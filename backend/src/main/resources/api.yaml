@@ -1,0 +1,123 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: OpenZEV API
+
+paths:
+  /v1/user/{userId}/consumptions/{from}/{upto}/{chronoUnit}:
+    get:
+      operationId: getUserConsumptions
+      tags:
+        - Consumptions
+      parameters:
+        - $ref: '#/components/parameters/UserParam'
+        - $ref: '#/components/parameters/FromParam'
+        - $ref: '#/components/parameters/UptoParam'
+        - $ref: '#/components/parameters/ChronoParam'
+      responses:
+        '200':
+          description: Consumptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConsumptionDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+components:
+  parameters:
+    UserParam:
+      name: userId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UserId'
+
+    FromParam:
+      name: from
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Date'
+
+    UptoParam:
+      name: upto
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Date'
+
+    ChronoParam:
+      name: chronoUnit
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ChronoEnum'
+
+  schemas:
+    UserId:
+      type: string
+
+    Date:
+      type: string
+      format: date
+
+    DateTime:
+      type: string
+      format: date-time
+
+    ChronoEnum:
+      type: string
+      enum:
+        - year
+        - month
+        - day
+        - hour
+        - quarter_hour
+
+    ConsumptionDto:
+      type: object
+      properties:
+        from:
+          $ref: '#/components/schemas/DateTime'
+        upto:
+          $ref: '#/components/schemas/DateTime'
+        amountHighTariff:
+          type: number
+          format: double
+        amountLowTariff:
+          type: number
+          format: double
+        maxPowerBillable:
+          type: number
+          format: double
+        maxPowerPhysically:
+          type: number
+          format: double
+        quantityHighTariff:
+          type: number
+          format: double
+        quantityLowTariff:
+          type: number
+          format: double
+        quantityTotal:
+          type: number
+          format: double
+
+    ErrorDto:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
