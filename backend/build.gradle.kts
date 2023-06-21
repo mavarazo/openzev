@@ -25,20 +25,26 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
 
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.liquibase:liquibase-core")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
+    runtimeOnly("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("org.postgresql:postgresql")
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.squareup.okhttp3:okhttp:4.0.1")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.0.1")
+    testRuntimeOnly("com.h2database:h2")
 }
 
 tasks.withType<Test> {
@@ -61,6 +67,7 @@ tasks.openApiGenerate {
             "interfaceOnly" to "true",
             "openApiNullable" to "false",
             "useSpringBoot3" to "true",
+            "useTags" to "true"
     )
     )
 }

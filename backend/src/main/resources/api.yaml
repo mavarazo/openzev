@@ -4,25 +4,339 @@ info:
   title: OpenZEV API
 
 paths:
-  /v1/user/{userId}/consumptions/{from}/{upto}/{chronoUnit}:
+  /v1/users:
     get:
-      operationId: getUserConsumptions
+      operationId: getUsers
       tags:
-        - Consumptions
-      parameters:
-        - $ref: '#/components/parameters/UserParam'
-        - $ref: '#/components/parameters/FromParam'
-        - $ref: '#/components/parameters/UptoParam'
-        - $ref: '#/components/parameters/ChronoParam'
+        - User
       responses:
         '200':
-          description: Consumptions
+          description: Users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ConsumptionDto'
+                  $ref: '#/components/schemas/UserDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createUser
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableUserDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/users/{userId}:
+    get:
+      operationId: getUser
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/UserParam'
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeUser
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/UserParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableUserDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/units:
+    get:
+      operationId: getUnits
+      tags:
+        - Unit
+      responses:
+        '200':
+          description: Units
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createUnit
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableUnitDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  /v1/units/{unitId}:
+    get:
+      operationId: getUnit
+      tags:
+        - Unit
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      responses:
+        '200':
+          description: Unit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeUnit
+      tags:
+        - Unit
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableUnitDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/accountings:
+    get:
+      operationId: getAccountings
+      tags:
+        - Accounting
+      responses:
+        '200':
+          description: Accountings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountingDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createAccounting
+      tags:
+        - Accounting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableAccountingDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/accountings/{accountingId}:
+    get:
+      operationId: getAccounting
+      tags:
+        - Accounting
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      responses:
+        '200':
+          description: Accounting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeAccounting
+      tags:
+        - Accounting
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableAccountingDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/invoices:
+    post:
+      operationId: createInvoice
+      tags:
+        - Invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatableInvoiceDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/invoices/{invoiceId}:
+    get:
+      operationId: getInvoice
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/InvoiceParam'
+      responses:
+        '200':
+          description: Invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeInvoice
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/InvoiceParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatableInvoiceDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceId'
         default:
           description: Unexpected error
           content:
@@ -39,30 +353,43 @@ components:
       schema:
         $ref: '#/components/schemas/UserId'
 
-    FromParam:
-      name: from
+    UnitParam:
+      name: unitId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/Date'
+        $ref: '#/components/schemas/UnitId'
 
-    UptoParam:
-      name: upto
+    AccountingParam:
+      name: accountingId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/Date'
+        $ref: '#/components/schemas/AccountingId'
 
-    ChronoParam:
-      name: chronoUnit
+    InvoiceParam:
+      name: invoiceId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/ChronoEnum'
+        $ref: '#/components/schemas/InvoiceId'
 
   schemas:
     UserId:
       type: string
+      format: uuid
+
+    UnitId:
+      type: string
+      format: uuid
+
+    AccountingId:
+      type: string
+      format: uuid
+
+    InvoiceId:
+      type: string
+      format: uuid
 
     Date:
       type: string
@@ -72,43 +399,220 @@ components:
       type: string
       format: date-time
 
-    ChronoEnum:
-      type: string
-      enum:
-        - year
-        - month
-        - day
-        - hour
-        - quarter_hour
-
-    ConsumptionDto:
+    UserDto:
       type: object
       properties:
-        from:
-          $ref: '#/components/schemas/DateTime'
-        upto:
-          $ref: '#/components/schemas/DateTime'
+        uuid:
+          $ref: '#/components/schemas/UserId'
+        active:
+          type: boolean
+        contractId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        street:
+          type: string
+        houseNr:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+        phoneNr:
+          type: string
+        mobileNr:
+          type: string
+
+    ModifiableUserDto:
+      type: object
+      properties:
+        active:
+          type: boolean
+          default: true
+        contractId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        street:
+          type: string
+        houseNr:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+        phoneNr:
+          type: string
+        mobileNr:
+          type: string
+      required:
+        - firstName
+        - lastName
+        - street
+        - houseNr
+        - postalCode
+        - city
+
+    UnitDto:
+      type: object
+      properties:
+        uuid:
+          $ref: '#/components/schemas/UserId'
+        active:
+          type: boolean
+        subject:
+          type: string
+        valueRatio:
+          type: integer
+        mpan:
+          description: meter point administration number
+          type: string
+
+    ModifiableUnitDto:
+      type: object
+      properties:
+        active:
+          type: boolean
+          default: true
+        subject:
+          type: string
+        valueRatio:
+          type: integer
+        mpan:
+          description: meter point administration number
+          type: string
+      required:
+        - subject
+
+    AccountingDto:
+      type: object
+      properties:
+        uuid:
+          $ref: '#/components/schemas/AccountingId'
+        periodFrom:
+          $ref: '#/components/schemas/Date'
+        periodUpto:
+          $ref: '#/components/schemas/Date'
+        subject:
+          type: string
         amountHighTariff:
           type: number
-          format: double
         amountLowTariff:
           type: number
-          format: double
-        maxPowerBillable:
+        amountTotal:
+          type: number
+        lowTariff:
+          type: number
+        highTariff:
+          type: number
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceDto'
+
+    ModifiableAccountingDto:
+      type: object
+      properties:
+        periodFrom:
+          $ref: '#/components/schemas/Date'
+        periodUpto:
+          $ref: '#/components/schemas/Date'
+        subject:
+          type: string
+        amountHighTariff:
+          type: number
+        amountLowTariff:
+          type: number
+        amountTotal:
+          type: number
+        lowTariff:
+          type: number
+        highTariff:
+          type: number
+      required:
+        - subject
+
+    InvoiceDto:
+      type: object
+      properties:
+        uuid:
+          $ref: '#/components/schemas/InvoiceId'
+        usageHighTariff:
           type: number
           format: double
-        maxPowerPhysically:
+        usageLowTariff:
           type: number
           format: double
-        quantityHighTariff:
+        usageTotal:
           type: number
           format: double
-        quantityLowTariff:
+        amountHighTariff:
+          type: number
+        amountLowTariff:
+          type: number
+        amountTotal:
+          type: number
+        payed:
+          $ref: '#/components/schemas/Date'
+
+    CreatableInvoiceDto:
+      type: object
+      properties:
+        accountingId:
+          $ref: '#/components/schemas/AccountingId'
+        unitId:
+          $ref: '#/components/schemas/UnitId'
+        usageHighTariff:
           type: number
           format: double
-        quantityTotal:
+        usageLowTariff:
           type: number
           format: double
+        usageTotal:
+          type: number
+          format: double
+        amountHighTariff:
+          type: number
+        amountLowTariff:
+          type: number
+        amountTotal:
+          type: number
+        payed:
+          $ref: '#/components/schemas/Date'
+      required:
+        - accountingId
+        - unitId
+
+    UpdatableInvoiceDto:
+      type: object
+      properties:
+        usageHighTariff:
+          type: number
+          format: double
+        usageLowTariff:
+          type: number
+          format: double
+        usageTotal:
+          type: number
+          format: double
+        amountHighTariff:
+          type: number
+        amountLowTariff:
+          type: number
+        amountTotal:
+          type: number
+        payed:
+          $ref: '#/components/schemas/Date'
 
     ErrorDto:
       type: object
@@ -117,7 +621,6 @@ components:
         - message
       properties:
         code:
-          type: integer
-          format: int32
+          type: string
         message:
           type: string

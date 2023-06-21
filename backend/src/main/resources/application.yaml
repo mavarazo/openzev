@@ -1,3 +1,15 @@
+server:
+  port: 8001
+
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: true
+    change-log: /db/changelog/main.xml
+
 openzev:
   ckw:
     base-url: https://etility.ckw.ch/etility/proxy/ckw/serviceAzureDA/smartmeter/
