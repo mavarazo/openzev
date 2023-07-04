@@ -54,5 +54,5 @@ public class User extends AbstractEntity {
   private String mobileNr;
 
   @OneToMany(mappedBy = "user")
-  private Set<Unit> units;
+  private Set<Ownership> ownerships;
 }

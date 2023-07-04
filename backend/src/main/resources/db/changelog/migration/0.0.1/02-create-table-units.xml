@@ -3,7 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
 
-    <changeSet author="mav" id="0.0.1-02-1-create-table-unit">
+    <changeSet author="mav" id="0.0.1-02-1-create-table-units">
         <createTable tableName="OZEV_UNITS">
             <column name="ID" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="PK_OZEV_UNIT"/>
@@ -16,8 +16,6 @@
             <column name="ACTIVE" type="BOOLEAN" valueBoolean="TRUE">
                 <constraints nullable="false"/>
             </column>
-
-            <column name="USER_ID" type="BIGINT"/>
 
             <column name="MPAN" type="VARCHAR(255)"/>
 

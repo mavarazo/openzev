@@ -35,4 +35,10 @@ public class NotFoundException extends RuntimeException {
     return new NotFoundException(
         "invoice_not_found", "invoice with id '%s' not found".formatted(invoiceId.toString()));
   }
+
+  public static NotFoundException ofOwnershipNotFound(final UUID ownershipId) {
+    return new NotFoundException(
+        "ownership_not_found",
+        "ownership with id '%s' not found".formatted(ownershipId.toString()));
+  }
 }

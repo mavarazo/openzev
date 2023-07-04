@@ -15,15 +15,15 @@ public interface UnitMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
-  @Mapping(target = "user", ignore = true)
   @Mapping(target = "meterPointAdministrationNumber", source = "mpan")
+  @Mapping(target = "ownerships", ignore = true)
   @Mapping(target = "invoices", ignore = true)
   Unit mapToUnit(ModifiableUnitDto modifiableUnitDto);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
-  @Mapping(target = "user", ignore = true)
   @Mapping(target = "meterPointAdministrationNumber", source = "mpan")
+  @Mapping(target = "ownerships", ignore = true)
   @Mapping(target = "invoices", ignore = true)
   void updateUnit(ModifiableUnitDto modifiableUnitDto, @MappingTarget Unit unit);
 }

@@ -2,8 +2,6 @@ package com.mav.openzev.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -21,9 +19,8 @@ import lombok.experimental.SuperBuilder;
 @Setter
 public class Unit extends AbstractEntity {
 
-  @ManyToOne
-  @JoinColumn(name = "USER_ID")
-  private User user;
+  @OneToMany(mappedBy = "unit")
+  private Set<Ownership> ownerships;
 
   @Column(name = "ACTIVE")
   @Builder.Default

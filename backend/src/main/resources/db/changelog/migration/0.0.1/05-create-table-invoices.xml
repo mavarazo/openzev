@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
+
+    <changeSet author="mav" id="0.0.1-05-1-create-table-invoices">
+        <createTable tableName="OZEV_INVOICES">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_OZEV_INVOICE"/>
+            </column>
+
+            <column name="UUID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="CREATED" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="MODIFIED" type="TIMESTAMP(6)"/>
+
+            <column name="ACCOUNTING_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="UNIT_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="USAGE_HT" type="DOUBLE"/>
+
+            <column name="USAGE_LT" type="DOUBLE"/>
+
+            <column name="USAGE_TOTAL" type="DOUBLE"/>
+
+            <column name="AMOUNT_HT" type="DECIMAL(5, 2)"/>
+
+            <column name="AMOUNT_LT" type="DECIMAL(5, 2)"/>
+
+            <column name="AMOUNT_TOTAL" type="DECIMAL(5, 2)"/>
+
+            <column name="PAYED" type="DATE"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

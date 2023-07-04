@@ -14,11 +14,11 @@ public interface UserMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
-  @Mapping(target = "units", ignore = true)
+  @Mapping(target = "ownerships", ignore = true)
   User mapToUser(ModifiableUserDto modifiableUserDto);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
-  @Mapping(target = "units", ignore = true)
+  @Mapping(target = "ownerships", ignore = true)
   void updateUser(ModifiableUserDto modifiableUserDto, @MappingTarget User user);
 }

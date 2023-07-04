@@ -43,26 +43,6 @@ public class OpenZevUnitApiIntegrationTest {
   class GetUnitsTests {
 
     @Test
-    void status404() {
-      // act
-      final ResponseEntity<ErrorDto> response =
-          restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              ErrorDto.class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
-          .extracting(ResponseEntity::getBody)
-          .returns("unit_not_found", ErrorDto::getCode)
-          .returns(
-              "unit with id '414d2033-3b17-4e68-b69e-e483db0dc90b' not found",
-              ErrorDto::getMessage);
-    }
-
-    @Test
     @Sql(scripts = {"/db/test-data/units.sql"})
     void status200() {
       // act

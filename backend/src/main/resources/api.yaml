@@ -137,6 +137,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+
   /v1/units/{unitId}:
     get:
       operationId: getUnit
@@ -176,6 +177,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnitId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/units/{unitId}/ownerships:
+    get:
+      operationId: getOwnerships
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      responses:
+        '200':
+          description: Ownerships
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OwnershipDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createOwnership
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableOwnershipDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/ownerships/{ownershipId}:
+    get:
+      operationId: getOwnership
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/OwnershipParam'
+      responses:
+        '200':
+          description: Ownership
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeOwnership
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/OwnershipParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableOwnershipDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipId'
         default:
           description: Unexpected error
           content:
@@ -360,6 +455,13 @@ components:
       schema:
         $ref: '#/components/schemas/UnitId'
 
+    OwnershipParam:
+      name: ownershipId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/OwnershipId'
+
     AccountingParam:
       name: accountingId
       in: path
@@ -380,6 +482,10 @@ components:
       format: uuid
 
     UnitId:
+      type: string
+      format: uuid
+
+    OwnershipId:
       type: string
       format: uuid
 
@@ -493,6 +599,33 @@ components:
           type: string
       required:
         - subject
+
+    OwnershipDto:
+      type: object
+      properties:
+        uuid:
+          $ref: '#/components/schemas/OwnershipId'
+        unit:
+          $ref: '#/components/schemas/UnitId'
+        user:
+          $ref: '#/components/schemas/UserId'
+        periodFrom:
+          $ref: '#/components/schemas/Date'
+        periodUpto:
+          $ref: '#/components/schemas/Date'
+
+    ModifiableOwnershipDto:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserId'
+        periodFrom:
+          $ref: '#/components/schemas/Date'
+        periodUpto:
+          $ref: '#/components/schemas/Date'
+      required:
+        - user
+        - periodFrom
 
     AccountingDto:
       type: object

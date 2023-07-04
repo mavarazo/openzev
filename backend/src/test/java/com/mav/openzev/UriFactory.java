@@ -21,6 +21,18 @@ public class UriFactory {
     return UriComponentsBuilder.fromPath("/v1/units/{unitId}").buildAndExpand(unitId).toUri();
   }
 
+  public static URI units_ownerships(final String unitId) {
+    return UriComponentsBuilder.fromPath("/v1/units/{unitId}/ownerships")
+        .buildAndExpand(unitId)
+        .toUri();
+  }
+
+  public static URI ownerships(final String ownershipId) {
+    return UriComponentsBuilder.fromPath("/v1/ownerships/{unitId}")
+        .buildAndExpand(ownershipId)
+        .toUri();
+  }
+
   public static URI accountings() {
     return UriComponentsBuilder.fromPath("/v1/accountings").build().toUri();
   }
