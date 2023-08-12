@@ -181,6 +181,36 @@ public class OpenZevOwnershipApiIntegrationTest {
         scripts = {
           "/db/test-data/units.sql",
           "/db/test-data/users.sql",
+          "/db/test-data/ownerships.sql"
+        })
+    void status422() {
+      // arrange
+      final ModifiableOwnershipDto requestBody =
+          new ModifiableOwnershipDto()
+              .user(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
+              .periodFrom(LocalDate.of(2023, 1, 1));
+
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.units_ownerships("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
+          .extracting(HttpEntity::getBody)
+          .returns("ownership_overlap", ErrorDto::getCode)
+          .returns("ownership '2023-01-01 - ' overlaps with '2023-01-01 - '", ErrorDto::getMessage);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/users.sql",
         })
     void status201() {
       // arrange

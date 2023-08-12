@@ -219,6 +219,12 @@ paths:
             schema:
               $ref: '#/components/schemas/ModifiableOwnershipDto'
       responses:
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
         '200':
           description: Updated
           content:
