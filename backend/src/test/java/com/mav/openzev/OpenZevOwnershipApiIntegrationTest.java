@@ -356,4 +356,45 @@ public class OpenZevOwnershipApiIntegrationTest {
                       .returns(LocalDate.of(2023, 12, 31), Ownership::getPeriodUpto));
     }
   }
+
+  @Nested
+  class DeleteOwnershipTests {
+
+    @Test
+    void status404() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.ownerships("bbfe1426-3a77-40da-9947-f970adce3735"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("ownership_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/users.sql",
+          "/db/test-data/ownerships.sql"
+        })
+    void status204() {
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.ownerships("bbfe1426-3a77-40da-9947-f970adce3735"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              UUID.class);
+
+      // assert
+      assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);
+    }
+  }
 }

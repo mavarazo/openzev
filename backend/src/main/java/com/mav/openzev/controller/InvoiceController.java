@@ -73,4 +73,16 @@ public class InvoiceController implements InvoiceApi {
     invoiceMapper.updateInvoice(updatableInvoiceDto, invoice);
     return ResponseEntity.ok(invoiceRepository.save(invoice).getUuid());
   }
+
+  @Override
+  public ResponseEntity<Void> deleteInvoice(final UUID invoiceId) {
+    return invoiceRepository
+        .findByUuid(invoiceId)
+        .map(
+            invoice -> {
+              invoiceRepository.delete(invoice);
+              return ResponseEntity.noContent().<Void>build();
+            })
+        .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(invoiceId));
+  }
 }

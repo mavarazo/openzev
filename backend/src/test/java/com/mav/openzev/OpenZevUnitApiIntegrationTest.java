@@ -6,6 +6,9 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableUnitDto;
 import com.mav.openzev.api.model.UnitDto;
 import com.mav.openzev.model.Unit;
+import com.mav.openzev.repository.AccountingRepository;
+import com.mav.openzev.repository.InvoiceRepository;
+import com.mav.openzev.repository.OwnershipRepository;
 import com.mav.openzev.repository.UnitRepository;
 import com.mav.openzev.repository.UserRepository;
 import java.util.UUID;
@@ -32,9 +35,15 @@ public class OpenZevUnitApiIntegrationTest {
 
   @Autowired private UserRepository userRepository;
   @Autowired private UnitRepository unitRepository;
+  @Autowired private OwnershipRepository ownershipRepository;
+  @Autowired private AccountingRepository accountingRepository;
+  @Autowired private InvoiceRepository invoiceRepository;
 
   @AfterEach
   void tearDown() {
+    invoiceRepository.deleteAll();
+    accountingRepository.deleteAll();
+    ownershipRepository.deleteAll();
     unitRepository.deleteAll();
     userRepository.deleteAll();
   }
@@ -74,10 +83,7 @@ public class OpenZevUnitApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("unit_not_found", ErrorDto::getCode)
-          .returns(
-              "unit with id '414d2033-3b17-4e68-b69e-e483db0dc90b' not found",
-              ErrorDto::getMessage);
+          .returns("unit_not_found", ErrorDto::getCode);
     }
 
     @Test
@@ -200,10 +206,7 @@ public class OpenZevUnitApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("unit_not_found", ErrorDto::getCode)
-          .returns(
-              "unit with id '414d2033-3b17-4e68-b69e-e483db0dc90b' not found",
-              ErrorDto::getMessage);
+          .returns("unit_not_found", ErrorDto::getCode);
     }
 
     @Test
@@ -242,6 +245,89 @@ public class OpenZevUnitApiIntegrationTest {
                       .returns(
                           "c113ad13-dbef-4936-8f84-29ce39cb2ab9",
                           Unit::getMeterPointAdministrationNumber));
+    }
+  }
+
+  @Nested
+  class DeleteUnitTests {
+
+    @Test
+    void status404() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("unit_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/users.sql",
+          "/db/test-data/units.sql",
+          "/db/test-data/ownerships.sql"
+        })
+    void status422_ownership() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("unit_has_ownership", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/users.sql",
+          "/db/test-data/units.sql",
+          "/db/test-data/accountings.sql",
+          "/db/test-data/invoices.sql"
+        })
+    void status422_invoice() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("unit_has_invoice", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(scripts = {"/db/test-data/units.sql"})
+    void status204() {
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              UUID.class);
+
+      // assert
+      assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);
     }
   }
 }

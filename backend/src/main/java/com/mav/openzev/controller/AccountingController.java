@@ -4,6 +4,7 @@ import com.mav.openzev.api.AccountingApi;
 import com.mav.openzev.api.model.AccountingDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
 import com.mav.openzev.exception.NotFoundException;
+import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.AccountingMapper;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.repository.AccountingRepository;
@@ -66,5 +67,21 @@ public class AccountingController implements AccountingApi {
               return ResponseEntity.ok(accountingRepository.save(accounting).getUuid());
             })
         .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
+  }
+
+  @Override
+  @Transactional
+  public ResponseEntity<Void> deleteAccounting(final UUID accountingId) {
+    final Accounting accounting =
+        accountingRepository
+            .findByUuid(accountingId)
+            .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(accountingId));
+
+    if (!accounting.getInvoices().isEmpty()) {
+      throw ValidationException.ofAccountingHasInvoice(accounting);
+    }
+
+    accountingRepository.delete(accounting);
+    return ResponseEntity.noContent().<Void>build();
   }
 }

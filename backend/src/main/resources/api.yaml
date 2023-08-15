@@ -49,6 +49,15 @@ paths:
                 $ref: '#/components/schemas/ErrorDto'
 
   /v1/users/{userId}:
+    delete:
+      operationId: deleteUser
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/UserParam'
+      responses:
+        '204':
+          description: Deleted
     get:
       operationId: getUser
       tags:
@@ -139,6 +148,15 @@ paths:
                 $ref: '#/components/schemas/ErrorDto'
 
   /v1/units/{unitId}:
+    delete:
+      operationId: deleteUnit
+      tags:
+        - Unit
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      responses:
+        '204':
+          description: Deleted
     get:
       operationId: getUnit
       tags:
@@ -239,6 +257,15 @@ paths:
                 $ref: '#/components/schemas/ErrorDto'
 
   /v1/ownerships/{ownershipId}:
+    delete:
+      operationId: deleteOwnership
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/OwnershipParam'
+      responses:
+        '204':
+          description: Deleted
     get:
       operationId: getOwnership
       tags:
@@ -329,6 +356,15 @@ paths:
                 $ref: '#/components/schemas/ErrorDto'
 
   /v1/accountings/{accountingId}:
+    delete:
+      operationId: deleteAccounting
+      tags:
+        - Accounting
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      responses:
+        '204':
+          description: Deleted
     get:
       operationId: getAccounting
       tags:
@@ -400,6 +436,15 @@ paths:
                 $ref: '#/components/schemas/ErrorDto'
 
   /v1/invoices/{invoiceId}:
+    delete:
+      operationId: deleteInvoice
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/InvoiceParam'
+      responses:
+        '204':
+          description: Deleted
     get:
       operationId: getInvoice
       tags:

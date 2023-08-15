@@ -7,6 +7,8 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.repository.AccountingRepository;
+import com.mav.openzev.repository.InvoiceRepository;
+import com.mav.openzev.repository.UnitRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -30,11 +32,15 @@ public class OpenZevAccountingApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
 
+  @Autowired private UnitRepository unitRepository;
   @Autowired private AccountingRepository accountingRepository;
+  @Autowired private InvoiceRepository invoiceRepository;
 
   @AfterEach
   void tearDown() {
+    invoiceRepository.deleteAll();
     accountingRepository.deleteAll();
+    unitRepository.deleteAll();
   }
 
   @Nested
@@ -237,6 +243,69 @@ public class OpenZevAccountingApiIntegrationTest {
                       .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal)
                       .returns(BigDecimal.valueOf(0.22), Accounting::getLowTariff)
                       .returns(BigDecimal.valueOf(0.33), Accounting::getHighTariff));
+    }
+  }
+
+  @Nested
+  class DeleteAccountingTests {
+
+    @Test
+    void status404() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("invoice_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/accountings.sql",
+          "/db/test-data/invoices.sql",
+        })
+    void status422() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("accounting_has_invoice", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/accountings.sql",
+        })
+    void status204() {
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              UUID.class);
+
+      // assert
+      assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);
     }
   }
 }

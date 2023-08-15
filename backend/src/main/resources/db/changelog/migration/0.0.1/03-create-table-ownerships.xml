@@ -20,11 +20,11 @@
             <column name="MODIFIED" type="TIMESTAMP(6)"/>
 
             <column name="UNIT_ID" type="BIGINT">
-                <constraints nullable="false"/>
+                <constraints nullable="false" foreignKeyName="FK_OWNERSHIP_UNIT" references="OZEV_UNITS(ID)"/>
             </column>
 
             <column name="USER_ID" type="BIGINT">
-                <constraints nullable="false"/>
+                <constraints nullable="false" foreignKeyName="FK_OWNERSHIP_USER" references="OZEV_USERS(ID)"/>
             </column>
 
             <column name="PERIOD_FROM" type="DATE">

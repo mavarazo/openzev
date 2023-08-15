@@ -2,7 +2,10 @@ package com.mav.openzev.exception;
 
 import static java.util.Objects.nonNull;
 
+import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Ownership;
+import com.mav.openzev.model.Unit;
+import com.mav.openzev.model.User;
 import java.util.StringJoiner;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -42,5 +45,30 @@ public class ValidationException extends RuntimeException {
                 overlap.getPeriodFrom(),
                 nonNull(overlap.getPeriodUpto()) ? overlap.getPeriodUpto() : ""));
     return new ValidationException("ownership_overlap", message.toString());
+  }
+
+  public static ValidationException ofUserHasOwnership(final User user) {
+    return new ValidationException(
+        "user_has_ownership",
+        "user with id '%s' is in use by ownership(s)".formatted(user.getUuid().toString()));
+  }
+
+  public static ValidationException ofUnitHasOwnership(final Unit unit) {
+    return new ValidationException(
+        "unit_has_ownership",
+        "unit with id '%s' is in use by ownership(s)".formatted(unit.getUuid().toString()));
+  }
+
+  public static ValidationException ofUnitHasInvoice(final Unit unit) {
+    return new ValidationException(
+        "unit_has_invoice",
+        "unit with id '%s' is in use by invoice(s)".formatted(unit.getUuid().toString()));
+  }
+
+  public static ValidationException ofAccountingHasInvoice(final Accounting accounting) {
+    return new ValidationException(
+        "accounting_has_invoice",
+        "accounting with id '%s' is in use by invoice(s)"
+            .formatted(accounting.getUuid().toString()));
   }
 }

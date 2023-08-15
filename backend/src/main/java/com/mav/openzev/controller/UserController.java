@@ -4,6 +4,7 @@ import com.mav.openzev.api.UserApi;
 import com.mav.openzev.api.model.ModifiableUserDto;
 import com.mav.openzev.api.model.UserDto;
 import com.mav.openzev.exception.NotFoundException;
+import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.UserMapper;
 import com.mav.openzev.model.User;
 import com.mav.openzev.repository.UserRepository;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -57,5 +59,21 @@ public class UserController implements UserApi {
               return ResponseEntity.ok(userRepository.save(user).getUuid());
             })
         .orElseThrow(() -> NotFoundException.ofUserNotFound(userId));
+  }
+
+  @Override
+  @Transactional
+  public ResponseEntity<Void> deleteUser(final UUID userId) {
+    final User user =
+        userRepository
+            .findByUuid(userId)
+            .orElseThrow(() -> NotFoundException.ofUserNotFound(userId));
+
+    if (!user.getOwnerships().isEmpty()) {
+      throw ValidationException.ofUserHasOwnership(user);
+    }
+
+    userRepository.delete(user);
+    return ResponseEntity.noContent().<Void>build();
   }
 }

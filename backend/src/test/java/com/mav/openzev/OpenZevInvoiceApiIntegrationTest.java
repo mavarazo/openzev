@@ -250,4 +250,45 @@ public class OpenZevInvoiceApiIntegrationTest {
                       .returns(LocalDate.of(2023, 4, 1), Invoice::getPayed));
     }
   }
+
+  @Nested
+  class DeleteInvoiceTests {
+
+    @Test
+    void status404() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.invoices("3394bcab-a426-45dd-8038-6ad347c1dd3b"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("invoice_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/accountings.sql",
+          "/db/test-data/invoices.sql",
+        })
+    void status204() {
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.invoices("3394bcab-a426-45dd-8038-6ad347c1dd3b"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              UUID.class);
+
+      // assert
+      assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);
+    }
+  }
 }

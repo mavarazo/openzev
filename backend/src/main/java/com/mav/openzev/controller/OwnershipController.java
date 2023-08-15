@@ -99,6 +99,18 @@ public class OwnershipController implements OwnershipApi {
     return ResponseEntity.ok(ownership.getUuid());
   }
 
+  @Override
+  public ResponseEntity<Void> deleteOwnership(final UUID ownershipId) {
+    return ownershipRepository
+        .findByUuid(ownershipId)
+        .map(
+            ownership -> {
+              ownershipRepository.delete(ownership);
+              return ResponseEntity.noContent().<Void>build();
+            })
+        .orElseThrow(() -> NotFoundException.ofOwnershipNotFound(ownershipId));
+  }
+
   private void assertNoOverlap(final Unit unit, final Ownership ownership) {
     final Optional<Ownership> optionalOverlap =
         ownershipRepository

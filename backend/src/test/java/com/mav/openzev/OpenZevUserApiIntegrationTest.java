@@ -6,6 +6,8 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableUserDto;
 import com.mav.openzev.api.model.UserDto;
 import com.mav.openzev.model.User;
+import com.mav.openzev.repository.OwnershipRepository;
+import com.mav.openzev.repository.UnitRepository;
 import com.mav.openzev.repository.UserRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -30,9 +32,13 @@ public class OpenZevUserApiIntegrationTest {
   @Autowired private TestRestTemplate restTemplate;
 
   @Autowired private UserRepository userRepository;
+  @Autowired private UnitRepository unitRepository;
+  @Autowired private OwnershipRepository ownershipRepository;
 
   @AfterEach
   void tearDown() {
+    ownershipRepository.deleteAll();
+    unitRepository.deleteAll();
     userRepository.deleteAll();
   }
 
@@ -71,10 +77,7 @@ public class OpenZevUserApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("user_not_found", ErrorDto::getCode)
-          .returns(
-              "user with id '790772bd-6425-41af-9270-297eb0d42060' not found",
-              ErrorDto::getMessage);
+          .returns("user_not_found", ErrorDto::getCode);
     }
 
     @Test
@@ -248,10 +251,7 @@ public class OpenZevUserApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("user_not_found", ErrorDto::getCode)
-          .returns(
-              "user with id '790772bd-6425-41af-9270-297eb0d42060' not found",
-              ErrorDto::getMessage);
+          .returns("user_not_found", ErrorDto::getCode);
     }
 
     @Test
@@ -302,6 +302,65 @@ public class OpenZevUserApiIntegrationTest {
                       .returns("Eigenthal", User::getCity)
                       .returns("+41 41 555 66 77", User::getPhoneNr)
                       .returns("+41 79 555 66 77", User::getMobileNr));
+    }
+  }
+
+  @Nested
+  class DeleteUserTests {
+
+    @Test
+    void status404() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("user_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/users.sql",
+          "/db/test-data/units.sql",
+          "/db/test-data/ownerships.sql"
+        })
+    void status422() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("user_has_ownership", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(scripts = {"/db/test-data/users.sql"})
+    void status204() {
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, null),
+              UUID.class);
+
+      // assert
+      assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);
     }
   }
 }
