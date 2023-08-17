@@ -8,8 +8,6 @@ import com.mav.openzev.api.model.ModifiableOwnershipDto;
 import com.mav.openzev.api.model.OwnershipDto;
 import com.mav.openzev.model.Ownership;
 import com.mav.openzev.repository.OwnershipRepository;
-import com.mav.openzev.repository.UnitRepository;
-import com.mav.openzev.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -32,16 +30,13 @@ import org.springframework.test.context.jdbc.Sql;
 public class OpenZevOwnershipApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
+  @Autowired private TestDatabaseService testDatabaseService;
 
-  @Autowired private UserRepository userRepository;
-  @Autowired private UnitRepository unitRepository;
   @Autowired private OwnershipRepository ownershipRepository;
 
   @AfterEach
   void tearDown() {
-    ownershipRepository.deleteAll();
-    userRepository.deleteAll();
-    unitRepository.deleteAll();
+    testDatabaseService.truncateAll();
   }
 
   @Nested

@@ -14,6 +14,7 @@ import com.mav.openzev.repository.InvoiceRepository;
 import com.mav.openzev.repository.UnitRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class InvoiceController implements InvoiceApi {
 
   private final AccountingRepository accountingRepository;
@@ -75,6 +77,7 @@ public class InvoiceController implements InvoiceApi {
   }
 
   @Override
+  @Transactional
   public ResponseEntity<Void> deleteInvoice(final UUID invoiceId) {
     return invoiceRepository
         .findByUuid(invoiceId)

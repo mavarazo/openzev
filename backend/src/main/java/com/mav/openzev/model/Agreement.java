@@ -2,11 +2,8 @@ package com.mav.openzev.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
@@ -16,17 +13,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Entity(name = "OZEV_ACCOUNTINGS")
+@Entity(name = "OZEV_AGREEMENTS")
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Accounting extends AbstractAuditEntity {
+public class Agreement extends AbstractAuditEntity {
 
-  @ManyToOne
-  @JoinColumn(name = "AGREEMENT_ID")
-  private Agreement agreement;
+  @OneToMany(mappedBy = "agreement")
+  private Set<Accounting> accountings;
 
   @Column(name = "PERIOD_FROM", nullable = false)
   private LocalDate periodFrom;
@@ -34,22 +30,14 @@ public class Accounting extends AbstractAuditEntity {
   @Column(name = "PERIOD_UPTO", nullable = false)
   private LocalDate periodUpto;
 
-  @Column(name = "SUBJECT")
-  private String subject;
+  @Digits(integer = 5, fraction = 2)
+  @Column(name = "HIGH_TARIFF", nullable = false)
+  private BigDecimal highTariff;
 
   @Digits(integer = 5, fraction = 2)
-  @Column(name = "AMOUNT_HT")
-  private BigDecimal amountHighTariff;
+  @Column(name = "LOW_TARIFF")
+  private BigDecimal lowTariff;
 
-  @Digits(integer = 5, fraction = 2)
-  @Column(name = "AMOUNT_LT")
-  private BigDecimal amountLowTariff;
-
-  @Positive
-  @Digits(integer = 5, fraction = 2)
-  @Column(name = "AMOUNT_TOTAL", nullable = false)
-  private BigDecimal amountTotal;
-
-  @OneToMany(mappedBy = "accounting")
-  private Set<Invoice> invoices;
+  @Column(name = "APPROVED", nullable = false)
+  private LocalDate approved;
 }

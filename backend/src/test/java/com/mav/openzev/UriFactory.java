@@ -33,6 +33,16 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI agreements() {
+    return UriComponentsBuilder.fromPath("/v1/agreements").build().toUri();
+  }
+
+  public static URI agreements(final String agreementId) {
+    return UriComponentsBuilder.fromPath("/v1/agreements/{agreementId}")
+        .buildAndExpand(agreementId)
+        .toUri();
+  }
+
   public static URI accountings() {
     return UriComponentsBuilder.fromPath("/v1/accountings").build().toUri();
   }

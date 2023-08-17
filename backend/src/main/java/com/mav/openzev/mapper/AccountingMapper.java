@@ -16,6 +16,7 @@ public interface AccountingMapper {
   @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "created", ignore = true)
   @Mapping(target = "modified", ignore = true)
+  @Mapping(target = "agreement", ignore = true)
   @Mapping(target = "invoices", ignore = true)
   Accounting mapToAccounting(ModifiableAccountingDto modifiableAccountingDto);
 
@@ -23,6 +24,7 @@ public interface AccountingMapper {
   @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "created", ignore = true)
   @Mapping(target = "modified", ignore = true)
+  @Mapping(target = "agreement", ignore = true)
   @Mapping(target = "invoices", ignore = true)
   void updateAccounting(
       ModifiableAccountingDto modifiableAccountingDto, @MappingTarget Accounting accounting);

@@ -41,4 +41,10 @@ public class NotFoundException extends RuntimeException {
         "ownership_not_found",
         "ownership with id '%s' not found".formatted(ownershipId.toString()));
   }
+
+    public static NotFoundException ofAgreementNotFound(final UUID agreementId) {
+        return new NotFoundException(
+                "agreement_not_found",
+                "agreement with id '%s' not found".formatted(agreementId.toString()));
+    }
 }

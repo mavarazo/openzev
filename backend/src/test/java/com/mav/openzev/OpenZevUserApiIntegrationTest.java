@@ -6,8 +6,6 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableUserDto;
 import com.mav.openzev.api.model.UserDto;
 import com.mav.openzev.model.User;
-import com.mav.openzev.repository.OwnershipRepository;
-import com.mav.openzev.repository.UnitRepository;
 import com.mav.openzev.repository.UserRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -30,16 +28,13 @@ import org.springframework.test.context.jdbc.Sql;
 public class OpenZevUserApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
+  @Autowired private TestDatabaseService testDatabaseService;
 
   @Autowired private UserRepository userRepository;
-  @Autowired private UnitRepository unitRepository;
-  @Autowired private OwnershipRepository ownershipRepository;
 
   @AfterEach
   void tearDown() {
-    ownershipRepository.deleteAll();
-    unitRepository.deleteAll();
-    userRepository.deleteAll();
+    testDatabaseService.truncateAll();
   }
 
   @Nested

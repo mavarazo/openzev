@@ -6,11 +6,7 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableUnitDto;
 import com.mav.openzev.api.model.UnitDto;
 import com.mav.openzev.model.Unit;
-import com.mav.openzev.repository.AccountingRepository;
-import com.mav.openzev.repository.InvoiceRepository;
-import com.mav.openzev.repository.OwnershipRepository;
 import com.mav.openzev.repository.UnitRepository;
-import com.mav.openzev.repository.UserRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -32,20 +28,13 @@ import org.springframework.test.context.jdbc.Sql;
 public class OpenZevUnitApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
+  @Autowired private TestDatabaseService testDatabaseService;
 
-  @Autowired private UserRepository userRepository;
   @Autowired private UnitRepository unitRepository;
-  @Autowired private OwnershipRepository ownershipRepository;
-  @Autowired private AccountingRepository accountingRepository;
-  @Autowired private InvoiceRepository invoiceRepository;
 
   @AfterEach
   void tearDown() {
-    invoiceRepository.deleteAll();
-    accountingRepository.deleteAll();
-    ownershipRepository.deleteAll();
-    unitRepository.deleteAll();
-    userRepository.deleteAll();
+    testDatabaseService.truncateAll();
   }
 
   @Nested
@@ -296,6 +285,7 @@ public class OpenZevUnitApiIntegrationTest {
         scripts = {
           "/db/test-data/users.sql",
           "/db/test-data/units.sql",
+          "/db/test-data/agreements.sql",
           "/db/test-data/accountings.sql",
           "/db/test-data/invoices.sql"
         })

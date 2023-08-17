@@ -3,6 +3,7 @@ package com.mav.openzev.exception;
 import static java.util.Objects.nonNull;
 
 import com.mav.openzev.model.Accounting;
+import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Ownership;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.User;
@@ -71,4 +72,10 @@ public class ValidationException extends RuntimeException {
         "accounting with id '%s' is in use by invoice(s)"
             .formatted(accounting.getUuid().toString()));
   }
+
+    public static ValidationException ofAgreementHasAccounting(final Agreement agreement) {
+        return new ValidationException(
+                "agreement_has_accounting",
+                "agreement with id '%s' is in use by accounting(s)".formatted(agreement.getUuid().toString()));
+    }
 }

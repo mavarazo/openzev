@@ -10,7 +10,6 @@ import com.mav.openzev.api.model.UpdatableInvoiceDto;
 import com.mav.openzev.model.Invoice;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.InvoiceRepository;
-import com.mav.openzev.repository.UnitRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -35,16 +34,14 @@ import org.springframework.test.context.jdbc.Sql;
 public class OpenZevInvoiceApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
+  @Autowired private TestDatabaseService testDatabaseService;
 
-  @Autowired private AccountingRepository accountingRepository;
   @Autowired private InvoiceRepository invoiceRepository;
-  @Autowired private UnitRepository unitRepository;
+  @Autowired private AccountingRepository accountingRepository;
 
   @AfterEach
   void tearDown() {
-    invoiceRepository.deleteAll();
-    unitRepository.deleteAll();
-    accountingRepository.deleteAll();
+    testDatabaseService.truncateAll();
   }
 
   @Nested
@@ -73,8 +70,9 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
-          "/db/test-data/accountings.sql",
           "/db/test-data/units.sql",
+          "/db/test-data/agreements.sql",
+          "/db/test-data/accountings.sql",
           "/db/test-data/invoices.sql"
         })
     void status200() {
@@ -130,7 +128,12 @@ public class OpenZevInvoiceApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/accountings.sql", "/db/test-data/units.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/agreements.sql",
+          "/db/test-data/accountings.sql"
+        })
     void status201() {
       // arrange
       final CreatableInvoiceDto requestBody =
@@ -179,7 +182,12 @@ public class OpenZevInvoiceApiIntegrationTest {
   class ChangeInvoiceTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/accountings.sql", "/db/test-data/units.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/agreements.sql",
+          "/db/test-data/accountings.sql"
+        })
     void status404() {
       // arrange
       final UpdatableInvoiceDto requestBody = new UpdatableInvoiceDto();
@@ -205,8 +213,9 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
-          "/db/test-data/accountings.sql",
           "/db/test-data/units.sql",
+          "/db/test-data/agreements.sql",
+          "/db/test-data/accountings.sql",
           "/db/test-data/invoices.sql"
         })
     void status200() {
@@ -275,6 +284,7 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
+          "/db/test-data/agreements.sql",
           "/db/test-data/accountings.sql",
           "/db/test-data/invoices.sql",
         })

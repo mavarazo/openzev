@@ -7,8 +7,6 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.repository.AccountingRepository;
-import com.mav.openzev.repository.InvoiceRepository;
-import com.mav.openzev.repository.UnitRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -31,23 +29,20 @@ import org.springframework.test.context.jdbc.Sql;
 public class OpenZevAccountingApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
+  @Autowired private com.mav.openzev.TestDatabaseService testDatabaseService;
 
-  @Autowired private UnitRepository unitRepository;
   @Autowired private AccountingRepository accountingRepository;
-  @Autowired private InvoiceRepository invoiceRepository;
 
   @AfterEach
   void tearDown() {
-    invoiceRepository.deleteAll();
-    accountingRepository.deleteAll();
-    unitRepository.deleteAll();
+    testDatabaseService.truncateAll();
   }
 
   @Nested
   class GetAccountingsTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/accountings.sql"})
+    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
     void status200() {
       // act
       final ResponseEntity<AccountingDto[]> response =
@@ -85,7 +80,7 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/accountings.sql"})
+    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
     void status200() {
       // act
       final ResponseEntity<AccountingDto> response =
@@ -111,9 +106,7 @@ public class OpenZevAccountingApiIntegrationTest {
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
                       .returns(BigDecimal.valueOf(100), AccountingDto::getAmountHighTariff)
                       .returns(BigDecimal.valueOf(75.00), AccountingDto::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175.00), AccountingDto::getAmountTotal)
-                      .returns(BigDecimal.valueOf(0.11), AccountingDto::getLowTariff)
-                      .returns(BigDecimal.valueOf(0.22), AccountingDto::getHighTariff));
+                      .returns(BigDecimal.valueOf(175.00), AccountingDto::getAmountTotal));
     }
   }
 
@@ -130,9 +123,7 @@ public class OpenZevAccountingApiIntegrationTest {
               .subject("Abrechnung 2023")
               .amountHighTariff(BigDecimal.valueOf(100))
               .amountLowTariff(BigDecimal.valueOf(75))
-              .amountTotal(BigDecimal.valueOf(175))
-              .lowTariff(BigDecimal.valueOf(0.11))
-              .highTariff(BigDecimal.valueOf(0.22));
+              .amountTotal(BigDecimal.valueOf(175));
 
       // act
       final ResponseEntity<UUID> response =
@@ -159,9 +150,7 @@ public class OpenZevAccountingApiIntegrationTest {
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
                       .returns(BigDecimal.valueOf(100), Accounting::getAmountHighTariff)
                       .returns(BigDecimal.valueOf(75), Accounting::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal)
-                      .returns(BigDecimal.valueOf(0.11), Accounting::getLowTariff)
-                      .returns(BigDecimal.valueOf(0.22), Accounting::getHighTariff));
+                      .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal));
     }
   }
 
@@ -178,9 +167,7 @@ public class OpenZevAccountingApiIntegrationTest {
               .subject("Abrechnung 2023")
               .amountHighTariff(BigDecimal.valueOf(100))
               .amountLowTariff(BigDecimal.valueOf(75))
-              .amountTotal(BigDecimal.valueOf(175))
-              .lowTariff(BigDecimal.valueOf(0.22))
-              .highTariff(BigDecimal.valueOf(0.33));
+              .amountTotal(BigDecimal.valueOf(175));
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -201,7 +188,7 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/accountings.sql"})
+    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
     void status200() {
       // arrange
       final ModifiableAccountingDto requestBody =
@@ -211,9 +198,7 @@ public class OpenZevAccountingApiIntegrationTest {
               .subject("Abrechnung 01/2023")
               .amountHighTariff(BigDecimal.valueOf(100))
               .amountLowTariff(BigDecimal.valueOf(75))
-              .amountTotal(BigDecimal.valueOf(175))
-              .lowTariff(BigDecimal.valueOf(0.22))
-              .highTariff(BigDecimal.valueOf(0.33));
+              .amountTotal(BigDecimal.valueOf(175));
 
       // act
       final ResponseEntity<UUID> response =
@@ -240,9 +225,7 @@ public class OpenZevAccountingApiIntegrationTest {
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
                       .returns(BigDecimal.valueOf(100), Accounting::getAmountHighTariff)
                       .returns(BigDecimal.valueOf(75), Accounting::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal)
-                      .returns(BigDecimal.valueOf(0.22), Accounting::getLowTariff)
-                      .returns(BigDecimal.valueOf(0.33), Accounting::getHighTariff));
+                      .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal));
     }
   }
 
@@ -270,6 +253,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
+          "/db/test-data/agreements.sql",
           "/db/test-data/accountings.sql",
           "/db/test-data/invoices.sql",
         })
@@ -293,6 +277,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
+          "/db/test-data/agreements.sql",
           "/db/test-data/accountings.sql",
         })
     void status204() {

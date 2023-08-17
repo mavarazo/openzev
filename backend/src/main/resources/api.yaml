@@ -58,6 +58,12 @@ paths:
       responses:
         '204':
           description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
     get:
       operationId: getUser
       tags:
@@ -157,6 +163,12 @@ paths:
       responses:
         '204':
           description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
     get:
       operationId: getUnit
       tags:
@@ -266,6 +278,12 @@ paths:
       responses:
         '204':
           description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
     get:
       operationId: getOwnership
       tags:
@@ -365,6 +383,12 @@ paths:
       responses:
         '204':
           description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
     get:
       operationId: getAccounting
       tags:
@@ -403,6 +427,111 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountingId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/agreements:
+    get:
+      operationId: getAgreements
+      tags:
+        - Agreement
+      responses:
+        '200':
+          description: Agreement
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AgreementDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createAgreement
+      tags:
+        - Agreement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableAgreementDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgreementId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/agreements/{agreementId}:
+    delete:
+      operationId: deleteAgreement
+      tags:
+        - Agreement
+      parameters:
+        - $ref: '#/components/parameters/AgreementParam'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      operationId: getAgreement
+      tags:
+        - Agreement
+      parameters:
+        - $ref: '#/components/parameters/AgreementParam'
+      responses:
+        '200':
+          description: Agreement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgreementDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeAgreement
+      tags:
+        - Agreement
+      parameters:
+        - $ref: '#/components/parameters/AgreementParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableAgreementDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgreementId'
         default:
           description: Unexpected error
           content:
@@ -520,6 +649,13 @@ components:
       schema:
         $ref: '#/components/schemas/AccountingId'
 
+    AgreementParam:
+      name: agreementId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/AgreementId'
+
     InvoiceParam:
       name: invoiceId
       in: path
@@ -541,6 +677,10 @@ components:
       format: uuid
 
     AccountingId:
+      type: string
+      format: uuid
+
+    AgreementId:
       type: string
       format: uuid
 
@@ -695,10 +835,6 @@ components:
           type: number
         amountTotal:
           type: number
-        lowTariff:
-          type: number
-        highTariff:
-          type: number
         invoices:
           type: array
           items:
@@ -719,12 +855,43 @@ components:
           type: number
         amountTotal:
           type: number
-        lowTariff:
-          type: number
-        highTariff:
-          type: number
       required:
         - subject
+
+    AgreementDto:
+      type: object
+      properties:
+        uuid:
+          $ref: '#/components/schemas/AgreementId'
+        periodFrom:
+          $ref: '#/components/schemas/Date'
+        periodUpto:
+          $ref: '#/components/schemas/Date'
+        highTariff:
+          type: number
+        lowTariff:
+          type: number
+        approved:
+          $ref: '#/components/schemas/Date'
+
+    ModifiableAgreementDto:
+      type: object
+      properties:
+        periodFrom:
+          $ref: '#/components/schemas/Date'
+        periodUpto:
+          $ref: '#/components/schemas/Date'
+        highTariff:
+          type: number
+        lowTariff:
+          type: number
+        approved:
+          $ref: '#/components/schemas/Date'
+      required:
+        - periodFrom
+        - periodUpto
+        - highTariff
+        - lowTariff
 
     InvoiceDto:
       type: object

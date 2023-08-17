@@ -57,6 +57,7 @@ public class AccountingController implements AccountingApi {
   }
 
   @Override
+  @Transactional
   public ResponseEntity<UUID> changeAccounting(
       final UUID accountingId, final ModifiableAccountingDto modifiableAccountingDto) {
     return accountingRepository
