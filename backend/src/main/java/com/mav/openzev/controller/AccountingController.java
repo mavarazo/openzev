@@ -1,5 +1,6 @@
 package com.mav.openzev.controller;
 
+
 import com.mav.openzev.api.AccountingApi;
 import com.mav.openzev.api.model.AccountingDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
@@ -7,9 +8,12 @@ import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.AccountingMapper;
 import com.mav.openzev.model.Accounting;
+import com.mav.openzev.model.Agreement;
 import com.mav.openzev.repository.AccountingRepository;
+import com.mav.openzev.repository.AgreementRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountingController implements AccountingApi {
 
   private final AccountingRepository accountingRepository;
+  private final AgreementRepository agreementRepository;
 
   private final AccountingMapper accountingMapper;
 
@@ -51,23 +56,25 @@ public class AccountingController implements AccountingApi {
   @Override
   public ResponseEntity<UUID> createAccounting(
       final ModifiableAccountingDto modifiableAccountingDto) {
-    final Accounting accounting =
-        accountingRepository.save(accountingMapper.mapToAccounting(modifiableAccountingDto));
-    return ResponseEntity.status(HttpStatus.CREATED).body(accounting.getUuid());
+    final Accounting accounting = accountingMapper.mapToAccounting(modifiableAccountingDto);
+    accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreement()));
+
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(accountingRepository.save(accounting).getUuid());
   }
 
   @Override
   @Transactional
   public ResponseEntity<UUID> changeAccounting(
       final UUID accountingId, final ModifiableAccountingDto modifiableAccountingDto) {
-    return accountingRepository
-        .findByUuid(accountingId)
-        .map(
-            accounting -> {
-              accountingMapper.updateAccounting(modifiableAccountingDto, accounting);
-              return ResponseEntity.ok(accountingRepository.save(accounting).getUuid());
-            })
-        .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
+    final Accounting accounting =
+        accountingRepository
+            .findByUuid(accountingId)
+            .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
+    accountingMapper.updateAccounting(modifiableAccountingDto, accounting);
+    accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreement()));
+
+    return ResponseEntity.ok(accountingRepository.save(accounting).getUuid());
   }
 
   @Override
@@ -84,5 +91,15 @@ public class AccountingController implements AccountingApi {
 
     accountingRepository.delete(accounting);
     return ResponseEntity.noContent().<Void>build();
+  }
+
+  private Agreement getAgreement(final UUID agreementId) {
+    if (Objects.isNull(agreementId)) {
+      return null;
+    }
+
+    return agreementRepository
+        .findByUuid(agreementId)
+        .orElseThrow(() -> NotFoundException.ofAgreementNotFound(agreementId));
   }
 }

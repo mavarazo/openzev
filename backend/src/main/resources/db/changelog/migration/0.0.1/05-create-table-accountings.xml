@@ -28,9 +28,9 @@
             <column name="PERIOD_FROM" type="DATE"/>
             <column name="PERIOD_UPTO" type="DATE"/>
             <column name="SUBJECT" type="VARCHAR(255)"/>
-            <column name="AMOUNT_HT" type="DECIMAL(5, 2)"/>
-            <column name="AMOUNT_LT" type="DECIMAL(5, 2)"/>
-            <column name="AMOUNT_TOTAL" type="DECIMAL(5, 2)"/>
+            <column name="AMOUNT_HT" type="DECIMAL(10, 2)"/>
+            <column name="AMOUNT_LT" type="DECIMAL(10, 2)"/>
+            <column name="AMOUNT_TOTAL" type="DECIMAL(10, 2)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

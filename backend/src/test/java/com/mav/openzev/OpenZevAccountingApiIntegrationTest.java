@@ -99,6 +99,9 @@ public class OpenZevAccountingApiIntegrationTest {
                       .returns(
                           UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
                           AccountingDto::getUuid)
+                      .returns(
+                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
+                          AccountingDto::getAgreement)
                       .returns(LocalDate.of(2023, 1, 1), AccountingDto::getPeriodFrom)
                       .returns(LocalDate.of(2023, 12, 31), AccountingDto::getPeriodUpto)
                       .returns("Abrechnung 2023", AccountingDto::getSubject)
@@ -114,10 +117,12 @@ public class OpenZevAccountingApiIntegrationTest {
   class CreateAccountingTests {
 
     @Test
+    @Sql(scripts = {"/db/test-data/agreements.sql"})
     void status201() {
       // arrange
       final ModifiableAccountingDto requestBody =
           new ModifiableAccountingDto()
+              .agreement(UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"))
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31))
               .subject("Abrechnung 2023")
@@ -143,6 +148,9 @@ public class OpenZevAccountingApiIntegrationTest {
           .hasValueSatisfying(
               accounting ->
                   assertThat(accounting)
+                      .returns(
+                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
+                          a -> a.getAgreement().getUuid())
                       .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
                       .returns(LocalDate.of(2023, 12, 31), Accounting::getPeriodUpto)
                       .returns("Abrechnung 2023", Accounting::getSubject)
@@ -218,6 +226,7 @@ public class OpenZevAccountingApiIntegrationTest {
           .hasValueSatisfying(
               accounting ->
                   assertThat(accounting)
+                      .returns(null, Accounting::getAgreement)
                       .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
                       .returns(LocalDate.of(2023, 3, 31), Accounting::getPeriodUpto)
                       .returns("Abrechnung 01/2023", Accounting::getSubject)

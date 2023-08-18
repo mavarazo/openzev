@@ -823,6 +823,8 @@ components:
       properties:
         uuid:
           $ref: '#/components/schemas/AccountingId'
+        agreement:
+          $ref: '#/components/schemas/AgreementId'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
@@ -843,6 +845,8 @@ components:
     ModifiableAccountingDto:
       type: object
       properties:
+        agreement:
+          $ref: '#/components/schemas/AgreementId'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:

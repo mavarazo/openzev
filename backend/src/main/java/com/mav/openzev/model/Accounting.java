@@ -37,16 +37,16 @@ public class Accounting extends AbstractAuditEntity {
   @Column(name = "SUBJECT")
   private String subject;
 
-  @Digits(integer = 5, fraction = 2)
+  @Digits(integer = 10, fraction = 2)
   @Column(name = "AMOUNT_HT")
   private BigDecimal amountHighTariff;
 
-  @Digits(integer = 5, fraction = 2)
+  @Digits(integer = 10, fraction = 2)
   @Column(name = "AMOUNT_LT")
   private BigDecimal amountLowTariff;
 
   @Positive
-  @Digits(integer = 5, fraction = 2)
+  @Digits(integer = 10, fraction = 2)
   @Column(name = "AMOUNT_TOTAL", nullable = false)
   private BigDecimal amountTotal;
 

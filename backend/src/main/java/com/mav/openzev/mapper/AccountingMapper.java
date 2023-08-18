@@ -10,6 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(config = MappingConfig.class)
 public interface AccountingMapper {
 
+  @Mapping(target = "agreement", source = "agreement.uuid")
   AccountingDto mapToAccountingDto(Accounting accounting);
 
   @Mapping(target = "id", ignore = true)
