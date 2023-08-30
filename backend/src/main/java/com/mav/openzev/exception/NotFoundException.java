@@ -1,5 +1,6 @@
 package com.mav.openzev.exception;
 
+import com.mav.openzev.model.Accounting;
 import java.util.UUID;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -46,5 +47,11 @@ public class NotFoundException extends RuntimeException {
         return new NotFoundException(
                 "agreement_not_found",
                 "agreement with id '%s' not found".formatted(agreementId.toString()));
+    }
+
+    public static NotFoundException ofDocumentNotFound(final Accounting accounting) {
+        return new NotFoundException(
+                "accounting_document_not_found",
+                "document for accounting with id '%s' not found".formatted(accounting.getUuid().toString()));
     }
 }

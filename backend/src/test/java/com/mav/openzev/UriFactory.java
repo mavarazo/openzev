@@ -53,6 +53,12 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI accountings_document(final String accountingId) {
+    return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}/document")
+        .buildAndExpand(accountingId)
+        .toUri();
+  }
+
   public static URI invoices() {
     return UriComponentsBuilder.fromPath("/v1/invoices").build().toUri();
   }

@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
@@ -52,4 +53,8 @@ public class Accounting extends AbstractAuditEntity {
 
   @OneToMany(mappedBy = "accounting")
   private Set<Invoice> invoices;
+
+  @OneToOne
+  @JoinColumn(name = "DOCUMENT_ID", referencedColumnName = "ID")
+  private Document document;
 }

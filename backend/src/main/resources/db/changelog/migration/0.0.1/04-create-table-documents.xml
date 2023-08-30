@@ -3,10 +3,10 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
 
-    <changeSet author="mav" id="0.0.1-04-1-create-table-agreements">
-        <createTable tableName="OZEV_AGREEMENTS">
+    <changeSet author="mav" id="0.0.1-04-1-create-table-documents">
+        <createTable tableName="OZEV_DOCUMENTS">
             <column name="ID" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" primaryKeyName="PK_OZEV_AGREEMENT"/>
+                <constraints primaryKey="true" primaryKeyName="PK_OZEV_DOCUMENT"/>
             </column>
 
             <column name="UUID" type="VARCHAR(36)">
@@ -19,11 +19,7 @@
 
             <column name="MODIFIED" type="TIMESTAMP(6)"/>
 
-            <column name="PERIOD_FROM" type="DATE"/>
-            <column name="PERIOD_UPTO" type="DATE"/>
-            <column name="LOW_TARIFF" type="DECIMAL(5, 2)"/>
-            <column name="HIGH_TARIFF" type="DECIMAL(5, 2)"/>
-            <column name="APPROVED" type="DATE"/>
+            <column name="DATA" type="BYTEA"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

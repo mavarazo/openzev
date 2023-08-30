@@ -434,6 +434,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
+  /v1/accountings/{accountingId}/document:
+    get:
+      operationId: getDocument
+      tags:
+        - Accounting
+        - Document
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      responses:
+        '200':
+          description: Document
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createDocument
+      tags:
+        - Accounting
+        - Documents
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      requestBody:
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
   /v1/agreements:
     get:
       operationId: getAgreements
@@ -649,6 +698,13 @@ components:
       schema:
         $ref: '#/components/schemas/AccountingId'
 
+    DocumentParam:
+      name: documentId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/DocumentId'
+
     AgreementParam:
       name: agreementId
       in: path
@@ -677,6 +733,10 @@ components:
       format: uuid
 
     AccountingId:
+      type: string
+      format: uuid
+
+    DocumentId:
       type: string
       format: uuid
 
@@ -841,6 +901,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvoiceDto'
+        isDocumentAvailable:
+          type: boolean
+          default: false
 
     ModifiableAccountingDto:
       type: object
