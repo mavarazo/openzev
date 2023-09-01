@@ -490,7 +490,7 @@ paths:
         - Agreement
       responses:
         '200':
-          description: Agreement
+          description: Agreements
           content:
             application/json:
               schema:
@@ -589,6 +589,30 @@ paths:
                 $ref: '#/components/schemas/ErrorDto'
 
   /v1/invoices:
+    get:
+      operationId: getInvoices
+      tags:
+        - Invoice
+      parameters:
+        - name: accountingId
+          in: query
+          schema:
+            $ref: '#/components/schemas/AccountingId'
+      responses:
+        '200':
+          description: Invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvoiceDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
     post:
       operationId: createInvoice
       tags:
@@ -598,7 +622,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatableInvoiceDto'
+              $ref: '#/components/schemas/ModifiableInvoiceDto'
       responses:
         '201':
           description: Created
@@ -653,7 +677,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatableInvoiceDto'
+              $ref: '#/components/schemas/ModifiableInvoiceDto'
       responses:
         '200':
           description: Updated
@@ -983,7 +1007,7 @@ components:
         payed:
           $ref: '#/components/schemas/Date'
 
-    CreatableInvoiceDto:
+    ModifiableInvoiceDto:
       type: object
       properties:
         accountingId:
@@ -1010,27 +1034,6 @@ components:
       required:
         - accountingId
         - unitId
-
-    UpdatableInvoiceDto:
-      type: object
-      properties:
-        usageHighTariff:
-          type: number
-          format: double
-        usageLowTariff:
-          type: number
-          format: double
-        usageTotal:
-          type: number
-          format: double
-        amountHighTariff:
-          type: number
-        amountLowTariff:
-          type: number
-        amountTotal:
-          type: number
-        payed:
-          $ref: '#/components/schemas/Date'
 
     ErrorDto:
       type: object
