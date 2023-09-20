@@ -151,6 +151,9 @@ public class OpenZevInvoiceApiIntegrationTest {
           .satisfies(
               r ->
                   assertThat(r.getBody())
+                      .returns(
+                          UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+                          InvoiceDto::getUnitId)
                       .returns(1000.00, InvoiceDto::getUsageHighTariff)
                       .returns(750.00, InvoiceDto::getUsageLowTariff)
                       .returns(1750.00, InvoiceDto::getUsageTotal)

@@ -10,6 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(config = MappingConfig.class)
 public interface InvoiceMapper {
 
+  @Mapping(target = "unitId", source = "unit.uuid")
   InvoiceDto mapToInvoiceDto(Invoice invoice);
 
   @Mapping(target = "id", ignore = true)

@@ -921,10 +921,6 @@ components:
           type: number
         amountTotal:
           type: number
-        invoices:
-          type: array
-          items:
-            $ref: '#/components/schemas/InvoiceDto'
         isDocumentAvailable:
           type: boolean
           default: false
@@ -989,6 +985,8 @@ components:
       properties:
         uuid:
           $ref: '#/components/schemas/InvoiceId'
+        unitId:
+          $ref: '#/components/schemas/UserId'
         usageHighTariff:
           type: number
           format: double
