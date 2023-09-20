@@ -985,6 +985,8 @@ components:
       properties:
         uuid:
           $ref: '#/components/schemas/InvoiceId'
+        accountingId:
+          $ref: '#/components/schemas/AccountingId'
         unitId:
           $ref: '#/components/schemas/UserId'
         usageHighTariff:
