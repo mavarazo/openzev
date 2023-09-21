@@ -83,6 +83,55 @@ public class OpenZevOwnershipApiIntegrationTest {
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
           .satisfies(r -> assertThat(r.getBody()).hasSize(2));
     }
+
+    @ParameterizedTest
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/users.sql",
+          "/db/test-data/ownerships.sql"
+        })
+    @CsvSource(value = {"2022-01-01,", ",2023-12-31"})
+    void status200_filtered_by_either_validity(
+        final LocalDate validFrom, final LocalDate validUpto) {
+      // act
+      final ResponseEntity<OwnershipDto[]> response =
+          restTemplate.exchange(
+              UriFactory.units_ownerships(
+                  "414d2033-3b17-4e68-b69e-e483db0dc90b", validFrom, validUpto),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              OwnershipDto[].class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+          .satisfies(r -> assertThat(r.getBody()).hasSize(2));
+    }
+
+    @ParameterizedTest
+    @Sql(
+        scripts = {
+          "/db/test-data/units.sql",
+          "/db/test-data/users.sql",
+          "/db/test-data/ownerships.sql"
+        })
+    @CsvSource(value = {"2022-01-01,2022-12-31"})
+    void status200_filtered_by_both_validity(final LocalDate validFrom, final LocalDate validUpto) {
+      // act
+      final ResponseEntity<OwnershipDto[]> response =
+          restTemplate.exchange(
+              UriFactory.units_ownerships(
+                  "414d2033-3b17-4e68-b69e-e483db0dc90b", validFrom, validUpto),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              OwnershipDto[].class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+          .satisfies(r -> assertThat(r.getBody()).hasSize(1));
+    }
   }
 
   @Nested
