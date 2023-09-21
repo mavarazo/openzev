@@ -10,6 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(config = MappingConfig.class)
 public interface AgreementMapper {
 
+  @Mapping(target = "id", source = "uuid")
   AgreementDto mapToAgreementDto(Agreement agreement);
 
   @Mapping(target = "id", ignore = true)

@@ -64,7 +64,7 @@ public class AccountingController implements AccountingApi {
   public ResponseEntity<UUID> createAccounting(
       final ModifiableAccountingDto modifiableAccountingDto) {
     final Accounting accounting = accountingMapper.mapToAccounting(modifiableAccountingDto);
-    accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreement()));
+    accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreementId()));
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(accountingRepository.save(accounting).getUuid());
@@ -79,7 +79,7 @@ public class AccountingController implements AccountingApi {
             .findByUuid(accountingId)
             .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
     accountingMapper.updateAccounting(modifiableAccountingDto, accounting);
-    accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreement()));
+    accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreementId()));
 
     return ResponseEntity.ok(accountingRepository.save(accounting).getUuid());
   }

@@ -13,7 +13,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(config = MappingConfig.class)
 public interface AccountingMapper {
 
-  @Mapping(target = "agreement", source = "agreement.uuid")
+  @Mapping(target = "id", source = "uuid")
+  @Mapping(target = "agreementId", source = "agreement.uuid")
   @Mapping(target = "isDocumentAvailable", source = "document")
   AccountingDto mapToAccountingDto(Accounting accounting);
 

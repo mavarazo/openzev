@@ -10,6 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(config = MappingConfig.class)
 public interface UnitMapper {
 
+  @Mapping(target = "id", source = "uuid")
   @Mapping(target = "mpan", source = "meterPointAdministrationNumber")
   UnitDto mapToUnitDto(Unit unit);
 

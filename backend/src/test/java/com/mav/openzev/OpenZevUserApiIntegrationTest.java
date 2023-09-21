@@ -93,7 +93,7 @@ public class OpenZevUserApiIntegrationTest {
               r ->
                   assertThat(r.getBody())
                       .returns(
-                          UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"), UserDto::getUuid)
+                          UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"), UserDto::getId)
                       .returns(true, UserDto::getActive)
                       .returns("6aeeaf0f-7e55-4bb8-8fb1-10f24fb8318c", UserDto::getContractId)
                       .returns("Anna", UserDto::getFirstName)

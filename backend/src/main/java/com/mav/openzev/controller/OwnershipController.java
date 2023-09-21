@@ -78,8 +78,9 @@ public class OwnershipController implements OwnershipApi {
             .orElseThrow(() -> NotFoundException.ofUnitNotFound(unitId));
     final User user =
         userRepository
-            .findByUuid(modifiableOwnershipDto.getUser())
-            .orElseThrow(() -> NotFoundException.ofUserNotFound(modifiableOwnershipDto.getUser()));
+            .findByUuid(modifiableOwnershipDto.getUserId())
+            .orElseThrow(
+                () -> NotFoundException.ofUserNotFound(modifiableOwnershipDto.getUserId()));
 
     final Ownership ownership = ownershipMapper.mapToOwnership(modifiableOwnershipDto);
 
@@ -102,9 +103,10 @@ public class OwnershipController implements OwnershipApi {
             .findByUuid(ownershipId)
             .orElseThrow(() -> NotFoundException.ofOwnershipNotFound(ownershipId));
 
+    ownershipMapper.updateOwnership(modifiableOwnershipDto, ownership);
+
     assertNoOverlap(ownership.getUnit(), ownership);
 
-    ownershipMapper.updateOwnership(modifiableOwnershipDto, ownership);
     ownershipRepository.save(ownership);
     return ResponseEntity.ok(ownership.getUuid());
   }

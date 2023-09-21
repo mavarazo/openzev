@@ -221,6 +221,16 @@ paths:
         - Ownership
       parameters:
         - $ref: '#/components/parameters/UnitParam'
+        - name: validFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: validUpto
+          in: query
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Ownerships
@@ -783,7 +793,7 @@ components:
     UserDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/UserId'
         active:
           type: boolean
@@ -847,7 +857,7 @@ components:
     UnitDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/UserId'
         active:
           type: boolean
@@ -878,11 +888,11 @@ components:
     OwnershipDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/OwnershipId'
-        unit:
+        unitId:
           $ref: '#/components/schemas/UnitId'
-        user:
+        userId:
           $ref: '#/components/schemas/UserId'
         periodFrom:
           $ref: '#/components/schemas/Date'
@@ -892,22 +902,22 @@ components:
     ModifiableOwnershipDto:
       type: object
       properties:
-        user:
+        userId:
           $ref: '#/components/schemas/UserId'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
           $ref: '#/components/schemas/Date'
       required:
-        - user
+        - userId
         - periodFrom
 
     AccountingDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/AccountingId'
-        agreement:
+        agreementId:
           $ref: '#/components/schemas/AgreementId'
         periodFrom:
           $ref: '#/components/schemas/Date'
@@ -928,7 +938,7 @@ components:
     ModifiableAccountingDto:
       type: object
       properties:
-        agreement:
+        agreementId:
           $ref: '#/components/schemas/AgreementId'
         periodFrom:
           $ref: '#/components/schemas/Date'
@@ -948,7 +958,7 @@ components:
     AgreementDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/AgreementId'
         periodFrom:
           $ref: '#/components/schemas/Date'
@@ -983,7 +993,7 @@ components:
     InvoiceDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/InvoiceId'
         accountingId:
           $ref: '#/components/schemas/AccountingId'

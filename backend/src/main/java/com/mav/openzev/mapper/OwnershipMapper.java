@@ -10,8 +10,9 @@ import org.mapstruct.MappingTarget;
 @Mapper(config = MappingConfig.class)
 public interface OwnershipMapper {
 
-  @Mapping(target = "unit", source = "unit.uuid")
-  @Mapping(target = "user", source = "user.uuid")
+  @Mapping(target = "id", source = "uuid")
+  @Mapping(target = "unitId", source = "unit.uuid")
+  @Mapping(target = "userId", source = "user.uuid")
   OwnershipDto mapToOwnershipDto(Ownership ownership);
 
   @Mapping(target = "id", ignore = true)
