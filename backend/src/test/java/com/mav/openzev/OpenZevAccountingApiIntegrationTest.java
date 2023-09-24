@@ -3,14 +3,14 @@ package com.mav.openzev;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.AccountingDto;
+import com.mav.openzev.api.model.DocumentDto;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Document;
 import com.mav.openzev.repository.AccountingRepository;
-import java.io.IOException;
+import com.mav.openzev.repository.DocumentRepository;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -21,8 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -31,6 +30,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -40,6 +41,7 @@ public class OpenZevAccountingApiIntegrationTest {
   @Autowired private com.mav.openzev.TestDatabaseService testDatabaseService;
 
   @Autowired private AccountingRepository accountingRepository;
+  @Autowired private DocumentRepository documentRepository;
 
   @AfterEach
   void tearDown() {
@@ -88,7 +90,7 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings_with_document.sql"})
+    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
     void status200() {
       // act
       final ResponseEntity<AccountingDto> response =
@@ -117,8 +119,7 @@ public class OpenZevAccountingApiIntegrationTest {
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
                       .returns(BigDecimal.valueOf(100), AccountingDto::getAmountHighTariff)
                       .returns(BigDecimal.valueOf(75.00), AccountingDto::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175.00), AccountingDto::getAmountTotal)
-                      .returns(true, AccountingDto::getIsDocumentAvailable));
+                      .returns(BigDecimal.valueOf(175.00), AccountingDto::getAmountTotal));
     }
   }
 
@@ -317,11 +318,10 @@ public class OpenZevAccountingApiIntegrationTest {
 
     @Test
     void status404_accounting() {
-      // arrange
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings_document("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
               HttpMethod.GET,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -334,54 +334,26 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
-    void status404_document() {
-      // arrange
-
-      // act
-      final ResponseEntity<ErrorDto> response =
-          restTemplate.exchange(
-              UriFactory.accountings_document("86fb361f-a577-405e-af02-f524478d2e49"),
-              HttpMethod.GET,
-              new HttpEntity<>(null, null),
-              ErrorDto.class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
-          .extracting(ResponseEntity::getBody)
-          .returns("accounting_document_not_found", ErrorDto::getCode);
-    }
-
-    @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings_with_document.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/agreements.sql",
+          "/db/test-data/documents.sql",
+          "/db/test-data/accountings.sql"
+        })
     @SneakyThrows
     void status200() {
-      // arrange
-      final HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_PDF);
-
       // act
-      final ResponseEntity<Resource> response =
+      final ResponseEntity<DocumentDto[]> response =
           restTemplate.exchange(
-              UriFactory.accountings_document("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
               HttpMethod.GET,
-              new HttpEntity<>(null, headers),
-              Resource.class);
+              new HttpEntity<>(null, null),
+              DocumentDto[].class);
 
       // assert
       assertThat(response)
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .extracting(HttpEntity::getBody)
-          .returns(
-              "a document",
-              b -> {
-                try {
-                  return b.getContentAsString(StandardCharsets.UTF_8);
-                } catch (final IOException e) {
-                  throw new RuntimeException(e);
-                }
-              });
+          .satisfies(r -> assertThat(r.getBody()).hasSize(1));
     }
   }
 
@@ -392,15 +364,15 @@ public class OpenZevAccountingApiIntegrationTest {
     void status404() {
       // arrange
       final HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_PDF);
+      headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-      final ByteArrayResource requestBody =
-          new ByteArrayResource("a document".getBytes(StandardCharsets.UTF_8));
+      final MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+      requestBody.add("content", new ClassPathResource("pdf.test-data/dummy.pdf"));
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings_document("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, headers),
               ErrorDto.class);
@@ -417,15 +389,15 @@ public class OpenZevAccountingApiIntegrationTest {
     void status200() {
       // arrange
       final HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_PDF);
+      headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-      final ByteArrayResource requestBody =
-          new ByteArrayResource("a document".getBytes(StandardCharsets.UTF_8));
+      final MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+      requestBody.add("content", new ClassPathResource("pdf.test-data/dummy.pdf"));
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.accountings_document("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, headers),
               UUID.class);
@@ -435,13 +407,18 @@ public class OpenZevAccountingApiIntegrationTest {
           .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
           .doesNotReturn(null, HttpEntity::getBody);
 
-      assertThat(accountingRepository.findByUuid(response.getBody()))
+      assertThat(documentRepository.findByUuid(response.getBody()))
           .isPresent()
           .hasValueSatisfying(
-              accounting ->
-                  assertThat(accounting.getDocument())
+              document ->
+                  assertThat(document)
                       .isNotNull()
-                      .returns("a document".getBytes(StandardCharsets.UTF_8), Document::getData));
+                      .returns(999L, Document::getRefId)
+                      .returns(Accounting.class.getSimpleName(), Document::getRefType)
+                      .returns("dummy.pdf", Document::getName)
+                      .returns(null, Document::getFilename)
+                      .returns(MediaType.APPLICATION_PDF_VALUE, Document::getMimeType)
+                      .doesNotReturn(null, Document::getData));
     }
   }
 }

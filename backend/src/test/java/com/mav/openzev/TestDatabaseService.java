@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Component
 @Slf4j
@@ -30,12 +31,12 @@ public class TestDatabaseService implements InitializingBean {
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     tableNames =
         entityManager.getMetamodel().getEntities().stream()
             .filter(e -> e.getJavaType().getAnnotation(Entity.class) != null)
             .map(e -> e.getJavaType().getAnnotation(Entity.class).name())
-            .peek(msg -> log.info(">>> " + msg))
+            .filter(StringUtils::hasText)
             .collect(Collectors.toList());
   }
 }

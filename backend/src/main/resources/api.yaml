@@ -444,9 +444,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/accountings/{accountingId}/document:
+  /v1/accountings/{accountingId}/documents:
     get:
-      operationId: getDocument
+      operationId: getAccountingDocuments
       tags:
         - Accounting
         - Document
@@ -454,12 +454,13 @@ paths:
         - $ref: '#/components/parameters/AccountingParam'
       responses:
         '200':
-          description: Document
+          description: Documents
           content:
-            application/pdf:
+            application/json:
               schema:
-                type: string
-                format: binary
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentDto'
         default:
           description: Unexpected error
           content:
@@ -467,7 +468,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
     post:
-      operationId: createDocument
+      operationId: createAccountingDocument
       tags:
         - Accounting
         - Documents
@@ -475,10 +476,13 @@ paths:
         - $ref: '#/components/parameters/AccountingParam'
       requestBody:
         content:
-          application/pdf:
+          multipart/form-data:
             schema:
-              type: string
-              format: binary
+              type: object
+              properties:
+                content:
+                  type: string
+                  format: binary
       responses:
         '201':
           description: Created
@@ -695,6 +699,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvoiceId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/documents/{documentId}:
+    delete:
+      operationId: deleteDocument
+      tags:
+        - Document
+      parameters:
+        - $ref: '#/components/parameters/DocumentParam'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      operationId: getDocument
+      tags:
+        - Document
+      parameters:
+        - $ref: '#/components/parameters/DocumentParam'
+      responses:
+        '200':
+          description: Document
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
         default:
           description: Unexpected error
           content:
@@ -931,9 +972,6 @@ components:
           type: number
         amountTotal:
           type: number
-        isDocumentAvailable:
-          type: boolean
-          default: false
 
     ModifiableAccountingDto:
       type: object
@@ -1044,6 +1082,29 @@ components:
       required:
         - accountingId
         - unitId
+
+    DocumentDto:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DocumentId'
+        name:
+          type: string
+        filename:
+          type: string
+        mimeType:
+          type: string
+
+    ModifiableDocumentDto:
+      type: object
+      properties:
+        name:
+          type: string
+        mimeType:
+          type: string
+        content:
+          type: string
+          format: binary
 
     ErrorDto:
       type: object

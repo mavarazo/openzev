@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 
 import com.mav.openzev.api.AccountingApi;
 import com.mav.openzev.api.model.AccountingDto;
+import com.mav.openzev.api.model.DocumentDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
 import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
@@ -16,17 +17,15 @@ import com.mav.openzev.repository.AgreementRepository;
 import com.mav.openzev.repository.DocumentRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -97,7 +96,7 @@ public class AccountingController implements AccountingApi {
     }
 
     accountingRepository.delete(accounting);
-    return ResponseEntity.noContent().<Void>build();
+    return ResponseEntity.noContent().build();
   }
 
   private Agreement getAgreement(final UUID agreementId) {
@@ -111,32 +110,49 @@ public class AccountingController implements AccountingApi {
   }
 
   @Override
-  public ResponseEntity<Resource> getDocument(final UUID accountingId) {
+  public ResponseEntity<List<DocumentDto>> getAccountingDocuments(final UUID accountingId) {
     final Accounting accounting =
         accountingRepository
             .findByUuid(accountingId)
             .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
 
-    final Document document =
-        Optional.ofNullable(accounting.getDocument())
-            .orElseThrow(() -> NotFoundException.ofDocumentNotFound(accounting));
+    final List<DocumentDto> documents =
+        documentRepository
+            .findAllByRefIdAndRefType(
+                accounting.getId(),
+                Accounting.class.getSimpleName(),
+                Sort.sort(Document.class).by(Document::getCreated))
+            .stream()
+            .map(
+                d ->
+                    new DocumentDto()
+                        .id(d.getUuid())
+                        .name(d.getName())
+                        .filename(d.getFilename())
+                        .mimeType(d.getMimeType()))
+            .toList();
 
-    return ResponseEntity.ok(new ByteArrayResource(document.getData()));
+    return ResponseEntity.ok(documents);
   }
 
   @SneakyThrows
   @Override
-  public ResponseEntity<UUID> createDocument(final UUID accountingId, final Resource body) {
+  public ResponseEntity<UUID> createAccountingDocument(
+      final UUID accountingId, final MultipartFile content) {
     final Accounting accounting =
         accountingRepository
             .findByUuid(accountingId)
             .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
 
     final Document document = new Document();
-    document.setData(body.getContentAsByteArray());
-    accounting.setDocument(documentRepository.save(document));
+    document.setRefId(accounting.getId());
+    document.setRefType(Accounting.class.getSimpleName());
+    document.setName(content.getName());
+    document.setName(content.getOriginalFilename());
+    document.setMimeType(content.getContentType());
+    document.setData(content.getBytes());
 
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(accountingRepository.save(accounting).getUuid());
+        .body(documentRepository.save(document).getUuid());
   }
 }

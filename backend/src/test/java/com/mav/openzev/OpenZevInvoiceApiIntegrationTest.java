@@ -7,7 +7,6 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.InvoiceDto;
 import com.mav.openzev.api.model.ModifiableInvoiceDto;
 import com.mav.openzev.model.Invoice;
-import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.InvoiceRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,7 +39,6 @@ public class OpenZevInvoiceApiIntegrationTest {
   @Autowired private TestDatabaseService testDatabaseService;
 
   @Autowired private InvoiceRepository invoiceRepository;
-  @Autowired private AccountingRepository accountingRepository;
 
   @AfterEach
   void tearDown() {

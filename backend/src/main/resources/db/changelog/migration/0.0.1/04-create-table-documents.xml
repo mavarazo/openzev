@@ -19,7 +19,23 @@
 
             <column name="MODIFIED" type="TIMESTAMP(6)"/>
 
-            <column name="DATA" type="BYTEA"/>
+            <column name="REF_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REF_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FILENAME" type="VARCHAR(255)"/>
+            <column name="MIME_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATA" type="BYTEA">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

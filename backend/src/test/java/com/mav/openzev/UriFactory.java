@@ -64,8 +64,8 @@ public class UriFactory {
         .toUri();
   }
 
-  public static URI accountings_document(final String accountingId) {
-    return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}/document")
+  public static URI accountings_documents(final String accountingId) {
+    return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}/documents")
         .buildAndExpand(accountingId)
         .toUri();
   }
@@ -77,6 +77,12 @@ public class UriFactory {
   public static URI invoices(final String invoiceId) {
     return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}")
         .buildAndExpand(invoiceId)
+        .toUri();
+  }
+
+  public static URI documents(final String documentId) {
+    return UriComponentsBuilder.fromPath("/v1/documents/{documentId}")
+        .buildAndExpand(documentId)
         .toUri();
   }
 }
