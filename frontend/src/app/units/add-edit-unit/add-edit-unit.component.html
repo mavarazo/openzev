@@ -1,0 +1,31 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between">
+    <h3>Add a new unit</h3>
+  </nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="unitForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label for="subject" class="form-label">Subject</label>
+        <input type="text" id="subject" class="form-control" formControlName="subject"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <label for="valueRatio" class="form-label">Value ratio</label>
+        <input type="number" id="valueRatio" class="form-control" formControlName="valueRatio">
+        <ng-container *ngIf="unitForm.get('valueRatio')?.invalid && unitForm.get('valueRatio')?.touched">
+          <div class="invalid-feedback" *ngIf="unitForm.get('valueRatio')?.errors">
+            Please use only numbers for value ratio
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="mb-3">
+        <label for="mpan" class="form-label">Meter point administration number</label>
+        <input type="text" id="mpan" class="form-control" formControlName="mpan">
+      </div>
+
+      <button type="submit" nbButton status="primary">Submit</button>
+    </form>
+  </nb-card-body>
+</nb-card>

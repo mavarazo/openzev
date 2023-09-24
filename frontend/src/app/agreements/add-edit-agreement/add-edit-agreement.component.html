@@ -1,0 +1,45 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between">
+    <h3>Add a new agreement</h3>
+  </nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="agreementForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label for="periodFrom" class="form-label">From</label>
+        <input type="date" id="periodFrom" class="form-control" formControlName="periodFrom" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="periodUpto" class="form-label">Upto</label>
+        <input type="date" id="periodUpto" class="form-control" formControlName="periodUpto" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="highTariff" class="form-label">High tariff</label>
+        <input type="number" id="highTariff" class="form-control" formControlName="highTariff">
+        <ng-container *ngIf="agreementForm.get('highTariff')?.invalid && agreementForm.get('highTariff')?.touched">
+          <div class="invalid-feedback" *ngIf="agreementForm.get('highTariff')?.errors">
+            Please use only numbers for high tariff
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="mb-3">
+        <label for="lowTariff" class="form-label">Low tariff</label>
+        <input type="number" id="lowTariff" class="form-control" formControlName="lowTariff">
+        <ng-container *ngIf="agreementForm.get('lowTariff')?.invalid && agreementForm.get('lowTariff')?.touched">
+          <div class="invalid-feedback" *ngIf="agreementForm.get('lowTariff')?.errors">
+            Please use only numbers for low tariff
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="mb-3">
+        <label for="approved" class="form-label">Approved</label>
+        <input type="date" id="approved" class="form-control" formControlName="approved">
+      </div>
+
+      <button type="submit" nbButton status="primary">Submit</button>
+    </form>
+  </nb-card-body>
+</nb-card>

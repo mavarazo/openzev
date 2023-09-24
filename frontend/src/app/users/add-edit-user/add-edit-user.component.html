@@ -1,0 +1,69 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between">
+    <h3>Add a new user</h3>
+  </nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="userForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label for="firstName" class="form-label">First name</label>
+        <input type="text" id="firstName" class="form-control" formControlName="firstName"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Last name</label>
+        <input type="text" id="lastName" class="form-control" formControlName="lastName"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" class="form-control" formControlName="email">
+        <ng-container *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+          <div class="invalid-feedback" *ngIf="userForm.get('email')?.errors">
+            Email is invalid!
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="mb-3">
+        <label for="street" class="form-label">Street</label>
+        <input type="text" id="street" class="form-control" formControlName="street" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="houseNr" class="form-label">House number</label>
+        <input type="text" id="houseNr" class="form-control" formControlName="houseNr"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <label for="postalCode" class="form-label">Postal code</label>
+        <input type="text" id="postalCode" class="form-control" formControlName="postalCode"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <label for="city" class="form-label">City</label>
+        <input type="text" id="city" class="form-control" formControlName="city" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="phoneNr" class="form-label">Phone number</label>
+        <input type="text" id="phoneNr" class="form-control" formControlName="phoneNr">
+      </div>
+
+      <div class="mb-3">
+        <label for="mobileNr" class="form-label">Mobile number</label>
+        <input type="text" id="mobileNr" class="form-control" formControlName="mobileNr">
+      </div>
+
+      <div class="mb-3">
+        <label for="contractId" class="form-label">Contract id</label>
+        <input type="text" id="contractId" class="form-control" formControlName="contractId">
+      </div>
+
+      <button type="submit" nbButton status="primary">Submit</button>
+    </form>
+  </nb-card-body>
+</nb-card>

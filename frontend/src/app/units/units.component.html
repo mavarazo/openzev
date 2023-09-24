@@ -1,0 +1,39 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between">
+    <h3>Units</h3>
+
+    <nb-actions>
+      <nb-action icon="plus" link="add"></nb-action>
+    </nb-actions>
+  </nb-card-header>
+  <nb-card-body>
+    <ng-container *ngIf="units$ | async as units; else loading">
+      <ng-container *ngIf="units.length; else empty">
+        <table class="table table-striped table-hover" style="width: 100%">
+          <thead>
+          <tr>
+            <th scope="col">Subject</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let unit of units" [routerLink]="unit.id" style="cursor: pointer">
+            <td>{{unit.subject}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </ng-container>
+    </ng-container>
+
+
+    <ng-template #empty>
+      Add your first unit
+    </ng-template>
+
+    <ng-template #loading>
+      <p class="placeholder-glow">
+        <span class="placeholder col-12"></span>
+      </p>
+    </ng-template>
+
+  </nb-card-body>
+</nb-card>

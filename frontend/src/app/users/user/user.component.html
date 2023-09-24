@@ -1,0 +1,110 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between">
+    <h3>User</h3>
+
+    <nb-actions >
+      <nb-action icon="edit-outline" routerLink="/users/edit/{{id}}"></nb-action>
+      <nb-action icon="trash-outline" (click)="delete()"></nb-action>
+    </nb-actions>
+  </nb-card-header>
+  <nb-card-body>
+    <ng-container *ngIf="user$ | async as user; else loading">
+      <div class="row mb-3">
+        <div class="col-3">
+          First name
+        </div>
+        <div class="col">
+          {{user.firstName}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          Last name
+        </div>
+        <div class="col">
+          {{user.lastName}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          Email
+        </div>
+        <div class="col">
+          {{user.email}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          Street
+        </div>
+        <div class="col">
+          {{user.street}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          House number
+        </div>
+        <div class="col">
+          {{user.houseNr}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          Postal code
+        </div>
+        <div class="col">
+          {{user.postalCode}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          City
+        </div>
+        <div class="col">
+          {{user.city}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          Phone number
+        </div>
+        <div class="col">
+          {{user.phoneNr}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          Mobile number
+        </div>
+        <div class="col">
+          {{user.mobileNr}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-3">
+          Contract id
+        </div>
+        <div class="col">
+          {{user.contractId}}
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #loading>
+      <p class="placeholder-glow">
+        <span class="placeholder col-12"></span>
+      </p>
+    </ng-template>
+
+  </nb-card-body>
+</nb-card>

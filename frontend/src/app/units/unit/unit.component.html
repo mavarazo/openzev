@@ -1,0 +1,101 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between">
+    <h3>Unit</h3>
+
+    <nb-actions>
+      <nb-action icon="edit-outline" routerLink="/units/edit/{{id}}"></nb-action>
+      <nb-action icon="trash-outline" (click)="delete()"></nb-action>
+    </nb-actions>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row">
+      <div class="col">
+        <nb-card>
+          <nb-card-body>
+            <ng-container *ngIf="unit$ | async as unit; else loading">
+              <div class="row mb-3">
+                <div class="col-3">
+                  Subject
+                </div>
+                <div class="col">
+                  {{unit.subject}}
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-3">
+                  Value ratio
+                </div>
+                <div class="col">
+                  {{unit.valueRatio}}
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-3">
+                  <p><abbr title="Meter point administration number">MPAN</abbr></p>
+                </div>
+                <div class="col">
+                  {{unit.mpan}}
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-template #loading>
+              <p class="placeholder-glow">
+                <span class="placeholder col-12"></span>
+              </p>
+            </ng-template>
+
+          </nb-card-body>
+        </nb-card>
+      </div>
+
+      <div class="col">
+        <nb-card>
+          <nb-card-header class="d-flex justify-content-between">
+            <h3>Participants</h3>
+            <button nbButton status="primary" routerLink="ownerships/add">Add a new ownership</button>
+          </nb-card-header>
+          <nb-card-body>
+            <ng-container *ngIf="ownerships$ | async as ownerships; else ownershipsLoading">
+              <ng-container *ngIf="ownerships?.length; else ownershipsEmpty">
+
+                <div *ngFor="let ownership of ownerships" class="row">
+                  <div class="col">
+                    {{ ownership.user?.firstName }} {{ ownership.user?.lastName }}
+                  </div>
+                  <div class="col">
+                    {{ ownership.periodFrom | date }} - {{ ownership.periodUpto | date}}
+                  </div>
+                  <div class="col text-end">
+                    <nb-actions size="small">
+                      <nb-action icon="edit-outline" routerLink="ownerships/edit/{{ownership.id}}"></nb-action>
+                      <nb-action icon="trash-outline" (click)="deleteOwnership(ownership)"></nb-action>
+                    </nb-actions>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <ng-template #ownershipsLoading>
+              <p class="placeholder-glow">
+                <span class="placeholder col-12"></span>
+              </p>
+            </ng-template>
+
+            <ng-template #ownershipsEmpty>
+              <div>
+                <p>Assign an owner to this unit</p>
+                <p><a href="#" routerLink="ownerships/add"
+                      class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Assign
+                  an owner</a></p>
+              </div>
+            </ng-template>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>
+

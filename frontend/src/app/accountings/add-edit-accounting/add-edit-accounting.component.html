@@ -1,0 +1,48 @@
+<nb-card>
+  <nb-card-header>
+    Add a new accounting
+  </nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="accountingForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label for="periodFrom" class="form-label">From</label>
+        <input type="date" id="periodFrom" class="form-control" formControlName="periodFrom" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="periodUpto" class="form-label">Upto</label>
+        <input type="date" id="periodUpto" class="form-control" formControlName="periodUpto" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="subject" class="form-label">Subject</label>
+        <input type="text" id="subject" class="form-control" formControlName="subject" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="amountHighTariff" class="form-label">Amount high tariff in CHF</label>
+        <input type="number" id="amountHighTariff" class="form-control" formControlName="amountHighTariff" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="amountLowTariff" class="form-label">Amount low tariff in CHF</label>
+        <input type="number" id="amountLowTariff" class="form-control" formControlName="amountLowTariff" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="amountTotal" class="form-label">Amount total in CHF</label>
+        <input type="number" id="amountTotal" class="form-control" formControlName="amountTotal" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="agreement" class="form-label">Agreement</label>
+        <select id="agreement" class="form-select" formControlName="agreementId">
+          <option *ngFor="let agreement of (agreements$ | async)"
+                  [ngValue]="agreement.id">{{agreement.periodFrom | date}} - {{agreement.periodUpto | date}}</option>
+        </select>
+      </div>
+
+      <button type="submit" nbButton status="primary">Submit</button>
+    </form>
+  </nb-card-body>
+</nb-card>

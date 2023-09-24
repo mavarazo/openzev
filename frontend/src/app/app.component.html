@@ -1,0 +1,17 @@
+<nb-layout>
+  <nb-layout-header fixed>
+    <h3>OpenZEV</h3>
+  </nb-layout-header>
+
+  <nb-sidebar responsive="true">
+    <nb-menu [items]="menu"></nb-menu>
+  </nb-sidebar>
+
+  <nb-layout-column>
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+
+  <nb-layout-footer fixed>
+    Copyright by Marco Niederberger 2023 (github)
+  </nb-layout-footer>
+</nb-layout>
