@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   catchError,
   defaultIfEmpty,
-  EMPTY,
   first,
   forkJoin,
   last,
@@ -21,20 +20,19 @@ import {
   DocumentService,
   InvoiceDto,
   InvoiceService,
-  UnitDto,
   UnitService,
 } from '../../../generated-source/api';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { CustomInvoiceDto } from '../../core/resolvers/invoices.resolver';
+import { BreadcrumbService } from 'xng-breadcrumb';
 import {
   HttpErrorResponse,
   HttpEvent,
   HttpEventType,
 } from '@angular/common/http';
 import { saveAs } from 'file-saver';
-
-export interface CustomInvoiceDto extends InvoiceDto {
-  unit?: UnitDto;
-}
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-accounting',
@@ -42,15 +40,19 @@ export interface CustomInvoiceDto extends InvoiceDto {
   styleUrls: ['./accounting.component.scss'],
 })
 export class AccountingComponent implements OnInit {
-  id: string | null;
-  accounting$: Observable<AccountingDto>;
+  @Input() accountingId: string | null;
+  @Input() accounting: AccountingDto;
   agreement$: Observable<AgreementDto>;
   documents$: Observable<DocumentDto[]>;
   invoices$: Observable<CustomInvoiceDto[]>;
 
+  actions: MenuItem[];
+
   constructor(
-    private activatedRoute: ActivatedRoute,
+    private route: ActivatedRoute,
     private router: Router,
+    private breadcrumbService: BreadcrumbService,
+    private datePipe: DatePipe,
     private accountingService: AccountingService,
     private agreementService: AgreementService,
     private documentService: DocumentService,
@@ -59,38 +61,52 @@ export class AccountingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.breadcrumbService.set(
+      '@accountingSlug',
+      `${this.datePipe.transform(
+        this.accounting.periodFrom
+      )} - ${this.datePipe.transform(this.accounting.periodUpto)}`
+    );
 
-    if (this.id) {
-      this.accounting$ = this.accountingService.getAccounting(this.id);
-      this.agreement$ = this.accounting$.pipe(
-        switchMap((a: AccountingDto) => {
-          if (a.agreementId) {
-            return this.agreementService.getAgreement(a.agreementId);
-          }
-          return EMPTY;
-        })
+    this.actions = [
+      {
+        icon: 'pi pi-pencil',
+        routerLink: '/accountings/edit/' + this.accounting.id,
+      },
+      {
+        icon: 'pi pi-trash',
+        command: () => this.delete(),
+        styleClass: 'p-button-danger',
+      },
+    ];
+
+    if (this.accounting.agreementId) {
+      this.agreement$ = this.agreementService.getAgreement(
+        this.accounting.agreementId
       );
-
-      this.documents$ = this.accountingService.getAccountingDocuments(this.id);
-
-      this.invoices$ = this.invoiceService
-        .getInvoices(this.id)
-        .pipe(
-          switchMap((invoices: InvoiceDto[]) =>
-            forkJoin(
-              invoices.map((invoice: InvoiceDto) =>
-                this.loadUnitForInvoice(invoice)
-              )
-            ).pipe(defaultIfEmpty([]))
-          )
-        );
     }
+
+    this.documents$ = this.documentService.getAccountingDocuments(
+      this.accounting.id!
+    );
+
+    this.invoices$ = this.invoiceService
+      .getInvoices(this.accounting.id!)
+      .pipe(
+        switchMap((invoices: InvoiceDto[]) =>
+          forkJoin(
+            invoices.map((invoice: InvoiceDto) =>
+              this.loadUnitForInvoice(invoice)
+            )
+          ).pipe(defaultIfEmpty([]))
+        )
+      );
   }
 
   private loadUnitForInvoice(
     invoice: InvoiceDto
   ): Observable<CustomInvoiceDto> {
+    console.log('something');
     if (invoice.unitId) {
       return this.unitService
         .getUnit(invoice.unitId)
@@ -100,9 +116,9 @@ export class AccountingComponent implements OnInit {
   }
 
   delete() {
-    if (this.id) {
+    if (this.accountingId) {
       this.accountingService
-        .deleteAccounting(this.id)
+        .deleteAccounting(this.accountingId)
         .pipe(first())
         .subscribe({
           error: console.error,
@@ -118,10 +134,10 @@ export class AccountingComponent implements OnInit {
   }
 
   private fileUpload(fileList: FileList): void {
-    if (this.id && fileList.length === 1) {
+    if (this.accountingId && fileList.length === 1) {
       const file = fileList.item(0)!;
       this.accountingService
-        .createAccountingDocument(this.id, file, 'events', true)
+        .createAccountingDocument(this.accountingId, file, 'events', true)
         .pipe(
           map((event) => this.getEventMessage(event, file)),
           tap((message) => this.showProgress(message)),
@@ -129,9 +145,9 @@ export class AccountingComponent implements OnInit {
           catchError(this.handleError(file))
         )
         .subscribe(() => {
-          if (this.id) {
+          if (this.accountingId) {
             this.documents$ = this.accountingService.getAccountingDocuments(
-              this.id
+              this.accountingId
             );
           }
         });
@@ -139,8 +155,6 @@ export class AccountingComponent implements OnInit {
   }
 
   private getEventMessage(event: HttpEvent<any>, file: File) {
-    console.log(event);
-
     switch (event.type) {
       case HttpEventType.Sent:
         return `Uploading file "${file.name}" of size ${file.size}.`;
@@ -194,9 +208,9 @@ export class AccountingComponent implements OnInit {
         .deleteDocument(document.id)
         .pipe(first())
         .subscribe(() => {
-          if (this.id) {
+          if (this.accountingId) {
             this.documents$ = this.accountingService.getAccountingDocuments(
-              this.id
+              this.accountingId
             );
           }
         });

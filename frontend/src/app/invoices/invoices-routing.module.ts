@@ -5,12 +5,19 @@ import { InvoiceComponent } from './invoice/invoice.component';
 
 const routes: Routes = [
   {
-    path: 'add',
-    component: AddEditInvoiceComponent,
-  },
-  {
-    path: ':id',
-    component: InvoiceComponent,
+    path: '',
+    data: { breadcrumb: { label: 'Invoices', disable: true } },
+    children: [
+      {
+        path: 'add',
+        component: AddEditInvoiceComponent,
+        data: { breadcrumb: 'Add' },
+      },
+      {
+        path: ':id',
+        component: InvoiceComponent,
+      },
+    ],
   },
 ];
 

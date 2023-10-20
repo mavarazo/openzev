@@ -1,0 +1,30 @@
+<app-header [actions]="actions"></app-header>
+
+<p-panel class="panel-without-header">
+  <ng-container *ngIf="accountings.length; else empty">
+    <p-table [value]="accountings" styleClass="p-datatable-striped">
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col">Period</th>
+          <th scope="col">Subject</th>
+          <th scope="col" class="text-right">High tariff</th>
+          <th scope="col" class="text-right">Low tariff</th>
+          <th scope="col" class="text-right">Total</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-accounting>
+        <tr style="cursor: pointer" [routerLink]="['/accountings/', accounting.id]">
+          <td>{{accounting.periodFrom | date}} - {{accounting.periodFrom | date}}</td>
+          <td>{{accounting.subject}}</td>
+          <td class="text-right">{{accounting.amountHighTariff | currency: 'CHF'}}</td>
+          <td class="text-right">{{accounting.amountLowTariff | currency: 'CHF'}}</td>
+          <td class="text-right">{{accounting.amountTotal | currency: 'CHF'}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-container>
+
+  <ng-template #empty>
+    Add your first accounting
+  </ng-template>
+</p-panel>

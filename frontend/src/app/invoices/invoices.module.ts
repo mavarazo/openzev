@@ -1,27 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { InvoicesRoutingModule } from './invoices-routing.module';
 import { AddEditInvoiceComponent } from './add-edit-invoice/add-edit-invoice.component';
-import {
-  NbActionsModule,
-  NbButtonModule,
-  NbCardModule,
-  NbCheckboxModule,
-} from '@nebular/theme';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InvoiceComponent } from './invoice/invoice.component';
+import { InvoicesRoutingModule } from './invoices-routing.module';
+import { SharedModule } from '../shared/shared.module';
+import { CoreModule } from '../core/core.module';
 
 @NgModule({
   declarations: [AddEditInvoiceComponent, InvoiceComponent],
   imports: [
     CommonModule,
     InvoicesRoutingModule,
-    NbCardModule,
+    CoreModule,
+    SharedModule,
     ReactiveFormsModule,
-    NbCheckboxModule,
-    NbButtonModule,
-    NbActionsModule,
   ],
 })
 export class InvoicesModule {}

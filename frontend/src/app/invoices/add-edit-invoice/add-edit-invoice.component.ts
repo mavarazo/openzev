@@ -123,8 +123,6 @@ export class AddEditInvoiceComponent implements OnInit {
         ...this.form.value,
       } as ModifiableInvoiceDto;
 
-      console.log(invoice);
-
       if (this.id) {
         this.editInvoice(invoice);
       } else {

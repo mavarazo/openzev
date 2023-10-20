@@ -1,23 +1,25 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { first, Observable, Subscription } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
+import { first, Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import {
+  AccountingDto,
   AccountingService,
   AgreementDto,
   AgreementService,
   ModifiableAccountingDto,
-  ModifiableUnitDto,
 } from '../../../generated-source/api';
+import { BreadcrumbService } from 'xng-breadcrumb';
+import { DatePipe } from '@angular/common';
+import { formatISO, parseISO } from 'date-fns';
 
 @Component({
   selector: 'app-add-edit-accounting',
   templateUrl: './add-edit-accounting.component.html',
   styleUrls: ['./add-edit-accounting.component.scss'],
 })
-export class AddEditAccountingComponent implements OnInit, OnDestroy {
-  id: string | null;
-  private subscription: Subscription;
+export class AddEditAccountingComponent implements OnInit {
+  @Input() accounting?: AccountingDto;
 
   agreements$: Observable<AgreementDto[]>;
 
@@ -25,7 +27,8 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
   isSubmitted: boolean = false;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
+    private datePipe: DatePipe,
+    private breadcrumbService: BreadcrumbService,
     private accountingService: AccountingService,
     private agreementService: AgreementService,
     private fb: FormBuilder,
@@ -33,25 +36,24 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
     this.initForm();
 
+    if (this.accounting) {
+      this.breadcrumbService.set(
+        '@accountingSlug',
+        `${this.datePipe.transform(
+          this.accounting.periodFrom
+        )} - ${this.datePipe.transform(this.accounting.periodUpto)}`
+      );
+
+      this.accountingForm.patchValue({
+        ...this.accounting,
+        periodFrom: parseISO(this.accounting.periodFrom!),
+        periodUpto: parseISO(this.accounting.periodUpto!),
+      });
+    }
+
     this.agreements$ = this.agreementService.getAgreements();
-
-    if (this.id) {
-      this.subscription = this.accountingService
-        .getAccounting(this.id)
-        .pipe(first())
-        .subscribe((accounting) => {
-          this.accountingForm.patchValue(accounting);
-        });
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
   }
 
   private initForm() {
@@ -96,17 +98,23 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
     if (this.accountingForm.valid) {
       const accounting = {
         ...this.accountingForm.value,
+        periodFrom: formatISO(this.accountingForm.get('periodFrom')?.value, {
+          representation: 'date',
+        }),
+        periodUpto: formatISO(this.accountingForm.get('periodUpto')?.value, {
+          representation: 'date',
+        }),
       } as ModifiableAccountingDto;
 
-      if (this.id) {
-        this.editAccounting(accounting);
+      if (this.accounting?.id) {
+        this.editAccounting(this.accounting?.id, accounting);
       } else {
         this.addAccounting(accounting);
       }
     }
   }
 
-  private addAccounting(accounting: ModifiableUnitDto) {
+  private addAccounting(accounting: ModifiableAccountingDto) {
     this.accountingService
       .createAccounting(accounting)
       .pipe(first())
@@ -121,14 +129,16 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
       });
   }
 
-  private editAccounting(accounting: ModifiableUnitDto) {
+  private editAccounting(id: string, accounting: ModifiableAccountingDto) {
+    console.log(accounting);
+
     this.accountingService
-      .changeAccounting(this.id!, accounting)
+      .changeAccounting(id, accounting)
       .pipe(first())
       .subscribe({
         next: () => {
           this.reset();
-          this.router.navigate(['/accountings', this.id]);
+          this.router.navigate(['/accountings', id]);
         },
         error: (error) => {
           console.error(error);

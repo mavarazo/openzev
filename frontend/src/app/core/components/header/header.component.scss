@@ -1,0 +1,11 @@
+.header {
+  background: var(--surface-b);
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+}
+
+:host ::ng-deep .p-breadcrumb {
+  background: var(--surface-b);
+  border: 0;
+}
+

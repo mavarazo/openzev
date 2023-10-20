@@ -1,0 +1,27 @@
+:host ::ng-deep {
+  .input-w-max {
+    .p-inputtext {
+      width: 100%;
+    }
+  }
+
+  .panel-header-with-actions {
+    .p-panel-header {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
+
+  .panel-without-header {
+    .p-panel {
+      .p-panel-header {
+        display: none;
+      }
+
+      .p-panel-content {
+        border-radius: 6px;
+      }
+    }
+  }
+}

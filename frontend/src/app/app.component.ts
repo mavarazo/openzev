@@ -1,35 +1,5 @@
 import { Component } from '@angular/core';
-import { NbMenuItem } from '@nebular/theme';
-
-const MENU_ITEMS: NbMenuItem[] = [
-  {
-    title: 'Dashboard',
-    icon: 'pie-chart-outline',
-    link: '/dashboard',
-    home: true,
-    hidden: true,
-  },
-  {
-    title: 'Units',
-    icon: 'home-outline',
-    link: '/units',
-  },
-  {
-    title: 'Users',
-    icon: 'people-outline',
-    link: '/users',
-  },
-  {
-    title: 'Agreements',
-    icon: 'award-outline',
-    link: '/agreements',
-  },
-  {
-    title: 'Accountings',
-    icon: 'briefcase-outline',
-    link: '/accountings',
-  },
-];
+import { MenuItem, PrimeNGConfig } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
@@ -37,7 +7,39 @@ const MENU_ITEMS: NbMenuItem[] = [
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'openzev';
+  items: MenuItem[];
 
-  menu = MENU_ITEMS;
+  constructor(private primengConfig: PrimeNGConfig) {}
+
+  ngOnInit(): void {
+    this.primengConfig.ripple = true;
+
+    this.items = [
+      {
+        label: 'Dashboard',
+        icon: 'pi pi-sliders-v',
+        routerLink: '/dashboard',
+      },
+      {
+        label: 'Accountings',
+        icon: 'pi pi-briefcase',
+        routerLink: '/accountings',
+      },
+      {
+        label: 'Agreements',
+        icon: 'pi pi-verified',
+        routerLink: '/agreements',
+      },
+      {
+        label: 'Units',
+        icon: 'pi pi-home',
+        routerLink: '/units',
+      },
+      {
+        label: 'Users',
+        icon: 'pi pi-users',
+        routerLink: '/users',
+      },
+    ];
+  }
 }
