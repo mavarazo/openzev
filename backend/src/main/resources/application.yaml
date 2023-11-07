@@ -9,6 +9,10 @@ spring:
   liquibase:
     enabled: true
     change-log: /db/changelog/main.xml
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
 
 openzev:
   ckw:
