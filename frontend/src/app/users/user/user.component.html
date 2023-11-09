@@ -1,0 +1,98 @@
+<div class="d-flex align-items-center justify-content-between pb-3">
+  <ng-container *ngIf="user$ | async as user">
+    <h4>
+      {{user.firstName}} {{user.lastName}}
+    </h4>
+  </ng-container>
+
+  <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" routerLink="edit">
+        <i class="bi bi-pencil-square me-1"></i>
+        <span>Edit</span>
+      </button>
+      <button class="btn btn-outline-danger" (click)="delete()">
+        <i class="bi bi-trash me-1"></i>
+        <span>Delete</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <ng-container *ngIf="user$ | async as user">
+      <div class="row mb-3">
+        <div class="col-2">
+          Email
+        </div>
+        <div class="col">
+          {{user.email}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          Street
+        </div>
+        <div class="col">
+          {{user.street}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          House number
+        </div>
+        <div class="col">
+          {{user.houseNr}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          Postal code
+        </div>
+        <div class="col">
+          {{user.postalCode}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          City
+        </div>
+        <div class="col">
+          {{user.city}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          Phone number
+        </div>
+        <div class="col">
+          {{user.phoneNr}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          Mobile number
+        </div>
+        <div class="col">
+          {{user.mobileNr}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          Contract id
+        </div>
+        <div class="col">
+          {{user.contractId}}
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

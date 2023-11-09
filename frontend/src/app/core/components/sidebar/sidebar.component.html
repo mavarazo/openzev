@@ -1,0 +1,15 @@
+<div class="d-flex flex-column flex-shrink-0 text-white" style="width: 280px;">
+  <div style="height: 70px">
+    <a href="/" class="d-flex align-items-center p-3 text-white text-decoration-none">
+      <h4>OpenZEV</h4>
+    </a>
+  </div>
+  <ul class="nav flex-column mb-auto">
+    <li class="nav-item" *ngFor="let item of items">
+      <a href="#" class="nav-link" [routerLink]="item.link" routerLinkActive="active">
+        <i class="{{item.icon}}"></i>
+        <span class="align-middle">{{item.label}}</span>
+      </a>
+    </li>
+  </ul>
+</div>

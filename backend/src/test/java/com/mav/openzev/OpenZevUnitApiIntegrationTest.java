@@ -93,7 +93,7 @@ public class OpenZevUnitApiIntegrationTest {
               r ->
                   assertThat(r.getBody())
                       .returns(
-                          UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"), UnitDto::getUuid)
+                          UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"), UnitDto::getId)
                       .returns(true, UnitDto::getActive)
                       .returns("EG/1.OG rechts", UnitDto::getSubject)
                       .returns(125, UnitDto::getValueRatio)

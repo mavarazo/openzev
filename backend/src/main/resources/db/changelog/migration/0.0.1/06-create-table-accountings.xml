@@ -3,7 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
 
-    <changeSet author="mav" id="0.0.1-05-1-create-table-accountings">
+    <changeSet author="mav" id="0.0.1-06-1-create-table-accountings">
         <createTable tableName="OZEV_ACCOUNTINGS">
             <column name="ID" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="PK_OZEV_ACCOUNTING"/>
@@ -25,12 +25,18 @@
                              references="OZEV_AGREEMENTS(ID)"/>
             </column>
 
+            <column name="DOCUMENT_ID" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="FK_ACCOUNTING_DOCUMENT"
+                             references="OZEV_DOCUMENTS(ID)"/>
+            </column>
+
             <column name="PERIOD_FROM" type="DATE"/>
             <column name="PERIOD_UPTO" type="DATE"/>
             <column name="SUBJECT" type="VARCHAR(255)"/>
-            <column name="AMOUNT_HT" type="DECIMAL(5, 2)"/>
-            <column name="AMOUNT_LT" type="DECIMAL(5, 2)"/>
-            <column name="AMOUNT_TOTAL" type="DECIMAL(5, 2)"/>
+            <column name="AMOUNT_HT" type="DECIMAL(10, 2)"/>
+            <column name="AMOUNT_LT" type="DECIMAL(10, 2)"/>
+            <column name="AMOUNT_TOTAL" type="DECIMAL(10, 2)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

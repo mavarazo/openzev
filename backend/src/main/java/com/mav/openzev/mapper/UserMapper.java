@@ -10,6 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(config = MappingConfig.class)
 public interface UserMapper {
 
+  @Mapping(target = "id", source = "uuid")
   UserDto mapToUserDto(User user);
 
   @Mapping(target = "id", ignore = true)

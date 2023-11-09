@@ -1,0 +1,36 @@
+.nav {
+  --bs-link-color: $white;
+  --bs-link-hover-color: $white;
+}
+
+.nav-link {
+  --bs-nav-link-padding-y: 0.625rem;
+  --bs-nav-link-padding-x: 1.625rem;
+
+  border-left: 3px solid transparent;
+  border-radius: 0;
+  color: rgba($gray-200, 0.5);
+  transition: background .1s ease-in-out;
+
+  i {
+    margin-right: .75rem;
+  }
+
+  &:hover {
+    border-left-color: $primary;
+
+    i {
+      color: var(--bs-link-hover-color);
+    }
+  }
+
+  &.active {
+    color: var(--bs-link-hover-color);
+    background: rgba($primary, 0.1);
+    border-left-color: $primary;
+
+    i {
+      color: var(--bs-link-hover-color);
+    }
+  }
+}

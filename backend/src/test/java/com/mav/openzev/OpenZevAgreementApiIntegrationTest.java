@@ -97,7 +97,7 @@ public class OpenZevAgreementApiIntegrationTest {
                   assertThat(r.getBody())
                       .returns(
                           UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
-                          AgreementDto::getUuid)
+                          AgreementDto::getId)
                       .returns(LocalDate.of(2023, 1, 1), AgreementDto::getPeriodFrom)
                       .returns(LocalDate.of(2023, 12, 31), AgreementDto::getPeriodUpto)
                       .usingComparatorForType(

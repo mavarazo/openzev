@@ -1,17 +1,22 @@
 package com.mav.openzev.controller;
 
+import static java.util.Objects.isNull;
+
 import com.mav.openzev.api.InvoiceApi;
-import com.mav.openzev.api.model.CreatableInvoiceDto;
 import com.mav.openzev.api.model.InvoiceDto;
-import com.mav.openzev.api.model.UpdatableInvoiceDto;
+import com.mav.openzev.api.model.ModifiableInvoiceDto;
 import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.mapper.InvoiceMapper;
+import com.mav.openzev.model.AbstractAuditEntity;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Invoice;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.InvoiceRepository;
 import com.mav.openzev.repository.UnitRepository;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,21 +37,38 @@ public class InvoiceController implements InvoiceApi {
   private final InvoiceMapper invoiceMapper;
 
   @Override
+  public ResponseEntity<List<InvoiceDto>> getInvoices(final UUID accountingId) {
+    final List<InvoiceDto> result = new ArrayList<>();
+
+    final List<Invoice> invoices =
+        isNull(accountingId)
+            ? invoiceRepository.findAll()
+            : invoiceRepository.findAllByAccounting_Uuid(accountingId);
+    invoices.stream()
+        .sorted(Comparator.comparing(i -> i.getAccounting().getPeriodFrom()))
+        .sorted(Comparator.comparing(AbstractAuditEntity::getCreated))
+        .map(invoiceMapper::mapToInvoiceDto)
+        .forEach(result::add);
+
+    return ResponseEntity.ok(result);
+  }
+
+  @Override
   @Transactional
-  public ResponseEntity<UUID> createInvoice(final CreatableInvoiceDto creatableInvoiceDto) {
+  public ResponseEntity<UUID> createInvoice(final ModifiableInvoiceDto modifiableInvoiceDto) {
     final Accounting accounting =
         accountingRepository
-            .findByUuid(creatableInvoiceDto.getAccountingId())
+            .findByUuid(modifiableInvoiceDto.getAccountingId())
             .orElseThrow(
                 () ->
-                    NotFoundException.ofAccountingNotFound(creatableInvoiceDto.getAccountingId()));
+                    NotFoundException.ofAccountingNotFound(modifiableInvoiceDto.getAccountingId()));
 
     final Unit unit =
         unitRepository
-            .findByUuid(creatableInvoiceDto.getUnitId())
-            .orElseThrow(() -> NotFoundException.ofUnitNotFound(creatableInvoiceDto.getUnitId()));
+            .findByUuid(modifiableInvoiceDto.getUnitId())
+            .orElseThrow(() -> NotFoundException.ofUnitNotFound(modifiableInvoiceDto.getUnitId()));
 
-    final Invoice invoice = invoiceMapper.mapToInvoice(creatableInvoiceDto);
+    final Invoice invoice = invoiceMapper.mapToInvoice(modifiableInvoiceDto);
     invoice.setAccounting(accounting);
     accounting.getInvoices().add(invoice);
     invoice.setUnit(unit);
@@ -66,13 +88,13 @@ public class InvoiceController implements InvoiceApi {
 
   @Override
   public ResponseEntity<UUID> changeInvoice(
-      final UUID invoiceId, final UpdatableInvoiceDto updatableInvoiceDto) {
+      final UUID invoiceId, final ModifiableInvoiceDto modifiableInvoiceDto) {
     final Invoice invoice =
         invoiceRepository
             .findByUuid(invoiceId)
             .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(invoiceId));
 
-    invoiceMapper.updateInvoice(updatableInvoiceDto, invoice);
+    invoiceMapper.updateInvoice(modifiableInvoiceDto, invoice);
     return ResponseEntity.ok(invoiceRepository.save(invoice).getUuid());
   }
 

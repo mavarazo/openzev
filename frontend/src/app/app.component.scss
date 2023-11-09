@@ -1,0 +1,28 @@
+.wrapper {
+  align-items: stretch;
+  background: #222e3c;
+  display: flex;
+  width: 100%;
+}
+
+.main {
+  background: #f5f7fb;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.content {
+  padding: 1.5rem 1.5rem 0.25rem;
+  width: auto;
+}
+
+footer.footer {
+  background: #fff;
+  padding: 1rem .875rem;
+}

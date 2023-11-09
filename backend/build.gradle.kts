@@ -16,7 +16,7 @@ repositories {
 sourceSets {
     main.configure {
         java {
-            srcDirs("$buildDir/generated/src/main/java")
+            srcDirs("${projectDir}/build/generated/src/main/java")
         }
     }
 }
@@ -61,7 +61,7 @@ tasks.compileJava {
 tasks.openApiGenerate {
     generatorName.set("spring")
     inputSpec.set("$projectDir/src/main/resources/api.yaml")
-    outputDir.set("$buildDir/generated")
+    outputDir.set("$projectDir/build/generated")
     apiPackage.set("com.mav.openzev.api")
     modelPackage.set("com.mav.openzev.api.model")
     configOptions.set(mapOf(

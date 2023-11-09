@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
@@ -37,19 +38,23 @@ public class Accounting extends AbstractAuditEntity {
   @Column(name = "SUBJECT")
   private String subject;
 
-  @Digits(integer = 5, fraction = 2)
+  @Digits(integer = 10, fraction = 2)
   @Column(name = "AMOUNT_HT")
   private BigDecimal amountHighTariff;
 
-  @Digits(integer = 5, fraction = 2)
+  @Digits(integer = 10, fraction = 2)
   @Column(name = "AMOUNT_LT")
   private BigDecimal amountLowTariff;
 
   @Positive
-  @Digits(integer = 5, fraction = 2)
+  @Digits(integer = 10, fraction = 2)
   @Column(name = "AMOUNT_TOTAL", nullable = false)
   private BigDecimal amountTotal;
 
   @OneToMany(mappedBy = "accounting")
   private Set<Invoice> invoices;
+
+  @OneToOne
+  @JoinColumn(name = "DOCUMENT_ID", referencedColumnName = "ID")
+  private Document document;
 }

@@ -1,0 +1,47 @@
+---
+services:
+  backend:
+    build:
+      context: backend
+    ports:
+    - 18002:8001
+    environment:
+    - LOGGING_LEVEL_ROOT=INFO
+    - LOGGING_LEVEL_COM_MAV_OPENZEV=TRACE
+    - LOGGING_LEVEL_ORG_HIBERNATE_SQL=DEBUG
+    - LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL_BASICBINDER=TRACE
+    - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/openzev
+    - SPRING_DATASOURCE_USERNAME=openzev
+    - SPRING_DATASOURCE_PASSWORD=password
+    - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+    - BUILDSCALE_BASEURL=http://frontend:3000
+    depends_on:
+    - db
+
+  db:
+    image: postgres
+    user: postgres
+    environment:
+    - POSTGRES_USER=openzev
+    - POSTGRES_PASSWORD=password
+    ports:
+    - 18003:5432
+    volumes:
+    - db-data:/var/lib/postgresql/data
+
+  # frontend:
+  #   build: 
+  #     context: frontend
+  #   ports:
+  #   - 18001:3000
+  #   depends_on:
+  #   - backend
+  
+  # nginx:
+  #   build:
+  #     context: nginx
+  #   ports:
+  #   - 18000:80
+
+volumes:
+  db-data:

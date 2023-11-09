@@ -47,4 +47,9 @@ public class NotFoundException extends RuntimeException {
                 "agreement_not_found",
                 "agreement with id '%s' not found".formatted(agreementId.toString()));
     }
+
+  public static NotFoundException ofDocumentNotFound(final UUID documentId) {
+    return new NotFoundException(
+        "document_not_found", "document with id '%s' not found".formatted(documentId.toString()));
+    }
 }

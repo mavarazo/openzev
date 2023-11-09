@@ -3,13 +3,17 @@ package com.mav.openzev;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.AccountingDto;
+import com.mav.openzev.api.model.DocumentDto;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
 import com.mav.openzev.model.Accounting;
+import com.mav.openzev.model.Document;
 import com.mav.openzev.repository.AccountingRepository;
+import com.mav.openzev.repository.DocumentRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.SneakyThrows;
 import org.assertj.core.util.BigDecimalComparator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -17,12 +21,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -32,6 +41,7 @@ public class OpenZevAccountingApiIntegrationTest {
   @Autowired private com.mav.openzev.TestDatabaseService testDatabaseService;
 
   @Autowired private AccountingRepository accountingRepository;
+  @Autowired private DocumentRepository documentRepository;
 
   @AfterEach
   void tearDown() {
@@ -98,7 +108,10 @@ public class OpenZevAccountingApiIntegrationTest {
                   assertThat(r.getBody())
                       .returns(
                           UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
-                          AccountingDto::getUuid)
+                          AccountingDto::getId)
+                      .returns(
+                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
+                          AccountingDto::getAgreementId)
                       .returns(LocalDate.of(2023, 1, 1), AccountingDto::getPeriodFrom)
                       .returns(LocalDate.of(2023, 12, 31), AccountingDto::getPeriodUpto)
                       .returns("Abrechnung 2023", AccountingDto::getSubject)
@@ -114,10 +127,12 @@ public class OpenZevAccountingApiIntegrationTest {
   class CreateAccountingTests {
 
     @Test
+    @Sql(scripts = {"/db/test-data/agreements.sql"})
     void status201() {
       // arrange
       final ModifiableAccountingDto requestBody =
           new ModifiableAccountingDto()
+              .agreementId(UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"))
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31))
               .subject("Abrechnung 2023")
@@ -143,6 +158,9 @@ public class OpenZevAccountingApiIntegrationTest {
           .hasValueSatisfying(
               accounting ->
                   assertThat(accounting)
+                      .returns(
+                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
+                          a -> a.getAgreement().getUuid())
                       .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
                       .returns(LocalDate.of(2023, 12, 31), Accounting::getPeriodUpto)
                       .returns("Abrechnung 2023", Accounting::getSubject)
@@ -218,6 +236,7 @@ public class OpenZevAccountingApiIntegrationTest {
           .hasValueSatisfying(
               accounting ->
                   assertThat(accounting)
+                      .returns(null, Accounting::getAgreement)
                       .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
                       .returns(LocalDate.of(2023, 3, 31), Accounting::getPeriodUpto)
                       .returns("Abrechnung 01/2023", Accounting::getSubject)
@@ -246,7 +265,7 @@ public class OpenZevAccountingApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("invoice_not_found", ErrorDto::getCode);
+          .returns("accounting_not_found", ErrorDto::getCode);
     }
 
     @Test
@@ -291,6 +310,115 @@ public class OpenZevAccountingApiIntegrationTest {
 
       // assert
       assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);
+    }
+  }
+
+  @Nested
+  class GetDocumentTests {
+
+    @Test
+    void status404_accounting() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              HttpMethod.GET,
+              new HttpEntity<>(null, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("accounting_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(
+        scripts = {
+          "/db/test-data/agreements.sql",
+          "/db/test-data/documents.sql",
+          "/db/test-data/accountings.sql"
+        })
+    @SneakyThrows
+    void status200() {
+      // act
+      final ResponseEntity<DocumentDto[]> response =
+          restTemplate.exchange(
+              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              HttpMethod.GET,
+              new HttpEntity<>(null, null),
+              DocumentDto[].class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+          .satisfies(r -> assertThat(r.getBody()).hasSize(1));
+    }
+  }
+
+  @Nested
+  class CreateDocumentTests {
+
+    @Test
+    void status404() {
+      // arrange
+      final HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+      final MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+      requestBody.add("content", new ClassPathResource("pdf.test-data/dummy.pdf"));
+
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, headers),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("accounting_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
+    void status200() {
+      // arrange
+      final HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+      final MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+      requestBody.add("content", new ClassPathResource("pdf.test-data/dummy.pdf"));
+
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, headers),
+              UUID.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
+          .doesNotReturn(null, HttpEntity::getBody);
+
+      assertThat(documentRepository.findByUuid(response.getBody()))
+          .isPresent()
+          .hasValueSatisfying(
+              document ->
+                  assertThat(document)
+                      .isNotNull()
+                      .returns(999L, Document::getRefId)
+                      .returns(Accounting.class.getSimpleName(), Document::getRefType)
+                      .returns("dummy.pdf", Document::getName)
+                      .returns(null, Document::getFilename)
+                      .returns(MediaType.APPLICATION_PDF_VALUE, Document::getMimeType)
+                      .doesNotReturn(null, Document::getData));
     }
   }
 }

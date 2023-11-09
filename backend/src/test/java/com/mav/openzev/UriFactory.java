@@ -1,6 +1,8 @@
 package com.mav.openzev;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.Optional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class UriFactory {
@@ -23,6 +25,15 @@ public class UriFactory {
 
   public static URI units_ownerships(final String unitId) {
     return UriComponentsBuilder.fromPath("/v1/units/{unitId}/ownerships")
+        .buildAndExpand(unitId)
+        .toUri();
+  }
+
+  public static URI units_ownerships(
+      final String unitId, final LocalDate validFrom, final LocalDate validUpto) {
+    return UriComponentsBuilder.fromPath("/v1/units/{unitId}/ownerships")
+        .queryParamIfPresent("validFrom", Optional.ofNullable(validFrom))
+        .queryParamIfPresent("validUpto", Optional.ofNullable(validUpto))
         .buildAndExpand(unitId)
         .toUri();
   }
@@ -53,6 +64,12 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI accountings_documents(final String accountingId) {
+    return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}/documents")
+        .buildAndExpand(accountingId)
+        .toUri();
+  }
+
   public static URI invoices() {
     return UriComponentsBuilder.fromPath("/v1/invoices").build().toUri();
   }
@@ -60,6 +77,12 @@ public class UriFactory {
   public static URI invoices(final String invoiceId) {
     return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}")
         .buildAndExpand(invoiceId)
+        .toUri();
+  }
+
+  public static URI documents(final String documentId) {
+    return UriComponentsBuilder.fromPath("/v1/documents/{documentId}")
+        .buildAndExpand(documentId)
         .toUri();
   }
 }

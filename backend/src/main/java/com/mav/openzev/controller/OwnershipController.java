@@ -14,6 +14,7 @@ import com.mav.openzev.model.User;
 import com.mav.openzev.repository.OwnershipRepository;
 import com.mav.openzev.repository.UnitRepository;
 import com.mav.openzev.repository.UserRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,18 +36,27 @@ public class OwnershipController implements OwnershipApi {
   private final OwnershipMapper ownershipMapper;
 
   @Override
-  public ResponseEntity<List<OwnershipDto>> getOwnerships(final UUID unitId) {
+  public ResponseEntity<List<OwnershipDto>> getOwnerships(
+      final UUID unitId, final LocalDate validFrom, final LocalDate validUpto) {
     final Unit unit =
         unitRepository
             .findByUuid(unitId)
             .orElseThrow(() -> NotFoundException.ofUnitNotFound(unitId));
 
-    return ResponseEntity.ok(
+    final List<OwnershipDto> result =
         ownershipRepository
             .findAllByUnit(unit, Sort.sort(Ownership.class).by(Ownership::getPeriodFrom))
             .stream()
+            .filter(
+                o ->
+                    isNull(validFrom)
+                        || isNull(o.getPeriodUpto())
+                        || validFrom.isBefore(o.getPeriodUpto()))
+            .filter(o -> isNull(validUpto) || validUpto.isAfter(o.getPeriodFrom()))
             .map(ownershipMapper::mapToOwnershipDto)
-            .toList());
+            .toList();
+
+    return ResponseEntity.ok(result);
   }
 
   @Override
@@ -68,8 +78,9 @@ public class OwnershipController implements OwnershipApi {
             .orElseThrow(() -> NotFoundException.ofUnitNotFound(unitId));
     final User user =
         userRepository
-            .findByUuid(modifiableOwnershipDto.getUser())
-            .orElseThrow(() -> NotFoundException.ofUserNotFound(modifiableOwnershipDto.getUser()));
+            .findByUuid(modifiableOwnershipDto.getUserId())
+            .orElseThrow(
+                () -> NotFoundException.ofUserNotFound(modifiableOwnershipDto.getUserId()));
 
     final Ownership ownership = ownershipMapper.mapToOwnership(modifiableOwnershipDto);
 
@@ -92,9 +103,10 @@ public class OwnershipController implements OwnershipApi {
             .findByUuid(ownershipId)
             .orElseThrow(() -> NotFoundException.ofOwnershipNotFound(ownershipId));
 
+    ownershipMapper.updateOwnership(modifiableOwnershipDto, ownership);
+
     assertNoOverlap(ownership.getUnit(), ownership);
 
-    ownershipMapper.updateOwnership(modifiableOwnershipDto, ownership);
     ownershipRepository.save(ownership);
     return ResponseEntity.ok(ownership.getUuid());
   }

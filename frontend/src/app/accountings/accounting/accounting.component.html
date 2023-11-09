@@ -1,0 +1,232 @@
+<div class="d-flex align-items-center justify-content-between pb-3">
+  <ng-container *ngIf="accounting$ | async as accounting">
+    <h4>
+      {{accounting.subject}}
+    </h4>
+  </ng-container>
+
+  <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" routerLink="edit">
+        <i class="bi bi-pencil-square me-1"></i>
+        <span>Edit</span>
+      </button>
+      <button class="btn btn-outline-danger" (click)="delete()">
+        <i class="bi bi-trash me-1"></i>
+        <span>Delete</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <ng-container *ngIf="accounting$ | async as accounting; else loading">
+      <div class="row mb-3">
+        <div class="col-2">
+          Period
+        </div>
+        <div class="col">
+          {{accounting.periodFrom | date}} - {{accounting.periodUpto | date}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          High tariff
+        </div>
+        <div class="col">
+          {{accounting.amountHighTariff | currency: 'CHF'}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          Low tariff
+        </div>
+        <div class="col">
+          {{accounting.amountLowTariff | currency: 'CHF'}}
+        </div>
+      </div>
+
+      <div class="row mb-3 fw-bolder">
+        <div class="col-2">
+          Total
+        </div>
+        <div class="col">
+          {{accounting.amountTotal | currency: 'CHF'}}
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <div class="card mb-3">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-baseline">
+          <h5>Agreement</h5>
+        </div>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="agreement$ | async as agreement; else loading">
+          <div class="row mb-3">
+            <div class="col-2">
+              Period
+            </div>
+            <div class="col">
+              {{ agreement.periodFrom | date }} - {{ agreement.periodUpto | date }}
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-2">
+              High tariff
+            </div>
+            <div class="col">
+              {{agreement.highTariff | currency: 'CHF'}}
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-2">
+              Low tariff
+            </div>
+            <div class="col">
+              {{agreement.lowTariff | currency: 'CHF'}}
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card mb-3">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-baseline">
+          <h5>Documents</h5>
+
+          <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+            <div class="btn-group" role="group">
+              <ng-container>
+                <button class="btn btn-outline-primary" (click)="fileInput.click()">
+                  <i class="bi bi-upload me-1"></i>
+                  <span>Upload document</span>
+                  <input #fileInput type="file" class="form-control" id="formFile"
+                         (change)="fileBrowseHandler($event)" hidden>
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="documents$ | async as documents; else loading">
+          <ng-container *ngIf="documents?.length; else invoicesEmpty">
+            <table class="table table-striped table-hover align-middle">
+              <caption>List of documents</caption>
+              <thead>
+              <tr>
+                <th scope="col">Name</th>
+              </tr>
+              </thead>
+              <tbody *ngFor="let document of documents">
+              <tr>
+                <td (click)="openOrDownloadDocument(document)"
+                    style="cursor: pointer">{{ document.name }}</td>
+                <td class="text-end">
+                  <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-outline-primary" (click)="downloadDocument(document)">
+                      <i class="bi bi-download"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" (click)="deleteDocument(document)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header">
+    <div class="d-flex justify-content-between align-items-baseline">
+      <h5>Invoices</h5>
+
+      <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+        <div class="btn-group" role="group">
+          <button class="btn btn-outline-primary" routerLink="invoices/add">
+            <i class="bi bi-plus-lg me-1"></i>
+            <span>Add a new invoice</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <ng-container *ngIf="invoices$ | async as invoices; else loading">
+      <ng-container *ngIf="invoices?.length; else invoicesEmpty">
+
+        <table class="table table-striped table-hover align-middle">
+          <caption>List of invoices</caption>
+          <thead>
+          <tr>
+            <th scope="col">Unit</th>
+            <th scope="col" class="text-end">High tariff in kWh</th>
+            <th scope="col" class="text-end">Low tariff in kWh</th>
+            <th scope="col" class="text-end">Total in kWh</th>
+            <th scope="col" class="text-end">High tariff in CHF</th>
+            <th scope="col" class="text-end">Low tariff in CHF</th>
+            <th scope="col" class="text-end">Total in CHF</th>
+            <th scope="col">Payed</th>
+          </tr>
+          </thead>
+          <tbody *ngFor="let invoice of invoices">
+          <tr routerLink="invoices/{{invoice.id}}" style="cursor: pointer">
+            <td>
+              {{invoice.unit?.subject}}
+            </td>
+            <td class="text-end">
+              {{invoice.usageLowTariff}}
+            </td>
+            <td class="text-end">
+              {{invoice.usageHighTariff}}
+            </td>
+            <td class="text-end">
+              {{invoice.usageTotal}}
+            </td>
+            <td class="text-end">
+              {{invoice.amountHighTariff}}
+            </td>
+            <td class="text-end">
+              {{invoice.amountLowTariff}}
+            </td>
+            <td class="text-end">
+              {{invoice.amountTotal}}
+            </td>
+            <td class="text-end">
+              {{invoice.payed | date}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #loading>
+  Loading...
+</ng-template>
+
+<ng-template #invoicesEmpty>
+  Create an invoice for this accounting
+</ng-template>

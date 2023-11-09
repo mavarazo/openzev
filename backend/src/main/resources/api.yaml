@@ -221,6 +221,16 @@ paths:
         - Ownership
       parameters:
         - $ref: '#/components/parameters/UnitParam'
+        - name: validFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: validUpto
+          in: query
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Ownerships
@@ -434,6 +444,59 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
+  /v1/accountings/{accountingId}/documents:
+    get:
+      operationId: getAccountingDocuments
+      tags:
+        - Accounting
+        - Document
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      responses:
+        '200':
+          description: Documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createAccountingDocument
+      tags:
+        - Accounting
+        - Documents
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
   /v1/agreements:
     get:
       operationId: getAgreements
@@ -441,7 +504,7 @@ paths:
         - Agreement
       responses:
         '200':
-          description: Agreement
+          description: Agreements
           content:
             application/json:
               schema:
@@ -540,6 +603,30 @@ paths:
                 $ref: '#/components/schemas/ErrorDto'
 
   /v1/invoices:
+    get:
+      operationId: getInvoices
+      tags:
+        - Invoice
+      parameters:
+        - name: accountingId
+          in: query
+          schema:
+            $ref: '#/components/schemas/AccountingId'
+      responses:
+        '200':
+          description: Invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvoiceDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
     post:
       operationId: createInvoice
       tags:
@@ -549,7 +636,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatableInvoiceDto'
+              $ref: '#/components/schemas/ModifiableInvoiceDto'
       responses:
         '201':
           description: Created
@@ -604,7 +691,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatableInvoiceDto'
+              $ref: '#/components/schemas/ModifiableInvoiceDto'
       responses:
         '200':
           description: Updated
@@ -612,6 +699,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvoiceId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/documents/{documentId}:
+    delete:
+      operationId: deleteDocument
+      tags:
+        - Document
+      parameters:
+        - $ref: '#/components/parameters/DocumentParam'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      operationId: getDocument
+      tags:
+        - Document
+      parameters:
+        - $ref: '#/components/parameters/DocumentParam'
+      responses:
+        '200':
+          description: Document
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
         default:
           description: Unexpected error
           content:
@@ -649,6 +773,13 @@ components:
       schema:
         $ref: '#/components/schemas/AccountingId'
 
+    DocumentParam:
+      name: documentId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/DocumentId'
+
     AgreementParam:
       name: agreementId
       in: path
@@ -680,6 +811,10 @@ components:
       type: string
       format: uuid
 
+    DocumentId:
+      type: string
+      format: uuid
+
     AgreementId:
       type: string
       format: uuid
@@ -699,7 +834,7 @@ components:
     UserDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/UserId'
         active:
           type: boolean
@@ -763,7 +898,7 @@ components:
     UnitDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/UserId'
         active:
           type: boolean
@@ -794,11 +929,11 @@ components:
     OwnershipDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/OwnershipId'
-        unit:
+        unitId:
           $ref: '#/components/schemas/UnitId'
-        user:
+        userId:
           $ref: '#/components/schemas/UserId'
         periodFrom:
           $ref: '#/components/schemas/Date'
@@ -808,21 +943,23 @@ components:
     ModifiableOwnershipDto:
       type: object
       properties:
-        user:
+        userId:
           $ref: '#/components/schemas/UserId'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
           $ref: '#/components/schemas/Date'
       required:
-        - user
+        - userId
         - periodFrom
 
     AccountingDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/AccountingId'
+        agreementId:
+          $ref: '#/components/schemas/AgreementId'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
@@ -835,14 +972,12 @@ components:
           type: number
         amountTotal:
           type: number
-        invoices:
-          type: array
-          items:
-            $ref: '#/components/schemas/InvoiceDto'
 
     ModifiableAccountingDto:
       type: object
       properties:
+        agreementId:
+          $ref: '#/components/schemas/AgreementId'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
@@ -861,7 +996,7 @@ components:
     AgreementDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/AgreementId'
         periodFrom:
           $ref: '#/components/schemas/Date'
@@ -896,8 +1031,12 @@ components:
     InvoiceDto:
       type: object
       properties:
-        uuid:
+        id:
           $ref: '#/components/schemas/InvoiceId'
+        accountingId:
+          $ref: '#/components/schemas/AccountingId'
+        unitId:
+          $ref: '#/components/schemas/UserId'
         usageHighTariff:
           type: number
           format: double
@@ -916,7 +1055,7 @@ components:
         payed:
           $ref: '#/components/schemas/Date'
 
-    CreatableInvoiceDto:
+    ModifiableInvoiceDto:
       type: object
       properties:
         accountingId:
@@ -944,26 +1083,28 @@ components:
         - accountingId
         - unitId
 
-    UpdatableInvoiceDto:
+    DocumentDto:
       type: object
       properties:
-        usageHighTariff:
-          type: number
-          format: double
-        usageLowTariff:
-          type: number
-          format: double
-        usageTotal:
-          type: number
-          format: double
-        amountHighTariff:
-          type: number
-        amountLowTariff:
-          type: number
-        amountTotal:
-          type: number
-        payed:
-          $ref: '#/components/schemas/Date'
+        id:
+          $ref: '#/components/schemas/DocumentId'
+        name:
+          type: string
+        filename:
+          type: string
+        mimeType:
+          type: string
+
+    ModifiableDocumentDto:
+      type: object
+      properties:
+        name:
+          type: string
+        mimeType:
+          type: string
+        content:
+          type: string
+          format: binary
 
     ErrorDto:
       type: object
