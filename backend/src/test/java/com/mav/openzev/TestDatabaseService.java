@@ -1,8 +1,8 @@
 package com.mav.openzev;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Table;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +34,8 @@ public class TestDatabaseService implements InitializingBean {
   public void afterPropertiesSet() {
     tableNames =
         entityManager.getMetamodel().getEntities().stream()
-            .filter(e -> e.getJavaType().getAnnotation(Entity.class) != null)
-            .map(e -> e.getJavaType().getAnnotation(Entity.class).name())
+            .filter(e -> e.getJavaType().getAnnotation(Table.class) != null)
+            .map(e -> e.getJavaType().getAnnotation(Table.class).name())
             .filter(StringUtils::hasText)
             .collect(Collectors.toList());
   }

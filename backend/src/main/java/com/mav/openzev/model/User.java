@@ -3,6 +3,7 @@ package com.mav.openzev.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +12,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Entity(name = "OZEV_USERS")
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "OZEV_USERS")
 public class User extends AbstractEntity {
 
   @Column(name = "ACTIVE")

@@ -3,6 +3,7 @@ package com.mav.openzev.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,12 +14,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Entity(name = "OZEV_AGREEMENTS")
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "OZEV_AGREEMENTS")
 public class Agreement extends AbstractAuditEntity {
 
   @OneToMany(mappedBy = "agreement")
