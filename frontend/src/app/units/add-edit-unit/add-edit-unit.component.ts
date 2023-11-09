@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ModifiableUnitDto, UnitService } from '../../../generated-source/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { first, Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-add-edit-unit',
@@ -10,27 +10,26 @@ import { first, Subscription } from 'rxjs';
   styleUrls: ['./add-edit-unit.component.scss'],
 })
 export class AddEditUnitComponent implements OnInit, OnDestroy {
-  id: string | null;
-  private subscription: Subscription;
+  @Input() unitId: string | null;
+
+  private destroy$ = new Subject<void>();
 
   unitForm: FormGroup;
   isSubmitted: boolean = false;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private unitService: UnitService,
     private fb: FormBuilder,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
     this.initForm();
 
-    if (this.id) {
-      this.subscription = this.unitService
-        .getUnit(this.id)
-        .pipe(first())
+    if (this.unitId) {
+      this.unitService
+        .getUnit(this.unitId)
+        .pipe(takeUntil(this.destroy$))
         .subscribe((unit) => {
           this.unitForm.patchValue(unit);
         });
@@ -38,9 +37,8 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initForm() {
@@ -56,7 +54,7 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
     if (this.unitForm.valid) {
       const unit = { ...this.unitForm.value } as ModifiableUnitDto;
 
-      if (this.id) {
+      if (this.unitId) {
         this.editUnit(unit);
       } else {
         this.addUnit(unit);
@@ -67,7 +65,7 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
   private addUnit(unit: ModifiableUnitDto) {
     this.unitService
       .createUnit(unit)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
@@ -81,12 +79,12 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
 
   private editUnit(unit: ModifiableUnitDto) {
     this.unitService
-      .changeUnit(this.id!, unit)
-      .pipe(first())
+      .changeUnit(this.unitId!, unit)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.reset();
-          this.router.navigate(['/units', this.id]);
+          this.router.navigate(['/units', this.unitId]);
         },
         error: (error) => {
           console.error(error);

@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { first, Observable, Subscription } from 'rxjs';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import {
   ErrorDto,
   ModifiableOwnershipDto,
@@ -19,9 +19,10 @@ import { formatISO } from 'date-fns';
   styleUrls: ['./add-edit-ownership.component.scss'],
 })
 export class AddEditOwnershipComponent implements OnInit, OnDestroy {
-  private unitId: string | null;
-  private ownershipId: string | null;
-  private subscription: Subscription;
+  @Input() unitId: string | null;
+  @Input() ownershipId: string | null;
+
+  private destroy$ = new Subject<void>();
 
   unit$: Observable<UnitDto>;
   users$: Observable<UserDto[]>;
@@ -31,7 +32,6 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   errors: string[] = [];
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private unitService: UnitService,
     private userService: UserService,
     private ownershipService: OwnershipService,
@@ -40,8 +40,6 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.unitId = this.activatedRoute.snapshot.paramMap.get('id');
-    this.ownershipId = this.activatedRoute.snapshot.paramMap.get('ownershipId');
     this.initForm();
 
     this.users$ = this.userService.getUsers();
@@ -50,9 +48,9 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
       this.unit$ = this.unitService.getUnit(this.unitId);
     }
     if (this.ownershipId) {
-      this.subscription = this.ownershipService
+      this.ownershipService
         .getOwnership(this.ownershipId)
-        .pipe(first())
+        .pipe(takeUntil(this.destroy$))
         .subscribe((ownership) => {
           this.ownershipForm.patchValue(ownership);
         });
@@ -60,9 +58,8 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initForm() {
@@ -76,17 +73,13 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   submit() {
     if (this.ownershipForm.valid) {
       const ownership = {
-        userId: this.ownershipForm.get('user')?.value,
-        periodFrom: this.ownershipForm.get('periodFrom')?.value
-          ? formatISO(new Date(this.ownershipForm.get('periodFrom')?.value), {
-              representation: 'date',
-            })
-          : null,
-        periodUpto: this.ownershipForm.get('periodUpto')?.value
-          ? formatISO(new Date(this.ownershipForm.get('periodUpto')?.value), {
-              representation: 'date',
-            })
-          : null,
+        userId: this.ownershipForm.get('userId')?.value,
+        periodFrom: this.formatDateAsISO(
+          this.ownershipForm.get('periodFrom')?.value
+        ),
+        periodUpto: this.formatDateAsISO(
+          this.ownershipForm.get('periodUpto')?.value
+        ),
       } as ModifiableOwnershipDto;
 
       if (this.ownershipId) {
@@ -97,10 +90,18 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
     }
   }
 
+  private formatDateAsISO(value: string): string | null {
+    return value
+      ? formatISO(new Date(value), {
+          representation: 'date',
+        })
+      : null;
+  }
+
   private add(ownership: ModifiableOwnershipDto) {
     this.ownershipService
       .createOwnership(this.unitId!, ownership)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
@@ -116,7 +117,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   private edit(ownership: ModifiableOwnershipDto) {
     this.ownershipService
       .changeOwnership(this.ownershipId!, ownership)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.reset();

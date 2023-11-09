@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
 import { UserDto, UserService } from '../../generated-source/api';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-users',

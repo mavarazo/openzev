@@ -1,8 +1,5 @@
-<nb-card>
-  <nb-card-header class="d-flex justify-content-between">
-    <h3>Add a new agreement</h3>
-  </nb-card-header>
-  <nb-card-body>
+<div class="card">
+  <div class="card-body">
     <form [formGroup]="agreementForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
       <div class="mb-3">
         <label for="periodFrom" class="form-label">From</label>
@@ -39,7 +36,7 @@
         <input type="date" id="approved" class="form-control" formControlName="approved">
       </div>
 
-      <button type="submit" nbButton status="primary">Submit</button>
+      <button class="btn btn-primary" type="submit">Submit</button>
     </form>
-  </nb-card-body>
-</nb-card>
+  </div>
+</div>

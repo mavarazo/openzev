@@ -1,34 +1,29 @@
-<nb-card>
-  <nb-card-header class="d-flex justify-content-between">
-    <h3>Agreement</h3>
+<div class="d-flex align-items-center justify-content-between pb-3">
+  <ng-container *ngIf="agreement$ | async as agreement">
+    <h4>
+      {{agreement.periodFrom | date}} - {{agreement.periodUpto | date}}
+    </h4>
+  </ng-container>
 
-    <nb-actions >
-      <nb-action icon="edit-outline" routerLink="/agreements/edit/{{id}}"></nb-action>
-      <nb-action icon="trash-outline" (click)="delete()"></nb-action>
-    </nb-actions>
-  </nb-card-header>
-  <nb-card-body>
-    <ng-container *ngIf="agreement$ | async as agreement; else loading">
-      <div class="row mb-3">
-        <div class="col-3">
-          From
-        </div>
-        <div class="col">
-          {{agreement.periodFrom | date}}
-        </div>
-      </div>
+  <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" routerLink="edit">
+        <i class="bi bi-pencil-square me-1"></i>
+        <span>Edit</span>
+      </button>
+      <button class="btn btn-outline-danger" (click)="delete()">
+        <i class="bi bi-trash me-1"></i>
+        <span>Delete</span>
+      </button>
+    </div>
+  </div>
+</div>
 
+<div class="card">
+  <div class="card-body">
+    <ng-container *ngIf="agreement$ | async as agreement">
       <div class="row mb-3">
-        <div class="col-3">
-          Upto
-        </div>
-        <div class="col">
-          {{agreement.periodUpto | date}}
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-3">
+        <div class="col-2">
           High tariff
         </div>
         <div class="col">
@@ -37,7 +32,7 @@
       </div>
 
       <div class="row mb-3">
-        <div class="col-3">
+        <div class="col-2">
           Low tariff
         </div>
         <div class="col">
@@ -46,7 +41,7 @@
       </div>
 
       <div class="row mb-3">
-        <div class="col-3">
+        <div class="col-2">
           Approved
         </div>
         <div class="col">
@@ -54,12 +49,5 @@
         </div>
       </div>
     </ng-container>
-
-    <ng-template #loading>
-      <p class="placeholder-glow">
-        <span class="placeholder col-12"></span>
-      </p>
-    </ng-template>
-
-  </nb-card-body>
-</nb-card>
+  </div>
+</div>

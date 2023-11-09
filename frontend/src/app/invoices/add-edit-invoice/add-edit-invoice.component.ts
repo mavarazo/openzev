@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   AccountingDto,
   AccountingService,
@@ -10,7 +10,7 @@ import {
   UnitDto,
   UnitService,
 } from '../../../generated-source/api';
-import { EMPTY, first, Observable, switchMap } from 'rxjs';
+import { EMPTY, Observable, share, Subject, switchMap, takeUntil } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -18,20 +18,29 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   templateUrl: './add-edit-invoice.component.html',
   styleUrls: ['./add-edit-invoice.component.scss'],
 })
-export class AddEditInvoiceComponent implements OnInit {
-  id: string | null;
-  accountingId: string | null;
-  highTariff: number | undefined;
-  lowTariff: number | undefined;
+export class AddEditInvoiceComponent implements OnInit, OnDestroy {
+  @Input() invoiceId: string | null;
+  @Input() accountingId: string | null;
+
+  private destroy$ = new Subject<void>();
+
+  agreement: AgreementDto | undefined;
 
   accounting$: Observable<AccountingDto>;
   units$: Observable<UnitDto[]>;
 
-  form: FormGroup;
+  invoiceForm: FormGroup;
   isSubmitted: boolean = false;
 
+  get highTariff() {
+    return this.agreement?.highTariff;
+  }
+
+  get lowTariff() {
+    return this.agreement?.lowTariff;
+  }
+
   constructor(
-    private activatedRoute: ActivatedRoute,
     private router: Router,
     private invoiceService: InvoiceService,
     private accountingService: AccountingService,
@@ -40,15 +49,21 @@ export class AddEditInvoiceComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.accountingId =
-      this.activatedRoute.snapshot.queryParamMap.get('accountingId');
     this.units$ = this.unitService.getUnits();
+
     this.initForm();
 
+    if (this.invoiceId) {
+      this.invoiceService
+        .getInvoice(this.invoiceId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((invoice) => this.invoiceForm.patchValue(invoice));
+    }
+
     if (this.accountingId) {
-      this.accounting$ = this.accountingService.getAccounting(
-        this.accountingId
-      );
+      this.accounting$ = this.accountingService
+        .getAccounting(this.accountingId)
+        .pipe(share(), takeUntil(this.destroy$));
 
       this.accounting$
         .pipe(
@@ -57,18 +72,20 @@ export class AddEditInvoiceComponent implements OnInit {
               return this.agreementService.getAgreement(a.agreementId);
             }
             return EMPTY;
-          })
+          }),
+          takeUntil(this.destroy$)
         )
-        .pipe(first())
-        .subscribe((a: AgreementDto) => {
-          this.highTariff = a.highTariff;
-          this.lowTariff = a.lowTariff;
-        });
+        .subscribe((a: AgreementDto) => (this.agreement = a));
     }
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private initForm() {
-    this.form = new FormGroup({
+    this.invoiceForm = new FormGroup({
       accountingId: new FormControl(this.accountingId, Validators.required),
       unitId: new FormControl(null, Validators.required),
       usageHighTariff: new FormControl(null, Validators.required),
@@ -80,50 +97,56 @@ export class AddEditInvoiceComponent implements OnInit {
       payed: new FormControl(null),
     });
 
-    this.form
+    this.invoiceForm
       .get('usageHighTariff')
       ?.valueChanges.subscribe((highTariff: number) => {
-        const sum = highTariff + this.form.get('usageLowTariff')?.value;
-        this.form.get('usageTotal')?.setValue(sum);
+        const sum = highTariff + this.invoiceForm.get('usageLowTariff')?.value;
+        this.invoiceForm.get('usageTotal')?.setValue(sum);
 
-        const amountHighTariff = highTariff * this.highTariff!;
-        this.form
+        const amountHighTariff = highTariff * this.agreement?.highTariff!;
+        this.invoiceForm
           .get('amountHighTariff')
           ?.setValue(amountHighTariff.toFixed(2));
       });
 
-    this.form
+    this.invoiceForm
       .get('usageLowTariff')
       ?.valueChanges.subscribe((lowTariff: number) => {
-        const sum = this.form.get('usageHighTariff')?.value + lowTariff;
-        this.form.get('usageTotal')?.setValue(sum);
+        const sum = this.invoiceForm.get('usageHighTariff')?.value + lowTariff;
+        this.invoiceForm.get('usageTotal')?.setValue(sum);
 
-        const amountLowTariff = lowTariff * this.lowTariff!;
-        this.form.get('amountLowTariff')?.setValue(amountLowTariff.toFixed(2));
+        const amountLowTariff = lowTariff * this.agreement?.lowTariff!;
+        this.invoiceForm
+          .get('amountLowTariff')
+          ?.setValue(amountLowTariff.toFixed(2));
       });
 
-    this.form.get('amountHighTariff')?.valueChanges.subscribe((highTariff) => {
-      const lowTariff = +this.form.get('amountLowTariff')?.value;
-      const sum = +highTariff + lowTariff;
-      this.form.get('amountTotal')?.setValue(sum.toFixed(2));
-    });
+    this.invoiceForm
+      .get('amountHighTariff')
+      ?.valueChanges.subscribe((highTariff) => {
+        const lowTariff = +this.invoiceForm.get('amountLowTariff')?.value;
+        const sum = +highTariff + lowTariff;
+        this.invoiceForm.get('amountTotal')?.setValue(sum.toFixed(2));
+      });
 
-    this.form.get('amountLowTariff')?.valueChanges.subscribe((lowTariff) => {
-      const highTariff = +this.form.get('amountHighTariff')?.value;
-      const sum = highTariff + +lowTariff;
-      this.form.get('amountTotal')?.setValue(sum.toFixed(2));
-    });
+    this.invoiceForm
+      .get('amountLowTariff')
+      ?.valueChanges.subscribe((lowTariff) => {
+        const highTariff = +this.invoiceForm.get('amountHighTariff')?.value;
+        const sum = highTariff + +lowTariff;
+        this.invoiceForm.get('amountTotal')?.setValue(sum.toFixed(2));
+      });
   }
 
   submit() {
     this.isSubmitted = true;
 
-    if (this.form.valid) {
+    if (this.invoiceForm.valid) {
       const invoice = {
-        ...this.form.value,
+        ...this.invoiceForm.value,
       } as ModifiableInvoiceDto;
 
-      if (this.id) {
+      if (this.invoiceId) {
         this.editInvoice(invoice);
       } else {
         this.addInvoice(invoice);
@@ -134,7 +157,7 @@ export class AddEditInvoiceComponent implements OnInit {
   private addInvoice(invoice: ModifiableInvoiceDto) {
     this.invoiceService
       .createInvoice(invoice)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
@@ -148,8 +171,8 @@ export class AddEditInvoiceComponent implements OnInit {
 
   private editInvoice(invoice: ModifiableInvoiceDto) {
     this.invoiceService
-      .changeInvoice(this.id!, invoice)
-      .pipe(first())
+      .changeInvoice(this.invoiceId!, invoice)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.reset();
@@ -163,6 +186,6 @@ export class AddEditInvoiceComponent implements OnInit {
 
   reset() {
     this.isSubmitted = false;
-    this.form.reset();
+    this.invoiceForm.reset();
   }
 }

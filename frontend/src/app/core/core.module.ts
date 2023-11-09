@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ButtonModule } from 'primeng/button';
 import { RouterModule } from '@angular/router';
-import { HeaderComponent } from './components/header/header.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { BreadcrumbModule } from 'xng-breadcrumb';
 
 @NgModule({
-  declarations: [HeaderComponent],
-  exports: [HeaderComponent],
-  imports: [CommonModule, RouterModule, BreadcrumbModule, ButtonModule],
+  declarations: [SidebarComponent],
+  exports: [SidebarComponent],
+  imports: [CommonModule, RouterModule, BreadcrumbModule],
 })
 export class CoreModule {}

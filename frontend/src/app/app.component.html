@@ -1,34 +1,15 @@
-<div class="layout-wrapper layout-static layout-sidebar-darkgray">
-  <div class="layout-content-wrapper">
-    <div class="layout-sidebar flex flex-column">
-      <div class="sidebar-header">
-        <a class="logo" href="#/">
-          <div class="logo-image">
-            <i class="pi pi-sun" style="font-size: 2rem"></i>
-          </div>
-          <span class="app-name">OpenZEV</span></a>
-      </div>
-      <div class="layout-menu-container">
-        <ul class="layout-menu">
-          <ng-container *ngFor="let item of items; let i = index;">
-            <li>
-              <a href="#" [routerLink]="item.routerLink" routerLinkActive="active-route">
-                <i class="layout-menuitem-icon" [ngClass]="item.icon"></i>
-                {{item.label}}
-              </a>
-            </li>
-          </ng-container>
-        </ul>
-      </div>
-    </div>
+<div class="wrapper">
+  <app-sidebar [items]="items"></app-sidebar>
 
-    <div class="layout-main-container flex flex-column justify-content-between">
-      <div class="py-2 px-3 flex-auto">
-        <router-outlet></router-outlet>
-      </div>
+  <div class="main">
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
 
-      <div class="layout-footer flex align-items-center justify-content-between">
-        <span class="footer-copyright">© by Marco Niederberger (github)</span></div>
-    </div>
+    <footer class="footer mt-auto p-3">
+      <p class="mb-0">
+        Copyright by Marco Niederberger <i class="bi bi-github"></i>
+      </p>
+    </footer>
   </div>
 </div>

@@ -1,56 +1,63 @@
-<app-header></app-header>
+<div class="card">
+  <div class="card-body">
+    <form [formGroup]="accountingForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label for="periodFrom" class="form-label">From</label>
+        <input type="date" id="periodFrom" class="form-control" formControlName="periodFrom" required>
+      </div>
 
-<p-panel class="panel-without-header">
-  <form [formGroup]="accountingForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
-    <div class="field">
-      <label htmlFor="periodFrom" class="block">From</label>
-      <p-calendar formControlName="periodFrom" dateFormat="dd.mm.yy" [style]="{'width':'100%'}"
-                  [required]="true"></p-calendar>
-    </div>
+      <div class="mb-3">
+        <label for="periodUpto" class="form-label">Upto</label>
+        <input type="date" id="periodUpto" class="form-control" formControlName="periodUpto" required>
+      </div>
 
-    <div class="field">
-      <label htmlFor="periodUpto" class="block">Upto</label>
-      <p-calendar formControlName="periodUpto" dateFormat="dd.mm.yy" [style]="{'width':'100%'}"
-                  [required]="true"></p-calendar>
-    </div>
+      <div class="mb-3">
+        <label for="subject" class="form-label">Subject</label>
+        <input type="text" id="subject" class="form-control" formControlName="subject" required>
+      </div>
 
-    <div class="field input-w-max">
-      <label htmlFor="subject" class="block">Subject</label>
-      <input pInputText formControlName="subject" required>
-    </div>
-
-    <div class="field input-w-max">
-      <label htmlFor="amountHighTariff" class="block">Amount high tariff in CHF</label>
-      <input pInputText pKeyFilter="money" formControlName="amountHighTariff" required>
-    </div>
-
-    <div class="field input-w-max">
-      <label htmlFor="amountLowTariff" class="block">Amount low tariff in CHF</label>
-      <input pInputText pKeyFilter="money" formControlName="amountLowTariff" required>
-    </div>
-
-    <div class="field input-w-max">
-      <label htmlFor="amountTotal" class="block">Amount total in CHF</label>
-      <input pInputText pKeyFilter="money" formControlName="amountTotal" required>
-    </div>
-
-    <div class="field">
-      <label htmlFor="agreement" class="block">Agreement</label>
-      <p-dropdown formControlName="agreementId" [options]="(agreements$ | async)!" optionValue="id"
-                  [style]="{'width':'100%'}">
-        <ng-template let-agreement pTemplate="selectedItem">
-          <div>
-            {{agreement.periodFrom | date}} - {{agreement.periodUpto | date}}
+      <div class="mb-3">
+        <label for="amountHighTariff" class="form-label">Amount high tariff in CHF</label>
+        <input type="number" id="amountHighTariff" class="form-control" formControlName="amountHighTariff" required>
+        <ng-container
+          *ngIf="accountingForm.get('amountHighTariff')?.invalid && accountingForm.get('amountHighTariff')?.touched">
+          <div class="invalid-feedback" *ngIf="accountingForm.get('amountHighTariff')?.errors">
+            Please use only numbers for high tariff
           </div>
-        </ng-template>
-        <ng-template let-agreement pTemplate="item">
-          <div>
-            {{agreement.periodFrom | date}} - {{agreement.periodUpto | date}}
-          </div>
-        </ng-template>
-      </p-dropdown>
-    </div>
+        </ng-container>
+      </div>
 
-    <p-button type="submit" label="Submit"></p-button>
-  </form>
-</p-panel>
+      <div class="mb-3">
+        <label for="amountLowTariff" class="form-label">Amount low tariff in CHF</label>
+        <input type="number" id="amountLowTariff" class="form-control" formControlName="amountLowTariff" required>
+        <ng-container
+          *ngIf="accountingForm.get('amountLowTariff')?.invalid && accountingForm.get('amountLowTariff')?.touched">
+          <div class="invalid-feedback" *ngIf="accountingForm.get('amountLowTariff')?.errors">
+            Please use only numbers for low tariff
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="mb-3">
+        <label for="amountTotal" class="form-label">Amount total in CHF</label>
+        <input type="number" id="amountTotal" class="form-control" formControlName="amountTotal" required>
+        <ng-container
+          *ngIf="accountingForm.get('amountTotal')?.invalid && accountingForm.get('amountTotal')?.touched">
+          <div class="invalid-feedback" *ngIf="accountingForm.get('amountTotal')?.errors">
+            Please use only numbers for total
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="mb-3">
+        <label for="agreement" class="form-label">Agreement</label>
+        <select id="agreement" class="form-select" formControlName="agreementId" required>
+          <option *ngFor="let agreement of (agreements$ | async)"
+                  [value]="agreement.id">{{agreement.periodFrom | date}} - {{agreement.periodUpto | date}}</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+  </div>
+</div>

@@ -1,36 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { UserDto, UserService } from '../../../generated-source/api';
-import { ActivatedRoute, Router } from '@angular/router';
-import { first, Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss'],
 })
-export class UserComponent implements OnInit {
-  id: string | null;
+export class UserComponent implements OnInit, OnDestroy {
+  @Input() userId: string;
+
+  private destroy$ = new Subject<void>();
+
   user$: Observable<UserDto>;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private userService: UserService
-  ) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.user$ = this.userService.getUser(this.userId);
+  }
 
-    if (this.id) {
-      this.user$ = this.userService.getUser(this.id);
-    }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   delete() {
-    if (this.id) {
+    if (this.userId) {
       this.userService
-        .deleteUser(this.id)
-        .pipe(first())
+        .deleteUser(this.userId)
+        .pipe(takeUntil(this.destroy$))
         .subscribe({
           error: console.error,
           complete: () => {

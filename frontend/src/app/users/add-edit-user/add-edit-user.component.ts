@@ -1,45 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {
-  ModifiableUserDto,
-  UserDto,
-  UserService,
-} from '../../../generated-source/api';
-import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs';
+import { ModifiableUserDto, UserService } from '../../../generated-source/api';
+import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-add-edit-user',
   templateUrl: './add-edit-user.component.html',
   styleUrls: ['./add-edit-user.component.scss'],
 })
-export class AddEditUserComponent implements OnInit {
-  private id: string | null;
-  private user: UserDto | null;
+export class AddEditUserComponent implements OnInit, OnDestroy {
+  @Input() userId: string | null;
+
+  private destroy$ = new Subject<void>();
 
   userForm: FormGroup;
   isSubmitted: boolean = false;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private userService: UserService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
     this.initForm();
 
-    if (this.id) {
+    if (this.userId) {
       this.userService
-        .getUser(this.id)
-        .pipe(first())
-        .subscribe((user) => {
-          this.user = user;
-          this.userForm.patchValue(user);
-        });
+        .getUser(this.userId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((user) => this.userForm.patchValue(user));
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initForm() {
@@ -62,7 +59,7 @@ export class AddEditUserComponent implements OnInit {
     if (this.userForm.valid) {
       const user = { ...this.userForm.value } as ModifiableUserDto;
 
-      if (this.id) {
+      if (this.userId) {
         this.editUser(user);
       } else {
         this.addUser(user);
@@ -73,7 +70,7 @@ export class AddEditUserComponent implements OnInit {
   private addUser(user: ModifiableUserDto) {
     this.userService
       .createUser(user)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
@@ -87,12 +84,12 @@ export class AddEditUserComponent implements OnInit {
 
   private editUser(user: ModifiableUserDto) {
     this.userService
-      .changeUser(this.id!, user)
-      .pipe(first())
+      .changeUser(this.userId!, user)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.reset();
-          this.router.navigate(['/users', this.id]);
+          this.router.navigate(['/users', this.userId]);
         },
         error: (error) => {
           console.error(error);

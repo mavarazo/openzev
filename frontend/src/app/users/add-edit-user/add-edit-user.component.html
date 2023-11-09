@@ -1,8 +1,5 @@
-<nb-card>
-  <nb-card-header class="d-flex justify-content-between">
-    <h3>Add a new user</h3>
-  </nb-card-header>
-  <nb-card-body>
+<div class="card">
+  <div class="card-body">
     <form [formGroup]="userForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
       <div class="mb-3">
         <label for="firstName" class="form-label">First name</label>
@@ -63,7 +60,7 @@
         <input type="text" id="contractId" class="form-control" formControlName="contractId">
       </div>
 
-      <button type="submit" nbButton status="primary">Submit</button>
+      <button class="btn btn-primary" type="submit">Submit</button>
     </form>
-  </nb-card-body>
-</nb-card>
+  </div>
+</div>

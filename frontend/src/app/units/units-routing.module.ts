@@ -15,20 +15,31 @@ const routes: Routes = [
     component: AddEditUnitComponent,
   },
   {
-    path: ':id',
-    component: UnitComponent,
-  },
-  {
-    path: 'edit/:id',
-    component: AddEditUnitComponent,
-  },
-  {
-    path: ':id/ownerships/add',
-    component: AddEditOwnershipComponent,
-  },
-  {
-    path: ':id/ownerships/edit/:ownershipId',
-    component: AddEditOwnershipComponent,
+    path: ':unitId',
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        component: UnitComponent,
+      },
+      {
+        path: 'edit',
+        component: AddEditUnitComponent,
+      },
+      {
+        path: 'ownerships',
+        children: [
+          {
+            path: 'add',
+            component: AddEditOwnershipComponent,
+          },
+          {
+            path: ':ownershipId/edit',
+            component: AddEditOwnershipComponent,
+          },
+        ],
+      },
+    ],
   },
 ];
 

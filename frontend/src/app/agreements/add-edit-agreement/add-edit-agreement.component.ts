@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { first, Subscription } from 'rxjs';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   AgreementService,
   ModifiableAgreementDto,
@@ -13,27 +13,26 @@ import {
   styleUrls: ['./add-edit-agreement.component.scss'],
 })
 export class AddEditAgreementComponent implements OnInit, OnDestroy {
-  id: string | null;
-  private subscription: Subscription;
+  @Input() agreementId: string | null;
+
+  private destroy$ = new Subject<void>();
 
   agreementForm: FormGroup;
   isSubmitted: boolean = false;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private agreementService: AgreementService,
     private fb: FormBuilder,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
     this.initForm();
 
-    if (this.id) {
-      this.subscription = this.agreementService
-        .getAgreement(this.id)
-        .pipe(first())
+    if (this.agreementId) {
+      this.agreementService
+        .getAgreement(this.agreementId)
+        .pipe(takeUntil(this.destroy$))
         .subscribe((agreement) => {
           this.agreementForm.patchValue(agreement);
         });
@@ -41,9 +40,8 @@ export class AddEditAgreementComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initForm() {
@@ -69,7 +67,7 @@ export class AddEditAgreementComponent implements OnInit, OnDestroy {
         ...this.agreementForm.value,
       } as ModifiableAgreementDto;
 
-      if (this.id) {
+      if (this.agreementId) {
         this.editAgreement(agreement);
       } else {
         this.addAgreement(agreement);
@@ -80,7 +78,7 @@ export class AddEditAgreementComponent implements OnInit, OnDestroy {
   private addAgreement(agreement: ModifiableAgreementDto) {
     this.agreementService
       .createAgreement(agreement)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
@@ -94,12 +92,12 @@ export class AddEditAgreementComponent implements OnInit, OnDestroy {
 
   private editAgreement(agreement: ModifiableAgreementDto) {
     this.agreementService
-      .changeAgreement(this.id!, agreement)
-      .pipe(first())
+      .changeAgreement(this.agreementId!, agreement)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.reset();
-          this.router.navigate(['/agreements', this.id]);
+          this.router.navigate(['/agreements', this.agreementId]);
         },
         error: (error) => {
           console.error(error);

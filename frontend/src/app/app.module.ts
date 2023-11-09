@@ -8,13 +8,9 @@ import { BASE_PATH } from '../generated-source/api';
 import { HttpClientModule } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localeDeCh from '@angular/common/locales/de-CH';
-import { MenubarModule } from 'primeng/menubar';
-import { ToastModule } from 'primeng/toast';
-import { SidebarModule } from 'primeng/sidebar';
-import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
-import { MenuModule } from 'primeng/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BreadcrumbModule } from 'xng-breadcrumb';
+import { CoreModule } from './core/core.module';
 
 registerLocaleData(localeDeCh);
 
@@ -26,12 +22,8 @@ registerLocaleData(localeDeCh);
     RouterModule,
     AppRoutingModule,
     HttpClientModule,
-    MenubarModule,
-    ToastModule,
-    SidebarModule,
-    ButtonModule,
-    RippleModule,
-    MenuModule,
+    BreadcrumbModule,
+    CoreModule,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de-CH' },

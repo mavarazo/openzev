@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MenuItem, PrimeNGConfig } from 'primeng/api';
+import { NavItem } from './core/components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-root',
@@ -7,38 +7,36 @@ import { MenuItem, PrimeNGConfig } from 'primeng/api';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  items: MenuItem[];
+  items: NavItem[];
 
-  constructor(private primengConfig: PrimeNGConfig) {}
+  constructor() {}
 
   ngOnInit(): void {
-    this.primengConfig.ripple = true;
-
     this.items = [
       {
         label: 'Dashboard',
-        icon: 'pi pi-sliders-v',
-        routerLink: '/dashboard',
+        icon: 'bi bi-clipboard-data',
+        link: '/dashboard',
       },
       {
         label: 'Accountings',
-        icon: 'pi pi-briefcase',
-        routerLink: '/accountings',
+        icon: 'bi bi-briefcase',
+        link: '/accountings',
       },
       {
         label: 'Agreements',
-        icon: 'pi pi-verified',
-        routerLink: '/agreements',
+        icon: 'bi bi-patch-check',
+        link: '/agreements',
       },
       {
         label: 'Units',
-        icon: 'pi pi-home',
-        routerLink: '/units',
+        icon: 'bi bi-houses',
+        link: '/units',
       },
       {
         label: 'Users',
-        icon: 'pi pi-users',
-        routerLink: '/users',
+        icon: 'bi bi-people',
+        link: '/users',
       },
     ];
   }

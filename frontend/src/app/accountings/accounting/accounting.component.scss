@@ -1,7 +1,4 @@
-@import "../../../assets/styles/custom";
-
-.hidden {
-  visibility: hidden;
-  width: 1px;
-  height: 1px;
+.btn-file-upload input {
+  left: -9999px;
+  position: absolute;
 }

@@ -1,15 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
-  catchError,
   defaultIfEmpty,
-  first,
+  filter,
   forkJoin,
-  last,
   map,
   Observable,
   of,
+  share,
+  Subject,
   switchMap,
-  tap,
+  takeUntil,
 } from 'rxjs';
 import {
   AccountingDto,
@@ -20,39 +20,37 @@ import {
   DocumentService,
   InvoiceDto,
   InvoiceService,
+  UnitDto,
   UnitService,
 } from '../../../generated-source/api';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
-import { CustomInvoiceDto } from '../../core/resolvers/invoices.resolver';
-import { BreadcrumbService } from 'xng-breadcrumb';
-import {
-  HttpErrorResponse,
-  HttpEvent,
-  HttpEventType,
-} from '@angular/common/http';
+import { Router } from '@angular/router';
 import { saveAs } from 'file-saver';
-import { DatePipe } from '@angular/common';
+import { HttpEventType } from '@angular/common/http';
+
+export interface CustomInvoiceDto extends InvoiceDto {
+  unit?: UnitDto;
+}
 
 @Component({
   selector: 'app-accounting',
   templateUrl: './accounting.component.html',
   styleUrls: ['./accounting.component.scss'],
 })
-export class AccountingComponent implements OnInit {
-  @Input() accountingId: string | null;
-  @Input() accounting: AccountingDto;
+export class AccountingComponent implements OnInit, OnDestroy {
+  @Input() accountingId: string;
+
+  private destroy$ = new Subject<void>();
+
+  accounting$: Observable<AccountingDto>;
   agreement$: Observable<AgreementDto>;
   documents$: Observable<DocumentDto[]>;
   invoices$: Observable<CustomInvoiceDto[]>;
 
-  actions: MenuItem[];
+  isFileUploading = false;
+  fileUploadProgress: number = 0;
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
-    private breadcrumbService: BreadcrumbService,
-    private datePipe: DatePipe,
     private accountingService: AccountingService,
     private agreementService: AgreementService,
     private documentService: DocumentService,
@@ -61,46 +59,37 @@ export class AccountingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.set(
-      '@accountingSlug',
-      `${this.datePipe.transform(
-        this.accounting.periodFrom
-      )} - ${this.datePipe.transform(this.accounting.periodUpto)}`
+    this.accounting$ = this.accountingService
+      .getAccounting(this.accountingId)
+      .pipe(share(), takeUntil(this.destroy$));
+
+    this.agreement$ = this.accounting$.pipe(
+      filter((accounting) => !!accounting.agreementId),
+      switchMap((accounting) =>
+        this.agreementService.getAgreement(accounting.agreementId!)
+      ),
+      takeUntil(this.destroy$)
     );
-
-    this.actions = [
-      {
-        icon: 'pi pi-pencil',
-        routerLink: '/accountings/edit/' + this.accounting.id,
-      },
-      {
-        icon: 'pi pi-trash',
-        command: () => this.delete(),
-        styleClass: 'p-button-danger',
-      },
-    ];
-
-    if (this.accounting.agreementId) {
-      this.agreement$ = this.agreementService.getAgreement(
-        this.accounting.agreementId
-      );
-    }
 
     this.documents$ = this.documentService.getAccountingDocuments(
-      this.accounting.id!
+      this.accountingId
     );
 
-    this.invoices$ = this.invoiceService
-      .getInvoices(this.accounting.id!)
-      .pipe(
-        switchMap((invoices: InvoiceDto[]) =>
-          forkJoin(
-            invoices.map((invoice: InvoiceDto) =>
-              this.loadUnitForInvoice(invoice)
-            )
-          ).pipe(defaultIfEmpty([]))
-        )
-      );
+    this.invoices$ = this.invoiceService.getInvoices(this.accountingId).pipe(
+      switchMap((invoices: InvoiceDto[]) =>
+        forkJoin(
+          invoices.map((invoice: InvoiceDto) =>
+            this.loadUnitForInvoice(invoice)
+          )
+        ).pipe(defaultIfEmpty([]))
+      ),
+      takeUntil(this.destroy$)
+    );
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadUnitForInvoice(
@@ -108,25 +97,24 @@ export class AccountingComponent implements OnInit {
   ): Observable<CustomInvoiceDto> {
     console.log('something');
     if (invoice.unitId) {
-      return this.unitService
-        .getUnit(invoice.unitId)
-        .pipe(map((unit) => ({ ...invoice, unit: unit } as CustomInvoiceDto)));
+      return this.unitService.getUnit(invoice.unitId).pipe(
+        map((unit) => ({ ...invoice, unit: unit } as CustomInvoiceDto)),
+        takeUntil(this.destroy$)
+      );
     }
     return of({ ...invoice } as CustomInvoiceDto);
   }
 
   delete() {
-    if (this.accountingId) {
-      this.accountingService
-        .deleteAccounting(this.accountingId)
-        .pipe(first())
-        .subscribe({
-          error: console.error,
-          complete: () => {
-            this.router.navigate(['/accountings']);
-          },
-        });
-    }
+    this.accountingService
+      .deleteAccounting(this.accountingId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        error: console.error,
+        complete: () => {
+          this.router.navigate(['/accountings']);
+        },
+      });
   }
 
   fileBrowseHandler($event: any): void {
@@ -134,68 +122,53 @@ export class AccountingComponent implements OnInit {
   }
 
   private fileUpload(fileList: FileList): void {
-    if (this.accountingId && fileList.length === 1) {
+    if (fileList.length === 1) {
       const file = fileList.item(0)!;
       this.accountingService
         .createAccountingDocument(this.accountingId, file, 'events', true)
-        .pipe(
-          map((event) => this.getEventMessage(event, file)),
-          tap((message) => this.showProgress(message)),
-          last(), // return last (completed) message to caller
-          catchError(this.handleError(file))
-        )
-        .subscribe(() => {
-          if (this.accountingId) {
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (event) => {
+            if (event.type === HttpEventType.UploadProgress) {
+              this.isFileUploading = true;
+              this.fileUploadProgress = Math.round(
+                (100 * event.loaded) / event.total!
+              );
+              console.log(this.fileUploadProgress);
+            }
+          },
+          complete: () => {
+            this.isFileUploading = false;
             this.documents$ = this.accountingService.getAccountingDocuments(
-              this.accountingId
+              this.accountingId!
             );
-          }
+          },
         });
     }
   }
 
-  private getEventMessage(event: HttpEvent<any>, file: File) {
-    switch (event.type) {
-      case HttpEventType.Sent:
-        return `Uploading file "${file.name}" of size ${file.size}.`;
-
-      case HttpEventType.UploadProgress:
-        // Compute and show the % done:
-        const percentDone = event.total
-          ? Math.round((100 * event.loaded) / event.total)
-          : 0;
-        return `File "${file.name}" is ${percentDone}% uploaded.`;
-
-      case HttpEventType.Response:
-        return `File "${file.name}" was completely uploaded!`;
-
-      default:
-        return `File "${file.name}" surprising upload event: ${event.type}.`;
+  openOrDownloadDocument(document: DocumentDto) {
+    if (document.id) {
+      if ('application/pdf' === document.mimeType) {
+        this.documentService
+          .getDocument(document.id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((file: Blob) => {
+            const pdfBlob = new Blob([file], { type: document.mimeType });
+            const fileURL = URL.createObjectURL(pdfBlob);
+            window.open(fileURL, '_blank');
+          });
+      } else {
+        this.downloadDocument(document);
+      }
     }
-  }
-
-  private handleError(file: File) {
-    const userMessage = `${file.name} upload failed.`;
-
-    return (error: HttpErrorResponse) => {
-      const message =
-        error.error instanceof Error
-          ? error.error.message
-          : `server returned code ${error.status} with body "${error.error}"`;
-      console.error(message); // log to console instead
-      return of(userMessage);
-    };
-  }
-
-  private showProgress(message: string) {
-    console.log(message);
   }
 
   downloadDocument(document: DocumentDto) {
     if (document.id) {
       this.documentService
         .getDocument(document.id)
-        .pipe(first())
+        .pipe(takeUntil(this.destroy$))
         .subscribe((file: Blob) => {
           saveAs(file, document.filename ?? document.name);
         });
@@ -206,7 +179,7 @@ export class AccountingComponent implements OnInit {
     if (document.id) {
       this.documentService
         .deleteDocument(document.id)
-        .pipe(first())
+        .pipe(takeUntil(this.destroy$))
         .subscribe(() => {
           if (this.accountingId) {
             this.documents$ = this.accountingService.getAccountingDocuments(

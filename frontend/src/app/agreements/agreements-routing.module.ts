@@ -14,12 +14,18 @@ const routes: Routes = [
     component: AddEditAgreementComponent,
   },
   {
-    path: ':id',
-    component: AgreementComponent,
-  },
-  {
-    path: 'edit/:id',
-    component: AddEditAgreementComponent,
+    path: ':agreementId',
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        component: AgreementComponent,
+      },
+      {
+        path: 'edit',
+        component: AddEditAgreementComponent,
+      },
+    ],
   },
 ];
 

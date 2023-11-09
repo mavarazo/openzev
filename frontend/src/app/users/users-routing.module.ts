@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { UsersComponent } from './users.component';
-import { UserComponent } from './user/user.component';
 import { AddEditUserComponent } from './add-edit-user/add-edit-user.component';
+import { UserComponent } from './user/user.component';
 
 const routes: Routes = [
   {
@@ -14,12 +14,18 @@ const routes: Routes = [
     component: AddEditUserComponent,
   },
   {
-    path: ':id',
-    component: UserComponent,
-  },
-  {
-    path: 'edit/:id',
-    component: AddEditUserComponent,
+    path: ':userId',
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        component: UserComponent,
+      },
+      {
+        path: 'edit',
+        component: AddEditUserComponent,
+      },
+    ],
   },
 ];
 

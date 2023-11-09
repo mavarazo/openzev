@@ -6,46 +6,22 @@ import { AddEditAccountingComponent } from './add-edit-accounting/add-edit-accou
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccountingComponent } from './accounting/accounting.component';
 import { SharedModule } from '../shared/shared.module';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { CoreModule } from '../core/core.module';
-import { AccountingListComponent } from './accounting-list/accounting-list.component';
-import { CardModule } from 'primeng/card';
-import { PanelModule } from 'primeng/panel';
-import { FieldsetModule } from 'primeng/fieldset';
-import { StyleClassModule } from 'primeng/styleclass';
-import { CalendarModule } from 'primeng/calendar';
-import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
-import { KeyFilterModule } from 'primeng/keyfilter';
-import { InvoicesModule } from '../invoices/invoices.module';
+import { AccountingsComponent } from './accountings.component';
 
 @NgModule({
   declarations: [
+    AccountingsComponent,
     AddEditAccountingComponent,
     AccountingComponent,
-    AccountingListComponent,
   ],
   imports: [
     CommonModule,
     AccountingsRoutingModule,
     CoreModule,
     SharedModule,
-    InvoicesModule,
     FormsModule,
     ReactiveFormsModule,
-    TableModule,
-    ButtonModule,
-    BreadcrumbModule,
-    CardModule,
-    PanelModule,
-    FieldsetModule,
-    StyleClassModule,
-    CalendarModule,
-    InputTextModule,
-    DropdownModule,
-    KeyFilterModule,
   ],
   providers: [DatePipe],
 })

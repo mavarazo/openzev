@@ -1,25 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { first, Observable } from 'rxjs';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  AccountingDto,
   AccountingService,
   AgreementDto,
   AgreementService,
   ModifiableAccountingDto,
 } from '../../../generated-source/api';
-import { BreadcrumbService } from 'xng-breadcrumb';
-import { DatePipe } from '@angular/common';
-import { formatISO, parseISO } from 'date-fns';
+import { formatISO } from 'date-fns';
 
 @Component({
   selector: 'app-add-edit-accounting',
   templateUrl: './add-edit-accounting.component.html',
   styleUrls: ['./add-edit-accounting.component.scss'],
 })
-export class AddEditAccountingComponent implements OnInit {
-  @Input() accounting?: AccountingDto;
+export class AddEditAccountingComponent implements OnInit, OnDestroy {
+  @Input() accountingId: string | undefined;
+
+  private destroy$ = new Subject<void>();
 
   agreements$: Observable<AgreementDto[]>;
 
@@ -27,8 +26,6 @@ export class AddEditAccountingComponent implements OnInit {
   isSubmitted: boolean = false;
 
   constructor(
-    private datePipe: DatePipe,
-    private breadcrumbService: BreadcrumbService,
     private accountingService: AccountingService,
     private agreementService: AgreementService,
     private fb: FormBuilder,
@@ -38,22 +35,21 @@ export class AddEditAccountingComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
 
-    if (this.accounting) {
-      this.breadcrumbService.set(
-        '@accountingSlug',
-        `${this.datePipe.transform(
-          this.accounting.periodFrom
-        )} - ${this.datePipe.transform(this.accounting.periodUpto)}`
-      );
-
-      this.accountingForm.patchValue({
-        ...this.accounting,
-        periodFrom: parseISO(this.accounting.periodFrom!),
-        periodUpto: parseISO(this.accounting.periodUpto!),
-      });
+    if (this.accountingId) {
+      this.accountingService
+        .getAccounting(this.accountingId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((accounting) => {
+          this.accountingForm.patchValue(accounting);
+        });
     }
 
     this.agreements$ = this.agreementService.getAgreements();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initForm() {
@@ -106,8 +102,8 @@ export class AddEditAccountingComponent implements OnInit {
         }),
       } as ModifiableAccountingDto;
 
-      if (this.accounting?.id) {
-        this.editAccounting(this.accounting?.id, accounting);
+      if (this.accountingId) {
+        this.editAccounting(this.accountingId, accounting);
       } else {
         this.addAccounting(accounting);
       }
@@ -117,7 +113,7 @@ export class AddEditAccountingComponent implements OnInit {
   private addAccounting(accounting: ModifiableAccountingDto) {
     this.accountingService
       .createAccounting(accounting)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
@@ -134,7 +130,7 @@ export class AddEditAccountingComponent implements OnInit {
 
     this.accountingService
       .changeAccounting(id, accounting)
-      .pipe(first())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.reset();

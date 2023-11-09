@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   combineLatest,
   EMPTY,
-  first,
   forkJoin,
   map,
   Observable,
   of,
+  share,
+  Subject,
   switchMap,
+  takeUntil,
 } from 'rxjs';
 import {
   AccountingDto,
@@ -34,8 +35,11 @@ export interface CustomOwnershipDto extends OwnershipDto {
   templateUrl: './invoice.component.html',
   styleUrls: ['./invoice.component.scss'],
 })
-export class InvoiceComponent implements OnInit {
-  id: string | null;
+export class InvoiceComponent implements OnInit, OnDestroy {
+  @Input() invoiceId: string;
+
+  private destroy$ = new Subject<void>();
+
   highTariff: number | undefined;
   lowTariff: number | undefined;
 
@@ -45,8 +49,6 @@ export class InvoiceComponent implements OnInit {
   ownerships$: Observable<CustomOwnershipDto[]>;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
     private invoiceService: InvoiceService,
     private accountingService: AccountingService,
     private unitService: UnitService,
@@ -56,61 +58,66 @@ export class InvoiceComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.invoice$ = this.invoiceService
+      .getInvoice(this.invoiceId)
+      .pipe(share(), takeUntil(this.destroy$));
 
-    if (this.id) {
-      this.invoice$ = this.invoiceService.getInvoice(this.id);
+    this.accounting$ = this.invoice$.pipe(
+      switchMap((i) => this.accountingService.getAccounting(i.accountingId!)),
+      takeUntil(this.destroy$)
+    );
 
-      this.accounting$ = this.invoice$.pipe(
-        switchMap((i) => this.accountingService.getAccounting(i.accountingId!))
-      );
+    this.unit$ = this.invoice$.pipe(
+      switchMap((i) => this.unitService.getUnit(i.unitId!)),
+      takeUntil(this.destroy$)
+    );
 
-      this.unit$ = this.invoice$.pipe(
-        switchMap((i) => this.unitService.getUnit(i.unitId!))
-      );
-
-      this.ownerships$ = combineLatest([this.accounting$, this.unit$]).pipe(
-        switchMap(([a, u]) =>
-          this.ownershipService
-            .getOwnerships(u.id!, a.periodFrom, a.periodUpto)
-            .pipe(
-              switchMap((ownerships: OwnershipDto[]) =>
-                forkJoin(
-                  ownerships.map((ownership: OwnershipDto) =>
-                    this.loadUserForOwnership(ownership)
-                  )
+    this.ownerships$ = combineLatest([this.accounting$, this.unit$]).pipe(
+      switchMap(([a, u]) =>
+        this.ownershipService
+          .getOwnerships(u.id!, a.periodFrom, a.periodUpto)
+          .pipe(
+            switchMap((ownerships: OwnershipDto[]) =>
+              forkJoin(
+                ownerships.map((ownership: OwnershipDto) =>
+                  this.loadUserForOwnership(ownership)
                 )
               )
             )
-        )
-      );
+          )
+      ),
+      takeUntil(this.destroy$)
+    );
 
-      this.accounting$
-        .pipe(
-          switchMap((a: AccountingDto) => {
-            if (a.agreementId) {
-              return this.agreementService.getAgreement(a.agreementId);
-            }
-            return EMPTY;
-          })
-        )
-        .pipe(first())
-        .subscribe((a: AgreementDto) => {
-          this.highTariff = a.highTariff;
-          this.lowTariff = a.lowTariff;
-        });
-    }
+    this.accounting$
+      .pipe(
+        switchMap((a: AccountingDto) => {
+          if (a.agreementId) {
+            return this.agreementService.getAgreement(a.agreementId);
+          }
+          return EMPTY;
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((a: AgreementDto) => {
+        this.highTariff = a.highTariff;
+        this.lowTariff = a.lowTariff;
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadUserForOwnership(
     ownership: OwnershipDto
   ): Observable<CustomOwnershipDto> {
     if (ownership.userId) {
-      return this.userService
-        .getUser(ownership.userId)
-        .pipe(
-          map((user) => ({ ...ownership, user: user } as CustomOwnershipDto))
-        );
+      return this.userService.getUser(ownership.userId).pipe(
+        map((user) => ({ ...ownership, user: user } as CustomOwnershipDto)),
+        takeUntil(this.destroy$)
+      );
     }
     return of(ownership);
   }

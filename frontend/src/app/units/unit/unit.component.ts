@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   defaultIfEmpty,
-  first,
   forkJoin,
   map,
   Observable,
+  Subject,
   switchMap,
+  takeUntil,
 } from 'rxjs';
 import {
   OwnershipDto,
@@ -15,7 +16,7 @@ import {
   UserDto,
   UserService,
 } from '../../../generated-source/api';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 export interface CustomOwnershipDto extends OwnershipDto {
   user?: UserDto;
@@ -26,13 +27,15 @@ export interface CustomOwnershipDto extends OwnershipDto {
   templateUrl: './unit.component.html',
   styleUrls: ['./unit.component.scss'],
 })
-export class UnitComponent implements OnInit {
-  id: string | null;
+export class UnitComponent implements OnInit, OnDestroy {
+  @Input() unitId: string;
+
+  private destroy$ = new Subject<void>();
+
   unit$: Observable<UnitDto>;
   ownerships$: Observable<CustomOwnershipDto[]>;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private router: Router,
     private unitService: UnitService,
     private userService: UserService,
@@ -40,17 +43,18 @@ export class UnitComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
-
-    if (this.id) {
-      this.unit$ = this.unitService.getUnit(this.id);
-    }
+    this.unit$ = this.unitService.getUnit(this.unitId);
     this.loadOwnership();
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private loadOwnership(): void {
-    if (this.id) {
-      this.ownerships$ = this.ownershipService.getOwnerships(this.id).pipe(
+    if (this.unitId) {
+      this.ownerships$ = this.ownershipService.getOwnerships(this.unitId).pipe(
         switchMap((ownerships: OwnershipDto[]) => {
           return forkJoin(
             ownerships
@@ -67,16 +71,17 @@ export class UnitComponent implements OnInit {
                 );
               })
           ).pipe(defaultIfEmpty([]));
-        })
+        }),
+        takeUntil(this.destroy$)
       );
     }
   }
 
   delete() {
-    if (this.id) {
+    if (this.unitId) {
       this.unitService
-        .deleteUnit(this.id)
-        .pipe(first())
+        .deleteUnit(this.unitId)
+        .pipe(takeUntil(this.destroy$))
         .subscribe({
           error: console.error,
           complete: () => {
@@ -90,11 +95,11 @@ export class UnitComponent implements OnInit {
     if (ownership?.id) {
       this.ownershipService
         .deleteOwnership(ownership.id)
-        .pipe(first())
+        .pipe(takeUntil(this.destroy$))
         .subscribe({
           error: console.error,
           complete: () => {
-            this.router.navigate(['/units', this.id]);
+            this.loadOwnership();
           },
         });
     }
