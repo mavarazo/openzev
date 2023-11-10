@@ -65,7 +65,7 @@
   <div class="col">
     <div class="card mb-3">
       <div class="card-header">
-        <div class="d-flex justify-content-between align-items-baseline">
+        <div class="mt-1">
           <h5>Agreement</h5>
         </div>
       </div>
@@ -110,14 +110,12 @@
 
           <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
             <div class="btn-group" role="group">
-              <ng-container>
-                <button class="btn btn-outline-primary" (click)="fileInput.click()">
-                  <i class="bi bi-upload me-1"></i>
-                  <span>Upload document</span>
-                  <input #fileInput type="file" class="form-control" id="formFile"
-                         (change)="fileBrowseHandler($event)" hidden>
-                </button>
-              </ng-container>
+              <button class="btn btn-outline-primary" (click)="fileInput.click()">
+                <i class="bi bi-upload me-1"></i>
+                <span>Upload document</span>
+                <input #fileInput type="file" class="form-control" id="formFile"
+                       (change)="fileBrowseHandler($event)" hidden>
+              </button>
             </div>
           </div>
         </div>

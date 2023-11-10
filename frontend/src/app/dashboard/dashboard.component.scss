@@ -1,0 +1,9 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+.stat-icon {
+  display: inline-block;
+  border-radius: 60px;
+  box-shadow: 0 0 2px $gray-900;
+  padding: 0.5em 0.6em;
+}
