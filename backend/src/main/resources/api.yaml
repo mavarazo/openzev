@@ -4,6 +4,63 @@ info:
   title: OpenZEV API
 
 paths:
+  /v1/dashboard/users:
+    get:
+      operationId: getUserOverview
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: User overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOverviewDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/dashboard/units:
+    get:
+      operationId: getUnitOverview
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: Unit overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitOverviewDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/dashboard/accountings:
+    get:
+      operationId: getAccountingOverview
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: Accounting overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingOverviewDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
   /v1/users:
     get:
       operationId: getUsers
@@ -1105,6 +1162,24 @@ components:
         content:
           type: string
           format: binary
+
+    UserOverviewDto:
+      type: object
+      properties:
+        total:
+          type: integer
+
+    UnitOverviewDto:
+      type: object
+      properties:
+        total:
+          type: integer
+
+    AccountingOverviewDto:
+      type: object
+      properties:
+        total:
+          type: integer
 
     ErrorDto:
       type: object

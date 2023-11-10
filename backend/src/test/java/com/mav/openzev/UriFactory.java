@@ -85,4 +85,16 @@ public class UriFactory {
         .buildAndExpand(documentId)
         .toUri();
   }
+
+  public static URI dashboard_accountings() {
+    return UriComponentsBuilder.fromPath("/v1/dashboard").path("/accountings").build().toUri();
+  }
+
+  public static URI dashboard_units() {
+    return UriComponentsBuilder.fromPath("/v1/dashboard").path("/units").build().toUri();
+  }
+
+  public static URI dashboard_users() {
+    return UriComponentsBuilder.fromPath("/v1/dashboard").path("/users").build().toUri();
+  }
 }
