@@ -26,8 +26,8 @@ public class Ownership extends AbstractAuditEntity {
   private Unit unit;
 
   @ManyToOne
-  @JoinColumn(name = "USER_ID", nullable = false)
-  private User user;
+  @JoinColumn(name = "OWNER_ID", nullable = false)
+  private Owner owner;
 
   @Column(name = "PERIOD_FROM", nullable = false)
   private LocalDate periodFrom;

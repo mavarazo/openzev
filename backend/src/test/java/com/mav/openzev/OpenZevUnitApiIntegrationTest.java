@@ -76,7 +76,7 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/users.sql", "/db/test-data/units.sql"})
+    @Sql(scripts = {"/db/test-data/owners.sql", "/db/test-data/units.sql"})
     void status200() {
       // act
       final ResponseEntity<UnitDto> response =
@@ -178,7 +178,7 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/users.sql"})
+    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status404() {
       // arrange
       final ModifiableUnitDto requestBody = new ModifiableUnitDto().subject("EG/1.OG rechts");
@@ -199,7 +199,7 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/users.sql", "/db/test-data/units.sql"})
+    @Sql(scripts = {"/db/test-data/owners.sql", "/db/test-data/units.sql"})
     void status200() {
       // arrange
       final ModifiableUnitDto requestBody =
@@ -260,7 +260,7 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/units.sql",
           "/db/test-data/ownerships.sql"
         })
@@ -283,7 +283,7 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/units.sql",
           "/db/test-data/agreements.sql",
           "/db/test-data/accountings.sql",

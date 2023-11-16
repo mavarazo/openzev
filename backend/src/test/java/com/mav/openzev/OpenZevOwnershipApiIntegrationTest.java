@@ -66,7 +66,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
     void status200() {
@@ -88,7 +88,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
     @CsvSource(value = {"2022-01-01,", ",2023-12-31"})
@@ -113,7 +113,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
     @CsvSource(value = {"2022-01-01,2022-12-31"})
@@ -141,7 +141,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
         })
     void status404() {
       // act
@@ -166,7 +166,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
     void status200() {
@@ -198,14 +198,14 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
-    void status400(final String userId, final LocalDate periodFrom) {
+    void status400(final String ownerId, final LocalDate periodFrom) {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .userId(nonNull(userId) ? UUID.fromString(userId) : null)
+              .ownerId(nonNull(ownerId) ? UUID.fromString(ownerId) : null)
               .periodFrom(periodFrom);
 
       // act
@@ -224,14 +224,14 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
     void status422() {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .userId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
+              .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
               .periodFrom(LocalDate.of(2023, 1, 1));
 
       // act
@@ -254,13 +254,13 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
         })
     void status201() {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .userId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
+              .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
               .periodFrom(LocalDate.of(2023, 1, 1));
 
       // act
@@ -286,7 +286,7 @@ public class OpenZevOwnershipApiIntegrationTest {
                           o -> o.getUnit().getUuid())
                       .returns(
                           UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"),
-                          o -> o.getUser().getUuid())
+                          o -> o.getOwner().getUuid())
                       .returns(LocalDate.of(2023, 1, 1), Ownership::getPeriodFrom)
                       .returns(null, Ownership::getPeriodUpto));
     }
@@ -300,14 +300,14 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
-    void status400(final String userId, final LocalDate periodFrom) {
+    void status400(final String ownerId, final LocalDate periodFrom) {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .userId(nonNull(userId) ? UUID.fromString(userId) : null)
+              .ownerId(nonNull(ownerId) ? UUID.fromString(ownerId) : null)
               .periodFrom(periodFrom);
 
       // act
@@ -326,13 +326,13 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
         })
     void status404() {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .userId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
+              .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31));
 
@@ -358,14 +358,14 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
     void status200() {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .userId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
+              .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31));
 
@@ -395,7 +395,7 @@ public class OpenZevOwnershipApiIntegrationTest {
                           o -> o.getUnit().getUuid())
                       .returns(
                           UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"),
-                          o -> o.getUser().getUuid())
+                          o -> o.getOwner().getUuid())
                       .returns(LocalDate.of(2023, 1, 1), Ownership::getPeriodFrom)
                       .returns(LocalDate.of(2023, 12, 31), Ownership::getPeriodUpto));
     }
@@ -425,7 +425,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/units.sql",
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
     void status204() {

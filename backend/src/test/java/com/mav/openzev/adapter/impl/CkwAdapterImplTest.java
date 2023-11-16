@@ -1,8 +1,14 @@
 package com.mav.openzev.adapter.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.mav.openzev.adapter.CkwAdapterConfig;
 import com.mav.openzev.adapter.model.ChronoUnit;
 import com.mav.openzev.adapter.model.Consumption;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -15,15 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig(classes = {CkwAdapterImpl.class, CkwAdapterConfig.class})
 @TestPropertySource(properties = {"openzev.ckw.base-url=http://localhost:2222/"})
@@ -45,7 +42,7 @@ class CkwAdapterImplTest {
   }
 
   @Nested
-  class GetUserConsumptionsTests {
+  class GetOwnerConsumptionsTests {
 
     @Test
     void status200() {
@@ -79,7 +76,7 @@ class CkwAdapterImplTest {
 """));
 
       // act
-      Mono<List<Consumption>> result =
+      final Mono<List<Consumption>> result =
           sut.getConsumption(
               "12345",
               "56789",

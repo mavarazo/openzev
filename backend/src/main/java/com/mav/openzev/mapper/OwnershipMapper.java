@@ -12,7 +12,7 @@ public interface OwnershipMapper {
 
   @Mapping(target = "id", source = "uuid")
   @Mapping(target = "unitId", source = "unit.uuid")
-  @Mapping(target = "userId", source = "user.uuid")
+  @Mapping(target = "ownerId", source = "owner.uuid")
   OwnershipDto mapToOwnershipDto(Ownership ownership);
 
   @Mapping(target = "id", ignore = true)
@@ -20,7 +20,7 @@ public interface OwnershipMapper {
   @Mapping(target = "created", ignore = true)
   @Mapping(target = "modified", ignore = true)
   @Mapping(target = "unit", ignore = true)
-  @Mapping(target = "user", ignore = true)
+  @Mapping(target = "owner", ignore = true)
   Ownership mapToOwnership(ModifiableOwnershipDto modifiableOwnershipDto);
 
   @Mapping(target = "id", ignore = true)
@@ -28,7 +28,7 @@ public interface OwnershipMapper {
   @Mapping(target = "created", ignore = true)
   @Mapping(target = "modified", ignore = true)
   @Mapping(target = "unit", ignore = true)
-  @Mapping(target = "user", ignore = true)
+  @Mapping(target = "owner", ignore = true)
   void updateOwnership(
       ModifiableOwnershipDto modifiableOwnershipDto, @MappingTarget Ownership ownership);
 }

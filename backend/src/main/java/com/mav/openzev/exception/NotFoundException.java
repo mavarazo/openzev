@@ -15,9 +15,9 @@ public class NotFoundException extends RuntimeException {
     this.code = code;
   }
 
-  public static NotFoundException ofUserNotFound(final UUID userId) {
+  public static NotFoundException ofOwnerNotFound(final UUID ownerId) {
     return new NotFoundException(
-        "user_not_found", "user with id '%s' not found".formatted(userId.toString()));
+        "owner_not_found", "owner with id '%s' not found".formatted(ownerId.toString()));
   }
 
   public static NotFoundException ofUnitNotFound(final UUID unitId) {

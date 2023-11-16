@@ -18,8 +18,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @Entity
-@Table(name = "OZEV_USERS")
-public class User extends AbstractEntity {
+@Table(name = "OZEV_OWNERS")
+public class Owner extends AbstractEntity {
 
   @Column(name = "ACTIVE")
   @Builder.Default
@@ -55,6 +55,6 @@ public class User extends AbstractEntity {
   @Column(name = "MOBILE_NR")
   private String mobileNr;
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "owner")
   private Set<Ownership> ownerships;
 }

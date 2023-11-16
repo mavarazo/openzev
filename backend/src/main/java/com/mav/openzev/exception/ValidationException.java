@@ -4,9 +4,9 @@ import static java.util.Objects.nonNull;
 
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Agreement;
+import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Ownership;
 import com.mav.openzev.model.Unit;
-import com.mav.openzev.model.User;
 import java.util.StringJoiner;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -48,10 +48,10 @@ public class ValidationException extends RuntimeException {
     return new ValidationException("ownership_overlap", message.toString());
   }
 
-  public static ValidationException ofUserHasOwnership(final User user) {
+  public static ValidationException ofOwnerHasOwnership(final Owner owner) {
     return new ValidationException(
-        "user_has_ownership",
-        "user with id '%s' is in use by ownership(s)".formatted(user.getUuid().toString()));
+        "owner_has_ownership",
+        "owner with id '%s' is in use by ownership(s)".formatted(owner.getUuid().toString()));
   }
 
   public static ValidationException ofUnitHasOwnership(final Unit unit) {
@@ -73,9 +73,10 @@ public class ValidationException extends RuntimeException {
             .formatted(accounting.getUuid().toString()));
   }
 
-    public static ValidationException ofAgreementHasAccounting(final Agreement agreement) {
-        return new ValidationException(
-                "agreement_has_accounting",
-                "agreement with id '%s' is in use by accounting(s)".formatted(agreement.getUuid().toString()));
-    }
+  public static ValidationException ofAgreementHasAccounting(final Agreement agreement) {
+    return new ValidationException(
+        "agreement_has_accounting",
+        "agreement with id '%s' is in use by accounting(s)"
+            .formatted(agreement.getUuid().toString()));
+  }
 }

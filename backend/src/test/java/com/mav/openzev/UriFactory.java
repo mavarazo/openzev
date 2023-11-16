@@ -7,12 +7,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public class UriFactory {
 
-  public static URI users() {
-    return UriComponentsBuilder.fromPath("/v1/users").build().toUri();
+  public static URI owners() {
+    return UriComponentsBuilder.fromPath("/v1/owners").build().toUri();
   }
 
-  public static URI users(final String userId) {
-    return UriComponentsBuilder.fromPath("/v1/users/{userId}").buildAndExpand(userId).toUri();
+  public static URI owners(final String ownerId) {
+    return UriComponentsBuilder.fromPath("/v1/owners/{ownerId}").buildAndExpand(ownerId).toUri();
   }
 
   public static URI units() {
@@ -94,7 +94,7 @@ public class UriFactory {
     return UriComponentsBuilder.fromPath("/v1/dashboard").path("/units").build().toUri();
   }
 
-  public static URI dashboard_users() {
-    return UriComponentsBuilder.fromPath("/v1/dashboard").path("/users").build().toUri();
+  public static URI dashboard_owners() {
+    return UriComponentsBuilder.fromPath("/v1/dashboard").path("/owners").build().toUri();
   }
 }

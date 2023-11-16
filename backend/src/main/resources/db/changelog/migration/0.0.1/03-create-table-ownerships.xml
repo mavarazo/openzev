@@ -23,8 +23,8 @@
                 <constraints nullable="false" foreignKeyName="FK_OWNERSHIP_UNIT" references="OZEV_UNITS(ID)"/>
             </column>
 
-            <column name="USER_ID" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="FK_OWNERSHIP_USER" references="OZEV_USERS(ID)"/>
+            <column name="OWNER_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_OWNERSHIP_OWNER" references="OZEV_OWNERS(ID)"/>
             </column>
 
             <column name="PERIOD_FROM" type="DATE">

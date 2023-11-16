@@ -1,4 +1,4 @@
-INSERT INTO PUBLIC.OZEV_USERS (id,
+INSERT INTO PUBLIC.OZEV_OWNERS (id,
                                "uuid",
                                active,
                                contract_id,

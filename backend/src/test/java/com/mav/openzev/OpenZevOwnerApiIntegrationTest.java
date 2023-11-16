@@ -3,10 +3,10 @@ package com.mav.openzev;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.ErrorDto;
-import com.mav.openzev.api.model.ModifiableUserDto;
-import com.mav.openzev.api.model.UserDto;
-import com.mav.openzev.model.User;
-import com.mav.openzev.repository.UserRepository;
+import com.mav.openzev.api.model.ModifiableOwnerDto;
+import com.mav.openzev.api.model.OwnerDto;
+import com.mav.openzev.model.Owner;
+import com.mav.openzev.repository.OwnerRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -25,12 +25,12 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class OpenZevUserApiIntegrationTest {
+public class OpenZevOwnerApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
 
-  @Autowired private UserRepository userRepository;
+  @Autowired private OwnerRepository ownerRepository;
 
   @AfterEach
   void tearDown() {
@@ -38,15 +38,15 @@ public class OpenZevUserApiIntegrationTest {
   }
 
   @Nested
-  class GetUsersTests {
+  class GetOwnersTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/users.sql"})
+    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status200() {
       // act
-      final ResponseEntity<UserDto[]> response =
+      final ResponseEntity<OwnerDto[]> response =
           restTemplate.exchange(
-              UriFactory.users(), HttpMethod.GET, HttpEntity.EMPTY, UserDto[].class);
+              UriFactory.owners(), HttpMethod.GET, HttpEntity.EMPTY, OwnerDto[].class);
 
       // assert
       assertThat(response)
@@ -56,14 +56,14 @@ public class OpenZevUserApiIntegrationTest {
   }
 
   @Nested
-  class GetUserTests {
+  class GetOwnerTests {
 
     @Test
     void status404() {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               ErrorDto.class);
@@ -72,19 +72,19 @@ public class OpenZevUserApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("user_not_found", ErrorDto::getCode);
+          .returns("owner_not_found", ErrorDto::getCode);
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/users.sql"})
+    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status200() {
       // act
-      final ResponseEntity<UserDto> response =
+      final ResponseEntity<OwnerDto> response =
           restTemplate.exchange(
-              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
               HttpMethod.GET,
               HttpEntity.EMPTY,
-              UserDto.class);
+              OwnerDto.class);
 
       // assert
       assertThat(response)
@@ -93,35 +93,35 @@ public class OpenZevUserApiIntegrationTest {
               r ->
                   assertThat(r.getBody())
                       .returns(
-                          UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"), UserDto::getId)
-                      .returns(true, UserDto::getActive)
-                      .returns("6aeeaf0f-7e55-4bb8-8fb1-10f24fb8318c", UserDto::getContractId)
-                      .returns("Anna", UserDto::getFirstName)
-                      .returns("Barry", UserDto::getLastName)
-                      .returns("anna@barry.com", UserDto::getEmail)
-                      .returns("Stradun", UserDto::getStreet)
-                      .returns("30", UserDto::getHouseNr)
-                      .returns("1624", UserDto::getPostalCode)
-                      .returns("Grattavache", UserDto::getCity)
-                      .returns("+41 41 555 66 77", UserDto::getPhoneNr)
-                      .returns("+41 79 555 66 77", UserDto::getMobileNr));
+                          UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"), OwnerDto::getId)
+                      .returns(true, OwnerDto::getActive)
+                      .returns("6aeeaf0f-7e55-4bb8-8fb1-10f24fb8318c", OwnerDto::getContractId)
+                      .returns("Anna", OwnerDto::getFirstName)
+                      .returns("Barry", OwnerDto::getLastName)
+                      .returns("anna@barry.com", OwnerDto::getEmail)
+                      .returns("Stradun", OwnerDto::getStreet)
+                      .returns("30", OwnerDto::getHouseNr)
+                      .returns("1624", OwnerDto::getPostalCode)
+                      .returns("Grattavache", OwnerDto::getCity)
+                      .returns("+41 41 555 66 77", OwnerDto::getPhoneNr)
+                      .returns("+41 79 555 66 77", OwnerDto::getMobileNr));
     }
   }
 
   @Nested
-  class CreateUserTests {
+  class CreateOwnerTests {
 
     @ParameterizedTest
     @CsvSource(value = {"Anna,", ",Barry"})
     void status400(final String firstName, final String lastName) {
       // arrange
-      final ModifiableUserDto requestBody =
-          new ModifiableUserDto().firstName(firstName).lastName(lastName);
+      final ModifiableOwnerDto requestBody =
+          new ModifiableOwnerDto().firstName(firstName).lastName(lastName);
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.users(),
+              UriFactory.owners(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -133,8 +133,8 @@ public class OpenZevUserApiIntegrationTest {
     @Test
     void status201() {
       // arrange
-      final ModifiableUserDto requestBody =
-          new ModifiableUserDto()
+      final ModifiableOwnerDto requestBody =
+          new ModifiableOwnerDto()
               .contractId("7f382429-6fc5-424b-84b6-3e6177db63d4")
               .firstName("Anna")
               .lastName("Barry")
@@ -149,34 +149,37 @@ public class OpenZevUserApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.users(), HttpMethod.POST, new HttpEntity<>(requestBody, null), UUID.class);
+              UriFactory.owners(),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, null),
+              UUID.class);
 
       // assert
       assertThat(response)
           .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
           .doesNotReturn(null, HttpEntity::getBody);
 
-      assertThat(userRepository.findByUuid(response.getBody()))
+      assertThat(ownerRepository.findByUuid(response.getBody()))
           .isPresent()
           .hasValueSatisfying(
-              user ->
-                  assertThat(user)
-                      .returns(true, User::isActive)
-                      .returns("7f382429-6fc5-424b-84b6-3e6177db63d4", User::getContractId)
-                      .returns("Anna", User::getFirstName)
-                      .returns("Barry", User::getLastName)
-                      .returns("anna@barry.com", User::getEmail)
-                      .returns("Stradun", User::getStreet)
-                      .returns("30", User::getHouseNr)
-                      .returns("1624", User::getPostalCode)
-                      .returns("Grattavache", User::getCity)
-                      .returns("+41 41 555 66 77", User::getPhoneNr)
-                      .returns("+41 79 555 66 77", User::getMobileNr));
+              owner ->
+                  assertThat(owner)
+                      .returns(true, Owner::isActive)
+                      .returns("7f382429-6fc5-424b-84b6-3e6177db63d4", Owner::getContractId)
+                      .returns("Anna", Owner::getFirstName)
+                      .returns("Barry", Owner::getLastName)
+                      .returns("anna@barry.com", Owner::getEmail)
+                      .returns("Stradun", Owner::getStreet)
+                      .returns("30", Owner::getHouseNr)
+                      .returns("1624", Owner::getPostalCode)
+                      .returns("Grattavache", Owner::getCity)
+                      .returns("+41 41 555 66 77", Owner::getPhoneNr)
+                      .returns("+41 79 555 66 77", Owner::getMobileNr));
     }
   }
 
   @Nested
-  class ChangeUserTests {
+  class ChangeOwnerTests {
 
     @ParameterizedTest
     @CsvSource(
@@ -188,7 +191,7 @@ public class OpenZevUserApiIntegrationTest {
           "Anna,Barry,Stradun,30,,Grattavache",
           "Anna,Barry,Stradun,30,1624,"
         })
-    @Sql(scripts = {"/db/test-data/users.sql"})
+    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status400(
         final String firstName,
         final String lastName,
@@ -197,8 +200,8 @@ public class OpenZevUserApiIntegrationTest {
         final String postalCode,
         final String city) {
       // arrange
-      final ModifiableUserDto requestBody =
-          new ModifiableUserDto()
+      final ModifiableOwnerDto requestBody =
+          new ModifiableOwnerDto()
               .firstName(firstName)
               .lastName(lastName)
               .street(street)
@@ -209,7 +212,7 @@ public class OpenZevUserApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -221,8 +224,8 @@ public class OpenZevUserApiIntegrationTest {
     @Test
     void status404() {
       // arrange
-      final ModifiableUserDto requestBody =
-          new ModifiableUserDto()
+      final ModifiableOwnerDto requestBody =
+          new ModifiableOwnerDto()
               .contractId("7f382429-6fc5-424b-84b6-3e6177db63d5")
               .firstName("Jordan")
               .lastName("Sheppard")
@@ -237,7 +240,7 @@ public class OpenZevUserApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -246,15 +249,15 @@ public class OpenZevUserApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("user_not_found", ErrorDto::getCode);
+          .returns("owner_not_found", ErrorDto::getCode);
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/users.sql"})
+    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status200() {
       // arrange
-      final ModifiableUserDto requestBody =
-          new ModifiableUserDto()
+      final ModifiableOwnerDto requestBody =
+          new ModifiableOwnerDto()
               .contractId("7f382429-6fc5-424b-84b6-3e6177db63d5")
               .firstName("Jordan")
               .lastName("Sheppard")
@@ -269,7 +272,7 @@ public class OpenZevUserApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -279,36 +282,36 @@ public class OpenZevUserApiIntegrationTest {
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
           .doesNotReturn(null, HttpEntity::getBody);
 
-      assertThat(userRepository.findByUuid(response.getBody()))
+      assertThat(ownerRepository.findByUuid(response.getBody()))
           .isPresent()
           .hasValueSatisfying(
-              user ->
-                  assertThat(user)
+              owner ->
+                  assertThat(owner)
                       .returns(
-                          UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"), User::getUuid)
-                      .returns(true, User::isActive)
-                      .returns("7f382429-6fc5-424b-84b6-3e6177db63d5", User::getContractId)
-                      .returns("Jordan", User::getFirstName)
-                      .returns("Sheppard", User::getLastName)
-                      .returns("jordan@sheppard.com", User::getEmail)
-                      .returns("Casa Posrclas", User::getStreet)
-                      .returns("57", User::getHouseNr)
-                      .returns("6013", User::getPostalCode)
-                      .returns("Eigenthal", User::getCity)
-                      .returns("+41 41 555 66 77", User::getPhoneNr)
-                      .returns("+41 79 555 66 77", User::getMobileNr));
+                          UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"), Owner::getUuid)
+                      .returns(true, Owner::isActive)
+                      .returns("7f382429-6fc5-424b-84b6-3e6177db63d5", Owner::getContractId)
+                      .returns("Jordan", Owner::getFirstName)
+                      .returns("Sheppard", Owner::getLastName)
+                      .returns("jordan@sheppard.com", Owner::getEmail)
+                      .returns("Casa Posrclas", Owner::getStreet)
+                      .returns("57", Owner::getHouseNr)
+                      .returns("6013", Owner::getPostalCode)
+                      .returns("Eigenthal", Owner::getCity)
+                      .returns("+41 41 555 66 77", Owner::getPhoneNr)
+                      .returns("+41 79 555 66 77", Owner::getMobileNr));
     }
   }
 
   @Nested
-  class DeleteUserTests {
+  class DeleteOwnerTests {
 
     @Test
     void status404() {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -317,13 +320,13 @@ public class OpenZevUserApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("user_not_found", ErrorDto::getCode);
+          .returns("owner_not_found", ErrorDto::getCode);
     }
 
     @Test
     @Sql(
         scripts = {
-          "/db/test-data/users.sql",
+          "/db/test-data/owners.sql",
           "/db/test-data/units.sql",
           "/db/test-data/ownerships.sql"
         })
@@ -331,7 +334,7 @@ public class OpenZevUserApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -340,16 +343,16 @@ public class OpenZevUserApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("user_has_ownership", ErrorDto::getCode);
+          .returns("owner_has_ownership", ErrorDto::getCode);
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/users.sql"})
+    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status204() {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.users("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               UUID.class);

@@ -8,12 +8,12 @@ import com.mav.openzev.api.model.OwnershipDto;
 import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.OwnershipMapper;
+import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Ownership;
 import com.mav.openzev.model.Unit;
-import com.mav.openzev.model.User;
+import com.mav.openzev.repository.OwnerRepository;
 import com.mav.openzev.repository.OwnershipRepository;
 import com.mav.openzev.repository.UnitRepository;
-import com.mav.openzev.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OwnershipController implements OwnershipApi {
 
   private final UnitRepository unitRepository;
-  private final UserRepository userRepository;
+  private final OwnerRepository ownerRepository;
   private final OwnershipRepository ownershipRepository;
 
   private final OwnershipMapper ownershipMapper;
@@ -76,11 +76,11 @@ public class OwnershipController implements OwnershipApi {
         unitRepository
             .findByUuid(unitId)
             .orElseThrow(() -> NotFoundException.ofUnitNotFound(unitId));
-    final User user =
-        userRepository
-            .findByUuid(modifiableOwnershipDto.getUserId())
+    final Owner owner =
+        ownerRepository
+            .findByUuid(modifiableOwnershipDto.getOwnerId())
             .orElseThrow(
-                () -> NotFoundException.ofUserNotFound(modifiableOwnershipDto.getUserId()));
+                () -> NotFoundException.ofOwnerNotFound(modifiableOwnershipDto.getOwnerId()));
 
     final Ownership ownership = ownershipMapper.mapToOwnership(modifiableOwnershipDto);
 
@@ -88,8 +88,8 @@ public class OwnershipController implements OwnershipApi {
     ownership.setUnit(unit);
     unit.getOwnerships().add(ownership);
 
-    ownership.setUser(user);
-    user.getOwnerships().add(ownership);
+    ownership.setOwner(owner);
+    owner.getOwnerships().add(ownership);
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(ownershipRepository.save(ownership).getUuid());

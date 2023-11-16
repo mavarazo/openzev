@@ -4,18 +4,18 @@ info:
   title: OpenZEV API
 
 paths:
-  /v1/dashboard/users:
+  /v1/dashboard/owners:
     get:
-      operationId: getUserOverview
+      operationId: getOwnerOverview
       tags:
         - Dashboard
       responses:
         '200':
-          description: User overview
+          description: Owner overview
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserOverviewDto'
+                $ref: '#/components/schemas/OwnerOverviewDto'
         default:
           description: Unexpected error
           content:
@@ -61,20 +61,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/users:
+  /v1/owners:
     get:
-      operationId: getUsers
+      operationId: getOwners
       tags:
-        - User
+        - Owner
       responses:
         '200':
-          description: Users
+          description: Owners
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserDto'
+                  $ref: '#/components/schemas/OwnerDto'
         default:
           description: Unexpected error
           content:
@@ -82,22 +82,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
     post:
-      operationId: createUser
+      operationId: createOwner
       tags:
-        - User
+        - Owner
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ModifiableUserDto'
+              $ref: '#/components/schemas/ModifiableOwnerDto'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserId'
+                $ref: '#/components/schemas/OwnerId'
         default:
           description: Unexpected error
           content:
@@ -105,13 +105,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/users/{userId}:
+  /v1/owners/{ownerId}:
     delete:
-      operationId: deleteUser
+      operationId: deleteOwner
       tags:
-        - User
+        - Owner
       parameters:
-        - $ref: '#/components/parameters/UserParam'
+        - $ref: '#/components/parameters/OwnerParam'
       responses:
         '204':
           description: Deleted
@@ -122,18 +122,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
     get:
-      operationId: getUser
+      operationId: getOwner
       tags:
-        - User
+        - Owner
       parameters:
-        - $ref: '#/components/parameters/UserParam'
+        - $ref: '#/components/parameters/OwnerParam'
       responses:
         '200':
-          description: User
+          description: Owner
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDto'
+                $ref: '#/components/schemas/OwnerDto'
         default:
           description: Unexpected error
           content:
@@ -141,24 +141,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
     put:
-      operationId: changeUser
+      operationId: changeOwner
       tags:
-        - User
+        - Owner
       parameters:
-        - $ref: '#/components/parameters/UserParam'
+        - $ref: '#/components/parameters/OwnerParam'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ModifiableUserDto'
+              $ref: '#/components/schemas/ModifiableOwnerDto'
       responses:
         '200':
           description: Updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserId'
+                $ref: '#/components/schemas/OwnerId'
         default:
           description: Unexpected error
           content:
@@ -432,7 +432,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserId'
+                $ref: '#/components/schemas/AccountingId'
         default:
           description: Unexpected error
           content:
@@ -802,12 +802,12 @@ paths:
 
 components:
   parameters:
-    UserParam:
-      name: userId
+    OwnerParam:
+      name: ownerId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/UserId'
+        $ref: '#/components/schemas/OwnerId'
 
     UnitParam:
       name: unitId
@@ -852,7 +852,7 @@ components:
         $ref: '#/components/schemas/InvoiceId'
 
   schemas:
-    UserId:
+    OwnerId:
       type: string
       format: uuid
 
@@ -888,11 +888,11 @@ components:
       type: string
       format: date-time
 
-    UserDto:
+    OwnerDto:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/UserId'
+          $ref: '#/components/schemas/OwnerId'
         active:
           type: boolean
         contractId:
@@ -917,7 +917,7 @@ components:
         mobileNr:
           type: string
 
-    ModifiableUserDto:
+    ModifiableOwnerDto:
       type: object
       properties:
         active:
@@ -956,7 +956,7 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/UserId'
+          $ref: '#/components/schemas/UnitId'
         active:
           type: boolean
         subject:
@@ -990,8 +990,8 @@ components:
           $ref: '#/components/schemas/OwnershipId'
         unitId:
           $ref: '#/components/schemas/UnitId'
-        userId:
-          $ref: '#/components/schemas/UserId'
+        ownerId:
+          $ref: '#/components/schemas/OwnerId'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
@@ -1000,14 +1000,14 @@ components:
     ModifiableOwnershipDto:
       type: object
       properties:
-        userId:
-          $ref: '#/components/schemas/UserId'
+        ownerId:
+          $ref: '#/components/schemas/OwnerId'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
           $ref: '#/components/schemas/Date'
       required:
-        - userId
+        - ownerId
         - periodFrom
 
     AccountingDto:
@@ -1093,7 +1093,7 @@ components:
         accountingId:
           $ref: '#/components/schemas/AccountingId'
         unitId:
-          $ref: '#/components/schemas/UserId'
+          $ref: '#/components/schemas/UnitId'
         usageHighTariff:
           type: number
           format: double
@@ -1163,7 +1163,7 @@ components:
           type: string
           format: binary
 
-    UserOverviewDto:
+    OwnerOverviewDto:
       type: object
       properties:
         total:
