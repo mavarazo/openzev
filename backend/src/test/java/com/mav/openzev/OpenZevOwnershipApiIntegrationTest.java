@@ -199,7 +199,11 @@ public class OpenZevOwnershipApiIntegrationTest {
   class CreateOwnershipTests {
 
     @ParameterizedTest
-    @CsvSource({", 2023-01-01", "790772bd-6425-41af-9270-297eb0d42060,"})
+    @CsvSource({
+      ",790772bd-6425-41af-9270-297eb0d42060,2023-01-01",
+      "414d2033-3b17-4e68-b69e-e483db0dc90b,,2023-01-01",
+      "414d2033-3b17-4e68-b69e-e483db0dc90b,790772bd-6425-41af-9270-297eb0d42060,",
+    })
     @Sql(
         scripts = {
           "/db/test-data/properties.sql",
@@ -207,17 +211,18 @@ public class OpenZevOwnershipApiIntegrationTest {
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
-    void status400(final String ownerId, final LocalDate periodFrom) {
+    void status400(final String unitId, final String ownerId, final LocalDate periodFrom) {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
+              .unitId(nonNull(unitId) ? UUID.fromString(unitId) : null)
               .ownerId(nonNull(ownerId) ? UUID.fromString(ownerId) : null)
               .periodFrom(periodFrom);
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units_ownerships("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.ownerships(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -238,13 +243,14 @@ public class OpenZevOwnershipApiIntegrationTest {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
+              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
               .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
               .periodFrom(LocalDate.of(2023, 1, 1));
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units_ownerships("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.ownerships(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -268,13 +274,14 @@ public class OpenZevOwnershipApiIntegrationTest {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
+              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
               .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
               .periodFrom(LocalDate.of(2023, 1, 1));
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.units_ownerships("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.ownerships(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -304,7 +311,11 @@ public class OpenZevOwnershipApiIntegrationTest {
   class ChangeOwnershipTests {
 
     @ParameterizedTest
-    @CsvSource({",2023-01-01", "790772bd-6425-41af-9270-297eb0d42060,"})
+    @CsvSource({
+      ",790772bd-6425-41af-9270-297eb0d42060,2023-01-01",
+      "414d2033-3b17-4e68-b69e-e483db0dc90b,,2023-01-01",
+      "414d2033-3b17-4e68-b69e-e483db0dc90b,790772bd-6425-41af-9270-297eb0d42060,",
+    })
     @Sql(
         scripts = {
           "/db/test-data/properties.sql",
@@ -312,10 +323,11 @@ public class OpenZevOwnershipApiIntegrationTest {
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
         })
-    void status400(final String ownerId, final LocalDate periodFrom) {
+    void status400(final String unitId, final String ownerId, final LocalDate periodFrom) {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
+              .unitId(nonNull(unitId) ? UUID.fromString(unitId) : null)
               .ownerId(nonNull(ownerId) ? UUID.fromString(ownerId) : null)
               .periodFrom(periodFrom);
 
@@ -342,6 +354,7 @@ public class OpenZevOwnershipApiIntegrationTest {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
+              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
               .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31));
@@ -376,6 +389,7 @@ public class OpenZevOwnershipApiIntegrationTest {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
+              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
               .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31));

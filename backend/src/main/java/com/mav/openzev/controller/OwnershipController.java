@@ -70,12 +70,12 @@ public class OwnershipController implements OwnershipApi {
 
   @Override
   @Transactional
-  public ResponseEntity<UUID> createOwnership(
-      final UUID unitId, final ModifiableOwnershipDto modifiableOwnershipDto) {
+  public ResponseEntity<UUID> createOwnership(final ModifiableOwnershipDto modifiableOwnershipDto) {
     final Unit unit =
         unitRepository
-            .findByUuid(unitId)
-            .orElseThrow(() -> NotFoundException.ofUnitNotFound(unitId));
+            .findByUuid(modifiableOwnershipDto.getUnitId())
+            .orElseThrow(
+                () -> NotFoundException.ofUnitNotFound(modifiableOwnershipDto.getUnitId()));
     final Owner owner =
         ownerRepository
             .findByUuid(modifiableOwnershipDto.getOwnerId())

@@ -412,12 +412,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+
+  /v1/ownerships:
     post:
       operationId: createOwnership
       tags:
         - Ownership
-      parameters:
-        - $ref: '#/components/parameters/UnitParam'
       requestBody:
         required: true
         content:
@@ -1162,6 +1162,8 @@ components:
     ModifiableOwnershipDto:
       type: object
       properties:
+        unitId:
+          $ref: '#/components/schemas/UnitId'
         ownerId:
           $ref: '#/components/schemas/OwnerId'
         periodFrom:
@@ -1169,6 +1171,7 @@ components:
         periodUpto:
           $ref: '#/components/schemas/Date'
       required:
+        - unitId
         - ownerId
         - periodFrom
 

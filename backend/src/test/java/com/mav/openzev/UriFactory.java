@@ -54,8 +54,12 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI ownerships() {
+    return UriComponentsBuilder.fromPath("/v1/ownerships").build().toUri();
+  }
+
   public static URI ownerships(final String ownershipId) {
-    return UriComponentsBuilder.fromPath("/v1/ownerships/{unitId}")
+    return UriComponentsBuilder.fromPath("/v1/ownerships/{ownershipId}")
         .buildAndExpand(ownershipId)
         .toUri();
   }
