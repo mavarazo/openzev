@@ -2,6 +2,8 @@ package com.mav.openzev.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.Set;
@@ -20,10 +22,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "OZEV_UNITS")
 public class Unit extends AbstractEntity {
-
-  @OneToMany(mappedBy = "unit")
-  private Set<Ownership> ownerships;
-
+    
   @Column(name = "ACTIVE")
   @Builder.Default
   private boolean active = true;
@@ -36,6 +35,13 @@ public class Unit extends AbstractEntity {
 
   @Column(name = "MPAN")
   private String meterPointAdministrationNumber;
+
+  @ManyToOne
+  @JoinColumn(name = "PROPERTY_ID", nullable = false)
+  private Property property;
+
+  @OneToMany(mappedBy = "unit")
+  private Set<Ownership> ownerships;
 
   @OneToMany(mappedBy = "unit")
   private Set<Invoice> invoices;

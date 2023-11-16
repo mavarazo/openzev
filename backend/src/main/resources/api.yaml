@@ -166,6 +166,111 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
+  /v1/properties:
+    get:
+      operationId: getProperties
+      tags:
+        - Property
+      responses:
+        '200':
+          description: Units
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PropertyDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createProperty
+      tags:
+        - Property
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiablePropertyDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/properties/{propertyId}:
+    delete:
+      operationId: deleteProperty
+      tags:
+        - Property
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      operationId: getProperty
+      tags:
+        - Property
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
+      responses:
+        '200':
+          description: Property
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeProperty
+      tags:
+        - Property
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiablePropertyDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
   /v1/units:
     get:
       operationId: getUnits
@@ -809,6 +914,13 @@ components:
       schema:
         $ref: '#/components/schemas/OwnerId'
 
+    PropertyParam:
+      name: propertyId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PropertyId'
+
     UnitParam:
       name: unitId
       in: path
@@ -853,6 +965,10 @@ components:
 
   schemas:
     OwnerId:
+      type: string
+      format: uuid
+
+    PropertyId:
       type: string
       format: uuid
 
@@ -957,6 +1073,8 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/UnitId'
+        propertyId:
+          $ref: '#/components/schemas/PropertyId'
         active:
           type: boolean
         subject:
@@ -967,12 +1085,51 @@ components:
           description: meter point administration number
           type: string
 
+    PropertyDto:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/PropertyId'
+        active:
+          type: boolean
+          default: true
+        street:
+          type: string
+        houseNr:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+
+    ModifiablePropertyDto:
+      type: object
+      properties:
+        active:
+          type: boolean
+          default: true
+        street:
+          type: string
+        houseNr:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+      required:
+        - street
+        - houseNr
+        - postalCode
+        - city
+
     ModifiableUnitDto:
       type: object
       properties:
         active:
           type: boolean
           default: true
+        propertyId:
+          $ref: '#/components/schemas/PropertyId'
         subject:
           type: string
         valueRatio:
@@ -981,6 +1138,7 @@ components:
           description: meter point administration number
           type: string
       required:
+        - propertyId
         - subject
 
     OwnershipDto:

@@ -65,6 +65,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
@@ -87,6 +88,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @ParameterizedTest
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
@@ -112,6 +114,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @ParameterizedTest
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
@@ -140,6 +143,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
         })
@@ -165,6 +169,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
@@ -197,6 +202,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @CsvSource({", 2023-01-01", "790772bd-6425-41af-9270-297eb0d42060,"})
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
@@ -223,6 +229,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
@@ -253,6 +260,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
         })
@@ -299,6 +307,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @CsvSource({",2023-01-01", "790772bd-6425-41af-9270-297eb0d42060,"})
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
@@ -325,6 +334,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
         })
@@ -357,6 +367,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"
@@ -424,6 +435,7 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/owners.sql",
           "/db/test-data/ownerships.sql"

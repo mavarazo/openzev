@@ -41,7 +41,7 @@ public class OpenZevUnitApiIntegrationTest {
   class GetUnitsTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/units.sql"})
+    @Sql(scripts = {"/db/test-data/properties.sql", "/db/test-data/units.sql"})
     void status200() {
       // act
       final ResponseEntity<UnitDto[]> response =
@@ -76,7 +76,12 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/owners.sql", "/db/test-data/units.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/owners.sql",
+          "/db/test-data/properties.sql",
+          "/db/test-data/units.sql"
+        })
     void status200() {
       // act
       final ResponseEntity<UnitDto> response =
@@ -123,10 +128,35 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
+    void status404() {
+      // arrange
+      final ModifiableUnitDto requestBody =
+          new ModifiableUnitDto()
+              .propertyId(UUID.fromString("67e8c925-abdf-418c-be74-c84332082f62"))
+              .subject("EG/1.OG rechts");
+
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.units(),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("property_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    @Sql(scripts = {"/db/test-data/properties.sql"})
     void status201() {
       // arrange
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
+              .propertyId(UUID.fromString("67e8c925-abdf-418c-be74-c84332082f62"))
               .subject("EG/1.OG rechts")
               .valueRatio(125)
               .mpan("414d2033-3b17-4e68-b69e-e483db0dc90b");
@@ -160,7 +190,7 @@ public class OpenZevUnitApiIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @Sql(scripts = {"/db/test-data/units.sql"})
+    @Sql(scripts = {"/db/test-data/properties.sql", "/db/test-data/units.sql"})
     void status400(final String subject) {
       // arrange
       final ModifiableUnitDto requestBody = new ModifiableUnitDto().subject(subject);
@@ -181,7 +211,10 @@ public class OpenZevUnitApiIntegrationTest {
     @Sql(scripts = {"/db/test-data/owners.sql"})
     void status404() {
       // arrange
-      final ModifiableUnitDto requestBody = new ModifiableUnitDto().subject("EG/1.OG rechts");
+      final ModifiableUnitDto requestBody =
+          new ModifiableUnitDto()
+              .propertyId(UUID.fromString("67e8c925-abdf-418c-be74-c84332082f62"))
+              .subject("EG/1.OG rechts");
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -199,11 +232,17 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/owners.sql", "/db/test-data/units.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/owners.sql",
+          "/db/test-data/properties.sql",
+          "/db/test-data/units.sql"
+        })
     void status200() {
       // arrange
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
+              .propertyId(UUID.fromString("67e8c925-abdf-418c-be74-c84332082f62"))
               .subject("EG/1.OG rechts")
               .valueRatio(55)
               .mpan("c113ad13-dbef-4936-8f84-29ce39cb2ab9");
@@ -261,6 +300,7 @@ public class OpenZevUnitApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/owners.sql",
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/ownerships.sql"
         })
@@ -284,6 +324,7 @@ public class OpenZevUnitApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/owners.sql",
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/agreements.sql",
           "/db/test-data/accountings.sql",
@@ -306,7 +347,7 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/units.sql"})
+    @Sql(scripts = {"/db/test-data/properties.sql", "/db/test-data/units.sql"})
     void status204() {
       // act
       final ResponseEntity<UUID> response =

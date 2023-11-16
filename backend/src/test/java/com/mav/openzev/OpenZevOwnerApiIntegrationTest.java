@@ -327,6 +327,7 @@ public class OpenZevOwnerApiIntegrationTest {
     @Sql(
         scripts = {
           "/db/test-data/owners.sql",
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/ownerships.sql"
         })

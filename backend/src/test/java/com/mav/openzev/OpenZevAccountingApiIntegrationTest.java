@@ -271,6 +271,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/agreements.sql",
           "/db/test-data/accountings.sql",
@@ -295,6 +296,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/units.sql",
           "/db/test-data/agreements.sql",
           "/db/test-data/accountings.sql",
