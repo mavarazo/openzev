@@ -271,11 +271,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/units:
+  /v1/properties/{propertyId}/units:
     get:
       operationId: getUnits
       tags:
         - Unit
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
       responses:
         '200':
           description: Units
@@ -291,6 +293,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+
+  /v1/units:
     post:
       operationId: createUnit
       tags:

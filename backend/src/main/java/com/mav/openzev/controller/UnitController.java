@@ -13,7 +13,6 @@ import com.mav.openzev.repository.UnitRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +28,13 @@ public class UnitController implements UnitApi {
   private final UnitMapper unitMapper;
 
   @Override
-  public ResponseEntity<List<UnitDto>> getUnits() {
-    return ResponseEntity.ok(
-        unitRepository.findAll(Sort.sort(Unit.class).by(Unit::getSubject)).stream()
-            .map(unitMapper::mapToUnitDto)
-            .toList());
+  @Transactional
+  public ResponseEntity<List<UnitDto>> getUnits(final UUID propertyId) {
+    final Property property =
+        propertyRepository
+            .findByUuid(propertyId)
+            .orElseThrow(() -> NotFoundException.ofPropertyNotFound(propertyId));
+    return ResponseEntity.ok(property.getUnits().stream().map(unitMapper::mapToUnitDto).toList());
   }
 
   @Override

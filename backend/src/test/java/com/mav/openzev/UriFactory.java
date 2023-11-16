@@ -25,6 +25,12 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI properties_units(final String propertyId) {
+    return UriComponentsBuilder.fromPath("/v1/properties/{propertyId}/units")
+        .buildAndExpand(propertyId)
+        .toUri();
+  }
+
   public static URI units() {
     return UriComponentsBuilder.fromPath("/v1/units").build().toUri();
   }

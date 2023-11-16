@@ -46,7 +46,10 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<UnitDto[]> response =
           restTemplate.exchange(
-              UriFactory.units(), HttpMethod.GET, HttpEntity.EMPTY, UnitDto[].class);
+              UriFactory.properties_units("67e8c925-abdf-418c-be74-c84332082f62"),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              UnitDto[].class);
 
       // assert
       assertThat(response)
