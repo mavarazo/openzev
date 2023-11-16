@@ -18,10 +18,10 @@
         </div>
 
         <div class="mb-3">
-          <label for="user" class="form-label">User</label>
-          <select id="user" class="form-select" formControlName="userId" required>
-            <option *ngFor="let user of (users$ | async)"
-                    [value]="user.id">{{ user.firstName }} {{ user.lastName }}</option>
+          <label for="owner" class="form-label">Owner</label>
+          <select id="owner" class="form-select" formControlName="ownerId" required>
+            <option *ngFor="let owner of (owners$ | async)"
+                    [value]="owner.id">{{ owner.firstName }} {{ owner.lastName }}</option>
           </select>
         </div>
 

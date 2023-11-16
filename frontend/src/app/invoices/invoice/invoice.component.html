@@ -54,9 +54,9 @@
         </div>
         <div class="col">
           <div *ngFor="let ownership of data.ownerships">
-            <div>{{ownership.user?.firstName}} {{ownership.user?.lastName}}</div>
-            <div>{{ownership.user?.street}} {{ownership.user?.houseNr}}</div>
-            <div>{{ownership.user?.postalCode}} {{ownership.user?.city}}</div>
+            <div>{{ownership.owner?.firstName}} {{ownership.owner?.lastName}}</div>
+            <div>{{ownership.owner?.street}} {{ownership.owner?.houseNr}}</div>
+            <div>{{ownership.owner?.postalCode}} {{ownership.owner?.city}}</div>
           </div>
         </div>
       </div>

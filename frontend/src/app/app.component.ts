@@ -29,14 +29,14 @@ export class AppComponent {
         link: '/agreements',
       },
       {
+        label: 'Owners',
+        icon: 'bi bi-people',
+        link: '/owners',
+      },
+      {
         label: 'Units',
         icon: 'bi bi-houses',
         link: '/units',
-      },
-      {
-        label: 'Users',
-        icon: 'bi bi-people',
-        link: '/users',
       },
     ];
   }

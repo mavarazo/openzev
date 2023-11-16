@@ -19,20 +19,15 @@ const routes: Routes = [
     loadChildren: () =>
       import('./agreements/agreements.module').then((_) => _.AgreementsModule),
   },
-  // {
-  //   path: 'invoices',
-  //   loadChildren: () =>
-  //     import('./invoices/invoices.module').then((_) => _.InvoicesModule),
-  // },
+  {
+    path: 'owners',
+    loadChildren: () =>
+      import('./owners/owners.module').then((_) => _.OwnersModule),
+  },
   {
     path: 'units',
     loadChildren: () =>
       import('./units/units.module').then((_) => _.UnitsModule),
-  },
-  {
-    path: 'users',
-    loadChildren: () =>
-      import('./users/users.module').then((_) => _.UsersModule),
   },
   {
     path: '',

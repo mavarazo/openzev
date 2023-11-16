@@ -4,11 +4,11 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import {
   ErrorDto,
   ModifiableOwnershipDto,
+  OwnerDto,
+  OwnerService,
   OwnershipService,
   UnitDto,
   UnitService,
-  UserDto,
-  UserService,
 } from '../../../generated-source/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { formatISO } from 'date-fns';
@@ -25,7 +25,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   unit$: Observable<UnitDto>;
-  users$: Observable<UserDto[]>;
+  owners$: Observable<OwnerDto[]>;
 
   ownershipForm: FormGroup;
   isSubmitted: boolean = false;
@@ -33,7 +33,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
 
   constructor(
     private unitService: UnitService,
-    private userService: UserService,
+    private ownerService: OwnerService,
     private ownershipService: OwnershipService,
     private fb: FormBuilder,
     private router: Router
@@ -42,7 +42,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
 
-    this.users$ = this.userService.getUsers();
+    this.owners$ = this.ownerService.getOwners();
 
     if (this.unitId) {
       this.unit$ = this.unitService.getUnit(this.unitId);
@@ -64,7 +64,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
 
   private initForm() {
     this.ownershipForm = this.fb.group({
-      userId: [null, Validators.required],
+      ownerId: [null, Validators.required],
       periodFrom: [null, Validators.required],
       periodUpto: [null],
     });
@@ -73,7 +73,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   submit() {
     if (this.ownershipForm.valid) {
       const ownership = {
-        userId: this.ownershipForm.get('userId')?.value,
+        ownerId: this.ownershipForm.get('ownerId')?.value,
         periodFrom: this.formatDateAsISO(
           this.ownershipForm.get('periodFrom')?.value
         ),

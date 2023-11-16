@@ -20,6 +20,25 @@
   <div class="col">
     <div class="card h-100">
       <div class="card-body">
+
+        <div class="row">
+          <div class="col mt-0">
+            <h5 class="card-title">Owners</h5>
+          </div>
+          <div class="col-auto">
+            <h3 class="stat-icon"><i class="bi bi-people"></i></h3>
+          </div>
+        </div>
+        <ng-container *ngIf="owners$ | async as owners">
+          <h1>{{owners.total}}</h1>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100">
+      <div class="card-body">
         <div class="row">
           <div class="col mt-0">
             <h5 class="card-title">Units</h5>
@@ -30,25 +49,6 @@
         </div>
         <ng-container *ngIf="units$ | async as units">
           <h1>{{units.total}}</h1>
-        </ng-container>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col">
-    <div class="card h-100">
-      <div class="card-body">
-
-        <div class="row">
-          <div class="col mt-0">
-            <h5 class="card-title">Users</h5>
-          </div>
-          <div class="col-auto">
-            <h3 class="stat-icon"><i class="bi bi-people"></i></h3>
-          </div>
-        </div>
-        <ng-container *ngIf="users$ | async as users">
-          <h1>{{users.total}}</h1>
         </ng-container>
       </div>
     </div>

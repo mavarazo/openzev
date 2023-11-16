@@ -18,16 +18,16 @@ import {
   AgreementService,
   InvoiceDto,
   InvoiceService,
+  OwnerDto,
+  OwnerService,
   OwnershipDto,
   OwnershipService,
   UnitDto,
   UnitService,
-  UserDto,
-  UserService,
 } from '../../../generated-source/api';
 
 export interface CustomOwnershipDto extends OwnershipDto {
-  user?: UserDto;
+  owner?: OwnerDto;
 }
 
 @Component({
@@ -52,7 +52,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     private invoiceService: InvoiceService,
     private accountingService: AccountingService,
     private unitService: UnitService,
-    private userService: UserService,
+    private ownerService: OwnerService,
     private ownershipService: OwnershipService,
     private agreementService: AgreementService
   ) {}
@@ -80,7 +80,7 @@ export class InvoiceComponent implements OnInit, OnDestroy {
             switchMap((ownerships: OwnershipDto[]) =>
               forkJoin(
                 ownerships.map((ownership: OwnershipDto) =>
-                  this.loadUserForOwnership(ownership)
+                  this.loadOwnerForOwnership(ownership)
                 )
               )
             )
@@ -110,12 +110,12 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private loadUserForOwnership(
+  private loadOwnerForOwnership(
     ownership: OwnershipDto
   ): Observable<CustomOwnershipDto> {
-    if (ownership.userId) {
-      return this.userService.getUser(ownership.userId).pipe(
-        map((user) => ({ ...ownership, user: user } as CustomOwnershipDto)),
+    if (ownership.ownerId) {
+      return this.ownerService.getOwner(ownership.ownerId).pipe(
+        map((owner) => ({ ...ownership, owner: owner } as CustomOwnershipDto)),
         takeUntil(this.destroy$)
       );
     }

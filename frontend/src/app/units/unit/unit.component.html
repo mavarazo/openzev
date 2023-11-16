@@ -66,14 +66,14 @@
           <caption>List of ownerships</caption>
           <thead>
           <tr>
-            <th scope="col">User</th>
+            <th scope="col">Owner</th>
             <th scope="col">Period</th>
             <th scope="col"></th>
           </tr>
           </thead>
           <tbody *ngFor="let ownership of ownerships">
           <tr>
-            <td>{{ ownership.user?.firstName }} {{ ownership.user?.lastName }}</td>
+            <td>{{ ownership.owner?.firstName }} {{ ownership.owner?.lastName }}</td>
             <td>{{ ownership.periodFrom | date }} - {{ ownership.periodUpto | date}}</td>
             <td class="text-end">
               <div class="btn-group btn-group-sm" role="group">

@@ -9,17 +9,17 @@ import {
   takeUntil,
 } from 'rxjs';
 import {
+  OwnerDto,
+  OwnerService,
   OwnershipDto,
   OwnershipService,
   UnitDto,
   UnitService,
-  UserDto,
-  UserService,
 } from '../../../generated-source/api';
 import { Router } from '@angular/router';
 
 export interface CustomOwnershipDto extends OwnershipDto {
-  user?: UserDto;
+  owner?: OwnerDto;
 }
 
 @Component({
@@ -38,7 +38,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private unitService: UnitService,
-    private userService: UserService,
+    private ownerService: OwnerService,
     private ownershipService: OwnershipService
   ) {}
 
@@ -58,14 +58,14 @@ export class UnitComponent implements OnInit, OnDestroy {
         switchMap((ownerships: OwnershipDto[]) => {
           return forkJoin(
             ownerships
-              .filter((ownership) => !!ownership.userId)
+              .filter((ownership) => !!ownership.ownerId)
               .map((ownership: OwnershipDto) => {
-                return this.userService.getUser(ownership.userId!).pipe(
+                return this.ownerService.getOwner(ownership.ownerId!).pipe(
                   map(
-                    (user: UserDto) =>
+                    (owner: OwnerDto) =>
                       ({
                         ...ownership,
-                        user: user,
+                        owner: owner,
                       } as CustomOwnershipDto)
                   )
                 );

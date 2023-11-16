@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-body">
-    <form [formGroup]="userForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+    <form [formGroup]="ownerForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
       <div class="mb-3">
         <label for="firstName" class="form-label">First name</label>
         <input type="text" id="firstName" class="form-control" formControlName="firstName"
@@ -16,8 +16,8 @@
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
         <input type="email" id="email" class="form-control" formControlName="email">
-        <ng-container *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
-          <div class="invalid-feedback" *ngIf="userForm.get('email')?.errors">
+        <ng-container *ngIf="ownerForm.get('email')?.invalid && ownerForm.get('email')?.touched">
+          <div class="invalid-feedback" *ngIf="ownerForm.get('email')?.errors">
             Email is invalid!
           </div>
         </ng-container>

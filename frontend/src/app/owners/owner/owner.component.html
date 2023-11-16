@@ -1,7 +1,7 @@
 <div class="d-flex align-items-center justify-content-between pb-3">
-  <ng-container *ngIf="user$ | async as user">
+  <ng-container *ngIf="owner$ | async as owner">
     <h4>
-      {{user.firstName}} {{user.lastName}}
+      {{owner.firstName}} {{owner.lastName}}
     </h4>
   </ng-container>
 
@@ -21,13 +21,13 @@
 
 <div class="card">
   <div class="card-body">
-    <ng-container *ngIf="user$ | async as user">
+    <ng-container *ngIf="owner$ | async as owner">
       <div class="row mb-3">
         <div class="col-2">
           Email
         </div>
         <div class="col">
-          {{user.email}}
+          {{owner.email}}
         </div>
       </div>
 
@@ -36,7 +36,7 @@
           Street
         </div>
         <div class="col">
-          {{user.street}}
+          {{owner.street}}
         </div>
       </div>
 
@@ -45,7 +45,7 @@
           House number
         </div>
         <div class="col">
-          {{user.houseNr}}
+          {{owner.houseNr}}
         </div>
       </div>
 
@@ -54,7 +54,7 @@
           Postal code
         </div>
         <div class="col">
-          {{user.postalCode}}
+          {{owner.postalCode}}
         </div>
       </div>
 
@@ -63,7 +63,7 @@
           City
         </div>
         <div class="col">
-          {{user.city}}
+          {{owner.city}}
         </div>
       </div>
 
@@ -72,7 +72,7 @@
           Phone number
         </div>
         <div class="col">
-          {{user.phoneNr}}
+          {{owner.phoneNr}}
         </div>
       </div>
 
@@ -81,7 +81,7 @@
           Mobile number
         </div>
         <div class="col">
-          {{user.mobileNr}}
+          {{owner.mobileNr}}
         </div>
       </div>
 
@@ -90,7 +90,7 @@
           Contract id
         </div>
         <div class="col">
-          {{user.contractId}}
+          {{owner.contractId}}
         </div>
       </div>
     </ng-container>

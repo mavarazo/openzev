@@ -1,36 +1,39 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModifiableUserDto, UserService } from '../../../generated-source/api';
+import {
+  ModifiableOwnerDto,
+  OwnerService,
+} from '../../../generated-source/api';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-add-edit-user',
-  templateUrl: './add-edit-user.component.html',
-  styleUrls: ['./add-edit-user.component.scss'],
+  selector: 'app-add-edit-owner',
+  templateUrl: './add-edit-owner.component.html',
+  styleUrls: ['./add-edit-owner.component.scss'],
 })
-export class AddEditUserComponent implements OnInit, OnDestroy {
-  @Input() userId: string | null;
+export class AddEditOwnerComponent implements OnInit, OnDestroy {
+  @Input() ownerId: string | null;
 
   private destroy$ = new Subject<void>();
 
-  userForm: FormGroup;
+  ownerForm: FormGroup;
   isSubmitted: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private userService: UserService
+    private ownerService: OwnerService
   ) {}
 
   ngOnInit(): void {
     this.initForm();
 
-    if (this.userId) {
-      this.userService
-        .getUser(this.userId)
+    if (this.ownerId) {
+      this.ownerService
+        .getOwner(this.ownerId)
         .pipe(takeUntil(this.destroy$))
-        .subscribe((user) => this.userForm.patchValue(user));
+        .subscribe((owner) => this.ownerForm.patchValue(owner));
     }
   }
 
@@ -40,7 +43,7 @@ export class AddEditUserComponent implements OnInit, OnDestroy {
   }
 
   private initForm() {
-    this.userForm = this.fb.group({
+    this.ownerForm = this.fb.group({
       contractId: [''],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -56,25 +59,25 @@ export class AddEditUserComponent implements OnInit, OnDestroy {
 
   submit() {
     this.isSubmitted = true;
-    if (this.userForm.valid) {
-      const user = { ...this.userForm.value } as ModifiableUserDto;
+    if (this.ownerForm.valid) {
+      const owner = { ...this.ownerForm.value } as ModifiableOwnerDto;
 
-      if (this.userId) {
-        this.editUser(user);
+      if (this.ownerId) {
+        this.editOwner(owner);
       } else {
-        this.addUser(user);
+        this.addOwner(owner);
       }
     }
   }
 
-  private addUser(user: ModifiableUserDto) {
-    this.userService
-      .createUser(user)
+  private addOwner(owner: ModifiableOwnerDto) {
+    this.ownerService
+      .createOwner(owner)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
-          this.router.navigate(['/users', id]);
+          this.router.navigate(['/owners', id]);
         },
         error: (error) => {
           console.error(error);
@@ -82,14 +85,14 @@ export class AddEditUserComponent implements OnInit, OnDestroy {
       });
   }
 
-  private editUser(user: ModifiableUserDto) {
-    this.userService
-      .changeUser(this.userId!, user)
+  private editOwner(owner: ModifiableOwnerDto) {
+    this.ownerService
+      .changeOwner(this.ownerId!, owner)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.reset();
-          this.router.navigate(['/users', this.userId]);
+          this.router.navigate(['/owners', this.ownerId]);
         },
         error: (error) => {
           console.error(error);
@@ -99,6 +102,6 @@ export class AddEditUserComponent implements OnInit, OnDestroy {
 
   reset() {
     this.isSubmitted = false;
-    this.userForm.reset();
+    this.ownerForm.reset();
   }
 }
