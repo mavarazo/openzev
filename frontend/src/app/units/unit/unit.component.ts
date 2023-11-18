@@ -13,6 +13,8 @@ import {
   OwnerService,
   OwnershipDto,
   OwnershipService,
+  PropertyDto,
+  PropertyService,
   UnitDto,
   UnitService,
 } from '../../../generated-source/api';
@@ -29,21 +31,26 @@ export interface CustomOwnershipDto extends OwnershipDto {
 })
 export class UnitComponent implements OnInit, OnDestroy {
   @Input() unitId: string;
+  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
   unit$: Observable<UnitDto>;
+  property$: Observable<PropertyDto>;
   ownerships$: Observable<CustomOwnershipDto[]>;
 
   constructor(
     private router: Router,
     private unitService: UnitService,
+    private propertyService: PropertyService,
     private ownerService: OwnerService,
     private ownershipService: OwnershipService
   ) {}
 
   ngOnInit(): void {
     this.unit$ = this.unitService.getUnit(this.unitId);
+    this.property$ = this.propertyService.getProperty(this.propertyId);
+
     this.loadOwnership();
   }
 

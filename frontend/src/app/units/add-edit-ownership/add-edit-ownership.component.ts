@@ -11,7 +11,6 @@ import {
   UnitService,
 } from '../../../generated-source/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { formatISO } from 'date-fns';
 
 @Component({
   selector: 'app-add-edit-ownership',
@@ -19,8 +18,9 @@ import { formatISO } from 'date-fns';
   styleUrls: ['./add-edit-ownership.component.scss'],
 })
 export class AddEditOwnershipComponent implements OnInit, OnDestroy {
-  @Input() unitId: string | null;
   @Input() ownershipId: string | null;
+  @Input() unitId: string;
+  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
@@ -73,13 +73,8 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   submit() {
     if (this.ownershipForm.valid) {
       const ownership = {
-        ownerId: this.ownershipForm.get('ownerId')?.value,
-        periodFrom: this.formatDateAsISO(
-          this.ownershipForm.get('periodFrom')?.value
-        ),
-        periodUpto: this.formatDateAsISO(
-          this.ownershipForm.get('periodUpto')?.value
-        ),
+        unitId: this.unitId,
+        ...this.ownershipForm.value,
       } as ModifiableOwnershipDto;
 
       if (this.ownershipId) {
@@ -90,22 +85,19 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
     }
   }
 
-  private formatDateAsISO(value: string): string | null {
-    return value
-      ? formatISO(new Date(value), {
-          representation: 'date',
-        })
-      : null;
-  }
-
   private add(ownership: ModifiableOwnershipDto) {
     this.ownershipService
-      .createOwnership(this.unitId!, ownership)
+      .createOwnership(ownership)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
-          this.router.navigate(['/units', this.unitId]);
+          this.router.navigate([
+            'properties',
+            this.propertyId,
+            'units',
+            this.unitId,
+          ]);
         },
         error: (error) => {
           console.error(error);
@@ -121,7 +113,12 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.reset();
-          this.router.navigate(['/units', this.unitId]);
+          this.router.navigate([
+            'properties',
+            this.propertyId,
+            'units',
+            this.unitId,
+          ]);
         },
         error: (error) => {
           console.error(error);

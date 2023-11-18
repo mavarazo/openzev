@@ -8,7 +8,6 @@ import {
   AgreementService,
   ModifiableAccountingDto,
 } from '../../../generated-source/api';
-import { formatISO } from 'date-fns';
 
 @Component({
   selector: 'app-add-edit-accounting',
@@ -94,12 +93,6 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
     if (this.accountingForm.valid) {
       const accounting = {
         ...this.accountingForm.value,
-        periodFrom: formatISO(this.accountingForm.get('periodFrom')?.value, {
-          representation: 'date',
-        }),
-        periodUpto: formatISO(this.accountingForm.get('periodUpto')?.value, {
-          representation: 'date',
-        }),
       } as ModifiableAccountingDto;
 
       if (this.accountingId) {

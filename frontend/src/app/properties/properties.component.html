@@ -1,7 +1,7 @@
 <div class="d-flex align-items-center justify-content-between pb-3">
   <ng-container>
     <h4>
-      Units
+      Properties
     </h4>
   </ng-container>
   <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
@@ -17,15 +17,15 @@
 <div class="card">
   <div class="card-body">
     <table class="table table-striped table-hover">
-      <caption>List of units</caption>
+      <caption>List of properties</caption>
       <thead>
       <tr>
-        <th scope="col">Subject</th>
+        <th scope="col">Address</th>
       </tr>
       </thead>
-      <tbody *ngFor="let unit of units$ | async as units">
-      <tr [routerLink]="unit.id" style="cursor: pointer">
-        <td>{{unit.subject}}</td>
+      <tbody *ngFor="let property of properties$ | async as properties">
+      <tr [routerLink]="property.id" style="cursor: pointer">
+        <td>{{property.street}} {{property.houseNr}}, {{property.postalCode}} {{property.city}}</td>
       </tr>
       </tbody>
     </table>
@@ -33,7 +33,7 @@
 </div>
 
 <ng-template #empty>
-  Add your first unit.
+  Add your first property.
 </ng-template>
 
 <ng-template #loading>

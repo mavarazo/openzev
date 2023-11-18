@@ -49,7 +49,7 @@ export class AddEditInvoiceComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.units$ = this.unitService.getUnits();
+    this.units$ = this.unitService.getUnits('');
 
     this.initForm();
 

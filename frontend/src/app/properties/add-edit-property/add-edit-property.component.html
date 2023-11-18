@@ -1,0 +1,29 @@
+<div class="card">
+  <div class="card-body">
+    <form [formGroup]="propertyForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label for="street" class="form-label">Street</label>
+        <input type="text" id="street" class="form-control" formControlName="street" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="houseNr" class="form-label">House number</label>
+        <input type="text" id="houseNr" class="form-control" formControlName="houseNr"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <label for="postalCode" class="form-label">Postal code</label>
+        <input type="text" id="postalCode" class="form-control" formControlName="postalCode"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <label for="city" class="form-label">City</label>
+        <input type="text" id="city" class="form-control" formControlName="city" required>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+  </div>
+</div>

@@ -9,8 +9,6 @@ import { NavItem } from './core/components/sidebar/sidebar.component';
 export class AppComponent {
   items: NavItem[];
 
-  constructor() {}
-
   ngOnInit(): void {
     this.items = [
       {
@@ -34,9 +32,9 @@ export class AppComponent {
         link: '/owners',
       },
       {
-        label: 'Units',
+        label: 'Properties',
         icon: 'bi bi-houses',
-        link: '/units',
+        link: '/properties',
       },
     ];
   }

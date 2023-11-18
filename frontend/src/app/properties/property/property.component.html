@@ -1,0 +1,52 @@
+<div class="d-flex align-items-center justify-content-between pb-3">
+  <ng-container *ngIf="property$ | async as property">
+    <h4>
+      {{property.street}} {{property.houseNr}}, {{property.postalCode}} {{property.city}}
+    </h4>
+  </ng-container>
+
+  <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" routerLink="edit">
+        <i class="bi bi-pencil-square me-1"></i>
+        <span>Edit</span>
+      </button>
+      <button class="btn btn-outline-danger" (click)="delete()">
+        <i class="bi bi-trash me-1"></i>
+        <span>Delete</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="d-flex justify-content-between align-items-baseline">
+      <h5>Units</h5>
+
+      <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+        <div class="btn-group" role="group">
+          <button class="btn btn-outline-primary" routerLink="units/add">
+            <i class="bi bi-plus-lg me-1"></i>
+            <span>Add a new unit</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table table-striped table-hover">
+      <caption>List of units</caption>
+      <thead>
+      <tr>
+        <th scope="col">Subject</th>
+      </tr>
+      </thead>
+      <tbody *ngFor="let unit of units$ | async as units">
+      <tr routerLink="units/{{unit.id}}" style="cursor: pointer">
+        <td>{{unit.subject}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

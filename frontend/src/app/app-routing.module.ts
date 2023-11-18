@@ -25,9 +25,9 @@ const routes: Routes = [
       import('./owners/owners.module').then((_) => _.OwnersModule),
   },
   {
-    path: 'units',
+    path: 'properties',
     loadChildren: () =>
-      import('./units/units.module').then((_) => _.UnitsModule),
+      import('./properties/properties.module').then((_) => _.PropertiesModule),
   },
   {
     path: '',
