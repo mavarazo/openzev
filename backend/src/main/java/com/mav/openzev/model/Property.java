@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,5 +39,14 @@ public class Property extends AbstractEntity {
   private String city;
 
   @OneToMany(mappedBy = "property")
+  @Builder.Default
+  private Set<Agreement> agreements = new HashSet<>();
+
+  @OneToMany(mappedBy = "property")
   private Set<Unit> units;
+
+  public void addAgreement(final Agreement agreement) {
+    this.agreements.add(agreement);
+    agreement.setProperty(this);
+  }
 }

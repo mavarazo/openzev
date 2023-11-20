@@ -17,7 +17,7 @@ import org.hibernate.type.SqlTypes;
 import org.springframework.util.ObjectUtils;
 
 @MappedSuperclass
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -3,6 +3,7 @@ package com.mav.openzev;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class UriFactory {
@@ -21,6 +22,12 @@ public class UriFactory {
 
   public static URI properties(final String propertyId) {
     return UriComponentsBuilder.fromPath("/v1/properties/{propertyId}")
+        .buildAndExpand(propertyId)
+        .toUri();
+  }
+
+  public static URI properties_agreements(final UUID propertyId) {
+    return UriComponentsBuilder.fromPath("/v1/properties/{propertyId}/agreements")
         .buildAndExpand(propertyId)
         .toUri();
   }
@@ -64,11 +71,7 @@ public class UriFactory {
         .toUri();
   }
 
-  public static URI agreements() {
-    return UriComponentsBuilder.fromPath("/v1/agreements").build().toUri();
-  }
-
-  public static URI agreements(final String agreementId) {
+  public static URI agreements(final UUID agreementId) {
     return UriComponentsBuilder.fromPath("/v1/agreements/{agreementId}")
         .buildAndExpand(agreementId)
         .toUri();

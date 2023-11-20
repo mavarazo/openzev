@@ -5,10 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.AgreementDto;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableAgreementDto;
+import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.Agreement;
+import com.mav.openzev.model.AgreementModels;
+import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.repository.AgreementRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 import org.assertj.core.util.BigDecimalComparator;
 import org.junit.jupiter.api.AfterEach;
@@ -24,11 +28,16 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class OpenZevAgreementApiIntegrationTest {
+
+  private static final LocalDate _2025_01_01 = LocalDate.of(2025, 1, 1);
+  private static final LocalDate _2025_12_31 = LocalDate.of(2025, 12, 31);
+  private static final BigDecimal _0_30 = BigDecimal.valueOf(0.30);
+  private static final BigDecimal _0_20 = BigDecimal.valueOf(0.20);
+  public static final LocalDate _2024_09_01 = LocalDate.of(2024, 9, 1);
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
@@ -44,12 +53,16 @@ public class OpenZevAgreementApiIntegrationTest {
   class GetAgreementsTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql"})
     void status200() {
+      // arrange
+      testDatabaseService.insertAgreement(AgreementModels.getAgreement());
       // act
       final ResponseEntity<AgreementDto[]> response =
           restTemplate.exchange(
-              UriFactory.agreements(), HttpMethod.GET, HttpEntity.EMPTY, AgreementDto[].class);
+              UriFactory.properties_agreements(PropertyModels.UUID),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              AgreementDto[].class);
 
       // assert
       assertThat(response)
@@ -66,7 +79,7 @@ public class OpenZevAgreementApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.agreements("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.agreements(AgreementModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               ErrorDto.class);
@@ -79,12 +92,14 @@ public class OpenZevAgreementApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql"})
     void status200() {
+      // arrange
+      testDatabaseService.insertAgreement(AgreementModels.getAgreement());
+
       // act
       final ResponseEntity<AgreementDto> response =
           restTemplate.exchange(
-              UriFactory.agreements("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.agreements(AgreementModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               AgreementDto.class);
@@ -95,16 +110,14 @@ public class OpenZevAgreementApiIntegrationTest {
           .satisfies(
               r ->
                   assertThat(r.getBody())
-                      .returns(
-                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
-                          AgreementDto::getId)
-                      .returns(LocalDate.of(2023, 1, 1), AgreementDto::getPeriodFrom)
-                      .returns(LocalDate.of(2023, 12, 31), AgreementDto::getPeriodUpto)
+                      .returns(AgreementModels.UUID, AgreementDto::getId)
+                      .returns(AgreementModels._2024_01_01, AgreementDto::getPeriodFrom)
+                      .returns(AgreementModels._2024_12_31, AgreementDto::getPeriodUpto)
                       .usingComparatorForType(
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(0.20), AgreementDto::getHighTariff)
-                      .returns(BigDecimal.valueOf(0.10), AgreementDto::getLowTariff)
-                      .returns(LocalDate.of(2022, 12, 1), AgreementDto::getApproved));
+                      .returns(AgreementModels._0_25, AgreementDto::getHighTariff)
+                      .returns(AgreementModels._0_15, AgreementDto::getLowTariff)
+                      .returns(AgreementModels._2023_10_01, AgreementDto::getApproved));
     }
   }
 
@@ -114,10 +127,10 @@ public class OpenZevAgreementApiIntegrationTest {
     @ParameterizedTest
     @CsvSource(
         value = {
-          ",2023-12-31,2,1",
-          "2023-01-01,,2,1",
-          "2023-01-01,2023-12-31,,1",
-          "2023-01-01,2023-12-31,2,"
+          " , 2023-01-01, 2, 1",
+          "2023-01-01, , 2, 1",
+          "2023-01-01, 2023-01-01, , 1",
+          "2023-01-01, 2023-01-01, 2, ",
         })
     void status400(
         final LocalDate periodFrom,
@@ -135,7 +148,7 @@ public class OpenZevAgreementApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.agreements(),
+              UriFactory.properties_agreements(PropertyModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -145,19 +158,46 @@ public class OpenZevAgreementApiIntegrationTest {
     }
 
     @Test
-    void status201() {
+    void status404_property_not_found() {
       // arrange
       final ModifiableAgreementDto requestBody =
           new ModifiableAgreementDto()
-              .periodFrom(LocalDate.of(2023, 1, 1))
-              .periodUpto(LocalDate.of(2023, 12, 31))
-              .highTariff(BigDecimal.valueOf(0.2))
-              .lowTariff(BigDecimal.valueOf(0.1));
+              .periodFrom(AgreementModels._2024_01_01)
+              .periodUpto(AgreementModels._2024_12_31)
+              .highTariff(AgreementModels._0_25)
+              .lowTariff(AgreementModels._0_15);
+
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.properties_agreements(PropertyModels.UUID),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("property_not_found", ErrorDto::getCode);
+    }
+
+    @Test
+    void status201() {
+      // arrange
+      testDatabaseService.insertProperty(PropertyModels.getProperty());
+
+      final ModifiableAgreementDto requestBody =
+          new ModifiableAgreementDto()
+              .periodFrom(AgreementModels._2024_01_01)
+              .periodUpto(AgreementModels._2024_12_31)
+              .highTariff(AgreementModels._0_25)
+              .lowTariff(AgreementModels._0_15);
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.agreements(),
+              UriFactory.properties_agreements(PropertyModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -172,12 +212,12 @@ public class OpenZevAgreementApiIntegrationTest {
           .hasValueSatisfying(
               agreement ->
                   assertThat(agreement)
-                      .returns(LocalDate.of(2023, 1, 1), Agreement::getPeriodFrom)
-                      .returns(LocalDate.of(2023, 12, 31), Agreement::getPeriodUpto)
+                      .returns(AgreementModels._2024_01_01, Agreement::getPeriodFrom)
+                      .returns(AgreementModels._2024_12_31, Agreement::getPeriodUpto)
                       .usingComparatorForType(
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(0.2), Agreement::getHighTariff)
-                      .returns(BigDecimal.valueOf(0.1), Agreement::getLowTariff)
+                      .returns(AgreementModels._0_25, Agreement::getHighTariff)
+                      .returns(AgreementModels._0_15, Agreement::getLowTariff)
                       .returns(null, Agreement::getApproved));
     }
   }
@@ -188,12 +228,11 @@ public class OpenZevAgreementApiIntegrationTest {
     @ParameterizedTest
     @CsvSource(
         value = {
-          ",2023-12-31,2,1",
-          "2023-01-01,,2,1",
-          "2023-01-01,2023-12-31,,1",
-          "2023-01-01,2023-12-31,2,"
+          " , 2023-01-01, 2, 1",
+          "2023-01-01, , 2, 1",
+          "2023-01-01, 2023-01-01, , 1",
+          "2023-01-01, 2023-01-01, 2, ",
         })
-    @Sql(scripts = {"/db/test-data/agreements.sql"})
     void status400(
         final LocalDate periodFrom,
         final LocalDate periodUpto,
@@ -210,7 +249,7 @@ public class OpenZevAgreementApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.agreements("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.agreements(AgreementModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -224,8 +263,8 @@ public class OpenZevAgreementApiIntegrationTest {
       // arrange
       final ModifiableAgreementDto requestBody =
           new ModifiableAgreementDto()
-              .periodFrom(LocalDate.of(2023, 1, 1))
-              .periodUpto(LocalDate.of(2023, 12, 31))
+              .periodFrom(AgreementModels._2024_01_01)
+              .periodUpto(AgreementModels._2024_01_01)
               .highTariff(BigDecimal.valueOf(0.2))
               .lowTariff(BigDecimal.valueOf(0.1))
               .approved(LocalDate.of(2022, 12, 1));
@@ -233,7 +272,7 @@ public class OpenZevAgreementApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.agreements("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.agreements(AgreementModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -246,21 +285,22 @@ public class OpenZevAgreementApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql"})
     void status200() {
       // arrange
+      testDatabaseService.insertAgreement(AgreementModels.getAgreement());
+
       final ModifiableAgreementDto requestBody =
           new ModifiableAgreementDto()
-              .periodFrom(LocalDate.of(2023, 1, 1))
-              .periodUpto(LocalDate.of(2023, 12, 31))
-              .highTariff(BigDecimal.valueOf(0.2))
-              .lowTariff(BigDecimal.valueOf(0.1))
-              .approved(LocalDate.of(2022, 12, 1));
+              .periodFrom(_2025_01_01)
+              .periodUpto(_2025_12_31)
+              .highTariff(_0_30)
+              .lowTariff(_0_20)
+              .approved(_2024_09_01);
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.agreements("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.agreements(AgreementModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -275,16 +315,16 @@ public class OpenZevAgreementApiIntegrationTest {
           .hasValueSatisfying(
               agreement ->
                   assertThat(agreement)
-                      .returns(LocalDate.of(2023, 1, 1), Agreement::getPeriodFrom)
-                      .returns(LocalDate.of(2023, 12, 31), Agreement::getPeriodUpto)
+                      .returns(_2025_01_01, Agreement::getPeriodFrom)
+                      .returns(_2025_12_31, Agreement::getPeriodUpto)
                       .usingComparatorForType(
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(0.2), Agreement::getHighTariff)
-                      .returns(BigDecimal.valueOf(0.1), Agreement::getLowTariff)
-                      .returns(LocalDate.of(2022, 12, 1), Agreement::getApproved));
+                      .returns(_0_30, Agreement::getHighTariff)
+                      .returns(_0_20, Agreement::getLowTariff)
+                      .returns(_2024_09_01, Agreement::getApproved));
     }
   }
-
+  
   @Nested
   class DeleteAgreementTests {
 
@@ -293,7 +333,7 @@ public class OpenZevAgreementApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.agreements("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.agreements(AgreementModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -306,16 +346,18 @@ public class OpenZevAgreementApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-        })
     void status422() {
+      // arrange
+
+      testDatabaseService.insertAgreement(
+          AgreementModels.getAgreement().toBuilder()
+              .accountings(Set.of(AccountingModels.getAccounting()))
+              .build());
+
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.agreements("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.agreements(AgreementModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -328,12 +370,14 @@ public class OpenZevAgreementApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql"})
     void status204() {
+      // arrange
+      testDatabaseService.insertAgreement(AgreementModels.getAgreement());
+
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.agreements("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.agreements(AgreementModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               UUID.class);
