@@ -1,5 +1,7 @@
 package com.mav.openzev;
 
+import com.mav.openzev.model.Agreement;
+import com.mav.openzev.model.Property;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Table;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -38,5 +41,25 @@ public class TestDatabaseService implements InitializingBean {
             .map(e -> e.getJavaType().getAnnotation(Table.class).name())
             .filter(StringUtils::hasText)
             .collect(Collectors.toList());
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void insertProperty(final Property property) {
+    entityManager.persist(property);
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void insertAgreement(final Agreement agreement) {
+    agreement.getProperty().addAgreement(agreement);
+    agreement
+        .getAccountings()
+        .forEach(
+            accounting -> {
+              accounting.setAgreement(agreement);
+              entityManager.persist(accounting);
+            });
+
+    entityManager.persist(agreement.getProperty());
+    entityManager.persist(agreement);
   }
 }

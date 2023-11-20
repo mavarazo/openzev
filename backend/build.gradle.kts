@@ -1,5 +1,6 @@
 plugins {
     java
+    id("java-test-fixtures")
     id("org.springframework.boot") version "3.1.0"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.openapi.generator") version "6.3.0"
@@ -48,6 +49,9 @@ dependencies {
     testImplementation("com.squareup.okhttp3:okhttp:4.0.1")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.0.1")
     testRuntimeOnly("com.h2database:h2")
+
+    testFixturesAnnotationProcessor("org.projectlombok:lombok")
+    testFixturesCompileOnly("org.projectlombok:lombok")
 }
 
 tasks.withType<Test> {

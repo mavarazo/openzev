@@ -15,11 +15,13 @@ public interface PropertyMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
+  @Mapping(target = "agreements", ignore = true)
   @Mapping(target = "units", ignore = true)
   Property mapToProperty(ModifiablePropertyDto modifiablePropertyDto);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
+  @Mapping(target = "agreements", ignore = true)
   @Mapping(target = "units", ignore = true)
   void updateProperty(
       ModifiablePropertyDto modifiablePropertyDto, @MappingTarget Property property);
