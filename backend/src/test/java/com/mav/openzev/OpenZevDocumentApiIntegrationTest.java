@@ -57,6 +57,7 @@ public class OpenZevDocumentApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/agreements.sql",
           "/db/test-data/documents.sql",
           "/db/test-data/accountings.sql"
@@ -114,6 +115,7 @@ public class OpenZevDocumentApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/agreements.sql",
           "/db/test-data/documents.sql",
           "/db/test-data/accountings.sql"

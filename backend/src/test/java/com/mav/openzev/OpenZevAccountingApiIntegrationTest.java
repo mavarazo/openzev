@@ -52,7 +52,12 @@ public class OpenZevAccountingApiIntegrationTest {
   class GetAccountingsTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/properties.sql",
+          "/db/test-data/agreements.sql",
+          "/db/test-data/accountings.sql"
+        })
     void status200() {
       // act
       final ResponseEntity<AccountingDto[]> response =
@@ -90,7 +95,12 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/properties.sql",
+          "/db/test-data/agreements.sql",
+          "/db/test-data/accountings.sql"
+        })
     void status200() {
       // act
       final ResponseEntity<AccountingDto> response =
@@ -127,7 +137,7 @@ public class OpenZevAccountingApiIntegrationTest {
   class CreateAccountingTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql"})
+    @Sql(scripts = {"/db/test-data/properties.sql", "/db/test-data/agreements.sql"})
     void status201() {
       // arrange
       final ModifiableAccountingDto requestBody =
@@ -206,7 +216,12 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/properties.sql",
+          "/db/test-data/agreements.sql",
+          "/db/test-data/accountings.sql"
+        })
     void status200() {
       // arrange
       final ModifiableAccountingDto requestBody =
@@ -338,6 +353,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     @Sql(
         scripts = {
+          "/db/test-data/properties.sql",
           "/db/test-data/agreements.sql",
           "/db/test-data/documents.sql",
           "/db/test-data/accountings.sql"
@@ -387,7 +403,12 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/agreements.sql", "/db/test-data/accountings.sql"})
+    @Sql(
+        scripts = {
+          "/db/test-data/properties.sql",
+          "/db/test-data/agreements.sql",
+          "/db/test-data/accountings.sql"
+        })
     void status200() {
       // arrange
       final HttpHeaders headers = new HttpHeaders();
