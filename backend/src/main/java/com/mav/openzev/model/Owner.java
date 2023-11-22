@@ -2,6 +2,8 @@ package com.mav.openzev.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.Set;
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -54,6 +56,10 @@ public class Owner extends AbstractEntity {
 
   @Column(name = "MOBILE_NR")
   private String mobileNr;
+
+  @ManyToOne
+  @JoinColumn(name = "PROPERTY_ID", nullable = false)
+  private Property property;
 
   @OneToMany(mappedBy = "owner")
   private Set<Ownership> ownerships;

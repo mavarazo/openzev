@@ -1,7 +1,10 @@
 package com.mav.openzev;
 
 import com.mav.openzev.model.Agreement;
+import com.mav.openzev.model.Owner;
+import com.mav.openzev.model.Ownership;
 import com.mav.openzev.model.Property;
+import com.mav.openzev.model.Unit;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Table;
@@ -61,5 +64,29 @@ public class TestDatabaseService implements InitializingBean {
 
     entityManager.persist(agreement.getProperty());
     entityManager.persist(agreement);
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Owner insertOwner(final Owner owner) {
+    owner.getProperty().addOwner(owner);
+
+    entityManager.persist(owner.getProperty());
+    entityManager.persist(owner);
+    return owner;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Ownership insertOwnership(final Ownership ownership) {
+    entityManager.persist(ownership);
+    return ownership;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Unit insertUnit(final Unit unit) {
+    unit.getProperty().addUnit(unit);
+
+    entityManager.persist(unit.getProperty());
+    entityManager.persist(unit);
+    return unit;
   }
 }

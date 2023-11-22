@@ -43,10 +43,25 @@ public class Property extends AbstractEntity {
   private Set<Agreement> agreements = new HashSet<>();
 
   @OneToMany(mappedBy = "property")
-  private Set<Unit> units;
+  @Builder.Default
+  private Set<Owner> owners = new HashSet<>();
+
+  @OneToMany(mappedBy = "property")
+  @Builder.Default
+  private Set<Unit> units = new HashSet<>();
 
   public void addAgreement(final Agreement agreement) {
-    this.agreements.add(agreement);
+    agreements.add(agreement);
     agreement.setProperty(this);
+  }
+
+  public void addOwner(final Owner owner) {
+    owners.add(owner);
+    owner.setProperty(this);
+  }
+
+  public void addUnit(final Unit unit) {
+    units.add(unit);
+    unit.setProperty(this);
   }
 }
