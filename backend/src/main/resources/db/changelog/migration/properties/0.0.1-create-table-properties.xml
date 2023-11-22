@@ -3,7 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
 
-    <changeSet author="mav" id="0.0.1-02-1-create-table-units">
+    <changeSet author="mav" id="0.0.1-1-create-table-properties">
         <createTable tableName="OZEV_PROPERTIES">
             <column name="ID" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="PK_OZEV_PROPERTY"/>
