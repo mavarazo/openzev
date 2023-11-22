@@ -8,11 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public class UriFactory {
 
-  public static URI owners() {
-    return UriComponentsBuilder.fromPath("/v1/owners").build().toUri();
-  }
-
-  public static URI owners(final String ownerId) {
+  public static URI owners(final UUID ownerId) {
     return UriComponentsBuilder.fromPath("/v1/owners/{ownerId}").buildAndExpand(ownerId).toUri();
   }
 

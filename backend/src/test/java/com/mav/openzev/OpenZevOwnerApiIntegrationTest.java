@@ -48,8 +48,8 @@ public class OpenZevOwnerApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertOwner(
-          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(OwnerModels.getOwner()));
 
       // act
       final ResponseEntity<OwnerDto[]> response =
@@ -74,7 +74,7 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners(UUID.randomUUID()),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               ErrorDto.class);
@@ -89,13 +89,13 @@ public class OpenZevOwnerApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertOwner(
-          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(OwnerModels.getOwner()));
 
       // act
       final ResponseEntity<OwnerDto> response =
           restTemplate.exchange(
-              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners(OwnerModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               OwnerDto.class);
@@ -214,10 +214,6 @@ public class OpenZevOwnerApiIntegrationTest {
         final String houseNr,
         final String postalCode,
         final String city) {
-      // arrange
-      testDatabaseService.insertOwner(
-          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
-
       final ModifiableOwnerDto requestBody =
           new ModifiableOwnerDto()
               .firstName(firstName)
@@ -230,7 +226,7 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners(OwnerModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -258,7 +254,7 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners(UUID.randomUUID()),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -273,8 +269,8 @@ public class OpenZevOwnerApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertOwner(
-          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(OwnerModels.getOwner()));
 
       final ModifiableOwnerDto requestBody =
           new ModifiableOwnerDto()
@@ -292,7 +288,7 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners(OwnerModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -331,7 +327,7 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners(OwnerModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -346,20 +342,19 @@ public class OpenZevOwnerApiIntegrationTest {
     @Test
     void status422() {
       // arrange
-        final Owner owner = testDatabaseService.insertOwner(
-                OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
-        final Unit unit = testDatabaseService.insertUnit(
-                UnitModels.getUnit().toBuilder().property(PropertyModels.getProperty()).build());
-        testDatabaseService.insertOwnership(Ownership.builder()
-                        .owner(owner)
-                        .unit(unit)
-                        .periodFrom(LocalDate.now())
-                .build());
+      final Owner owner = OwnerModels.getOwner();
+      final Unit unit = UnitModels.getUnit();
+
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
+
+      testDatabaseService.insertOwnership(
+          Ownership.builder().owner(owner).unit(unit).periodFrom(LocalDate.now()).build());
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners(OwnerModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -374,13 +369,13 @@ public class OpenZevOwnerApiIntegrationTest {
     @Test
     void status204() {
       // arrange
-      testDatabaseService.insertOwner(
-          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(OwnerModels.getOwner()));
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.owners("790772bd-6425-41af-9270-297eb0d42060"),
+              UriFactory.owners(OwnerModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               UUID.class);
