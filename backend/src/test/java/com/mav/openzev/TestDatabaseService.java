@@ -1,5 +1,6 @@
 package com.mav.openzev;
 
+import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Ownership;
@@ -49,8 +50,15 @@ public class TestDatabaseService implements InitializingBean {
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void insertProperty(final Property property) {
     entityManager.persist(property);
+    log.info(
+        "Properties: {}",
+        entityManager.createQuery("select p from Property p").getResultList().size());
+    log.info(
+        "Owners: {}", entityManager.createQuery("select p from Owner p").getResultList().size());
+    log.info("Units: {}", entityManager.createQuery("select p from Unit p").getResultList().size());
   }
 
+  @Deprecated
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void insertAgreement(final Agreement agreement) {
     agreement.getProperty().addAgreement(agreement);
@@ -66,6 +74,7 @@ public class TestDatabaseService implements InitializingBean {
     entityManager.persist(agreement);
   }
 
+  @Deprecated
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Owner insertOwner(final Owner owner) {
     owner.getProperty().addOwner(owner);
@@ -81,6 +90,7 @@ public class TestDatabaseService implements InitializingBean {
     return ownership;
   }
 
+  @Deprecated
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Unit insertUnit(final Unit unit) {
     unit.getProperty().addUnit(unit);
@@ -88,5 +98,18 @@ public class TestDatabaseService implements InitializingBean {
     entityManager.persist(unit.getProperty());
     entityManager.persist(unit);
     return unit;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void insertAccounting(final Accounting accounting) {
+
+    entityManager.persist(accounting);
+
+    log.info(
+        "Accountings: {}",
+        entityManager.createQuery("select p from Accounting p").getResultList().size());
+    log.info(
+        "Invoices: {}",
+        entityManager.createQuery("select p from Invoice p").getResultList().size());
   }
 }

@@ -38,7 +38,7 @@ public class UriFactory {
         .toUri();
   }
 
-  public static URI properties_units(final String propertyId) {
+  public static URI properties_units(final UUID propertyId) {
     return UriComponentsBuilder.fromPath("/v1/properties/{propertyId}/units")
         .buildAndExpand(propertyId)
         .toUri();
@@ -48,7 +48,7 @@ public class UriFactory {
     return UriComponentsBuilder.fromPath("/v1/units").build().toUri();
   }
 
-  public static URI units(final String unitId) {
+  public static URI units(final UUID unitId) {
     return UriComponentsBuilder.fromPath("/v1/units/{unitId}").buildAndExpand(unitId).toUri();
   }
 

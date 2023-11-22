@@ -5,8 +5,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableUnitDto;
 import com.mav.openzev.api.model.UnitDto;
+import com.mav.openzev.model.AccountingModels;
+import com.mav.openzev.model.AgreementModels;
+import com.mav.openzev.model.InvoiceModels;
+import com.mav.openzev.model.Owner;
+import com.mav.openzev.model.OwnerModels;
+import com.mav.openzev.model.Ownership;
+import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.model.Unit;
+import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.UnitRepository;
+import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -41,12 +50,15 @@ public class OpenZevUnitApiIntegrationTest {
   class GetUnitsTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/properties.sql", "/db/test-data/units.sql"})
     void status200() {
+      // arrange
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addUnit(UnitModels.getUnit()));
+
       // act
       final ResponseEntity<UnitDto[]> response =
           restTemplate.exchange(
-              UriFactory.properties_units("67e8c925-abdf-418c-be74-c84332082f62"),
+              UriFactory.properties_units(PropertyModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               UnitDto[].class);
@@ -66,10 +78,7 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              ErrorDto.class);
+              UriFactory.units(UnitModels.UUID), HttpMethod.GET, HttpEntity.EMPTY, ErrorDto.class);
 
       // assert
       assertThat(response)
@@ -79,20 +88,14 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/owners.sql",
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql"
-        })
     void status200() {
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addUnit(UnitModels.getUnit()));
+
       // act
       final ResponseEntity<UnitDto> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              UnitDto.class);
+              UriFactory.units(UnitModels.UUID), HttpMethod.GET, HttpEntity.EMPTY, UnitDto.class);
 
       // assert
       assertThat(response)
@@ -121,7 +124,7 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units(),
+              UriFactory.properties_units(PropertyModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -135,13 +138,12 @@ public class OpenZevUnitApiIntegrationTest {
       // arrange
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
-              .propertyId(UUID.fromString("67e8c925-abdf-418c-be74-c84332082f62"))
               .subject("EG/1.OG rechts");
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units(),
+              UriFactory.properties_units(PropertyModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -154,12 +156,12 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/properties.sql"})
     void status201() {
       // arrange
+      testDatabaseService.insertProperty(PropertyModels.getProperty());
+
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
-              .propertyId(UUID.fromString("67e8c925-abdf-418c-be74-c84332082f62"))
               .subject("EG/1.OG rechts")
               .valueRatio(125)
               .mpan("414d2033-3b17-4e68-b69e-e483db0dc90b");
@@ -167,7 +169,10 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.units(), HttpMethod.POST, new HttpEntity<>(requestBody, null), UUID.class);
+              UriFactory.properties_units(PropertyModels.UUID),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, null),
+              UUID.class);
 
       // assert
       assertThat(response)
@@ -201,7 +206,7 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.units(UnitModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -211,18 +216,16 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status404() {
       // arrange
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
-              .propertyId(UUID.fromString("67e8c925-abdf-418c-be74-c84332082f62"))
               .subject("EG/1.OG rechts");
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.units(UnitModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -235,17 +238,13 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/owners.sql",
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql"
-        })
     void status200() {
       // arrange
+      testDatabaseService.insertUnit(
+          UnitModels.getUnit().toBuilder().property(PropertyModels.getProperty()).build());
+
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
-              .propertyId(UUID.fromString("67e8c925-abdf-418c-be74-c84332082f62"))
               .subject("EG/1.OG rechts")
               .valueRatio(55)
               .mpan("c113ad13-dbef-4936-8f84-29ce39cb2ab9");
@@ -253,7 +252,7 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.units(UnitModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -287,7 +286,7 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.units(UnitModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -300,18 +299,21 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/owners.sql",
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/ownerships.sql"
-        })
     void status422_ownership() {
+      // arrange
+      final Owner owner =
+          testDatabaseService.insertOwner(
+              OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+      final Unit unit =
+          testDatabaseService.insertUnit(
+              UnitModels.getUnit().toBuilder().property(PropertyModels.getProperty()).build());
+      testDatabaseService.insertOwnership(
+          Ownership.builder().owner(owner).unit(unit).periodFrom(LocalDate.now()).build());
+
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.units(UnitModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -324,20 +326,20 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/owners.sql",
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-          "/db/test-data/invoices.sql"
-        })
     void status422_invoice() {
+      final Unit unit = UnitModels.getUnit();
+
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addUnit(unit).addAgreement(AgreementModels.getAgreement()));
+
+      testDatabaseService.insertAccounting(
+          AccountingModels.getAccounting()
+              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
+
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.units(UnitModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -350,12 +352,15 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/properties.sql", "/db/test-data/units.sql"})
     void status204() {
+      // arrange
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addUnit(UnitModels.getUnit()));
+
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.units("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.units(UnitModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               UUID.class);

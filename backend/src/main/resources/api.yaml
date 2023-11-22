@@ -166,29 +166,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/properties/{propertyId}/units:
-    get:
-      operationId: getUnits
-      tags:
-        - Unit
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      responses:
-        '200':
-          description: Units
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UnitDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
   /v1/properties/{propertyId}/agreements:
     get:
       operationId: getAgreements
@@ -230,6 +207,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AgreementId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/properties/{propertyId}/units:
+    get:
+      operationId: getUnits
+      tags:
+        - Unit
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
+      responses:
+        '200':
+          description: Units
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createUnit
+      tags:
+        - Unit
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableUnitDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitId'
         default:
           description: Unexpected error
           content:
@@ -339,31 +364,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OwnerId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/units:
-    post:
-      operationId: createUnit
-      tags:
-        - Unit
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableUnitDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnitId'
         default:
           description: Unexpected error
           content:
@@ -1140,8 +1140,6 @@ components:
         active:
           type: boolean
           default: true
-        propertyId:
-          $ref: '#/components/schemas/PropertyId'
         subject:
           type: string
         valueRatio:
@@ -1150,7 +1148,6 @@ components:
           description: meter point administration number
           type: string
       required:
-        - propertyId
         - subject
 
     OwnershipDto:

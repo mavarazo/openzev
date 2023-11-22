@@ -1,5 +1,6 @@
 package com.mav.openzev.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -11,8 +12,10 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -53,10 +56,17 @@ public class Accounting extends AbstractAuditEntity {
   @Column(name = "AMOUNT_TOTAL", nullable = false)
   private BigDecimal amountTotal;
 
-  @OneToMany(mappedBy = "accounting")
-  private Set<Invoice> invoices;
+  @OneToMany(mappedBy = "accounting", cascade = CascadeType.ALL)
+  @Builder.Default
+  private Set<Invoice> invoices = new HashSet<>();
 
   @OneToOne
   @JoinColumn(name = "DOCUMENT_ID", referencedColumnName = "ID")
   private Document document;
+
+  public Accounting addInvoice(final Invoice invoice) {
+    invoices.add(invoice);
+    invoice.setAccounting(this);
+    return this;
+  }
 }
