@@ -1,6 +1,5 @@
 package com.mav.openzev;
 
-import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.ErrorDto;
@@ -15,16 +14,11 @@ import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.InvoiceRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 import org.assertj.core.util.BigDecimalComparator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -33,7 +27,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -52,10 +45,8 @@ public class OpenZevInvoiceApiIntegrationTest {
   @Nested
   class GetInvoicesTests {
 
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {"27bc46ee-4d28-492b-a849-e52dbc5ded1a"})
-    void status200(final UUID accountingId) {
+    @Test
+    void status200() {
       // arrange
       final Unit unit = UnitModels.getUnit();
       testDatabaseService.insertProperty(
@@ -68,10 +59,7 @@ public class OpenZevInvoiceApiIntegrationTest {
       // act
       final ResponseEntity<InvoiceDto[]> response =
           restTemplate.exchange(
-              UriComponentsBuilder.fromPath("/v1/invoices")
-                  .queryParamIfPresent("accountingId", Optional.ofNullable(accountingId))
-                  .build()
-                  .toUri(),
+              UriFactory.accountings_invoices(AccountingModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               InvoiceDto[].class);
@@ -80,34 +68,6 @@ public class OpenZevInvoiceApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
           .satisfies(r -> assertThat(r.getBody()).hasSize(1));
-    }
-
-    @Test
-    void status200_unknown_Accounting() {
-      // arrange
-      final Unit unit = UnitModels.getUnit();
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addUnit(unit)
-              .addAccounting(
-                  AccountingModels.getAccounting()
-                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
-
-      // act
-      final ResponseEntity<InvoiceDto[]> response =
-          restTemplate.exchange(
-              UriComponentsBuilder.fromPath("/v1/invoices")
-                  .queryParam("accountingId", UUID.randomUUID().toString())
-                  .build()
-                  .toUri(),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              InvoiceDto[].class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .satisfies(r -> assertThat(r.getBody()).isEmpty());
     }
   }
 
@@ -176,20 +136,15 @@ public class OpenZevInvoiceApiIntegrationTest {
   @Nested
   class CreateInvoiceTests {
 
-    @ParameterizedTest
-    @CsvSource(
-        value = {"089a394c-4d25-4329-b696-7b6ab93b03b2,", ",089a394c-4d25-4329-b696-7b6ab93b03b2"})
-    void status400(final String accountingId, final String unitId) {
+    @Test
+    void status400() {
       // arrange
-      final ModifiableInvoiceDto requestBody =
-          new ModifiableInvoiceDto()
-              .accountingId(nonNull(accountingId) ? UUID.fromString(accountingId) : null)
-              .unitId(nonNull(unitId) ? UUID.fromString(unitId) : null);
+      final ModifiableInvoiceDto requestBody = new ModifiableInvoiceDto().unitId(null);
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.invoices(),
+              UriFactory.accountings_invoices(AccountingModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -212,7 +167,6 @@ public class OpenZevInvoiceApiIntegrationTest {
       // arrange
       final ModifiableInvoiceDto requestBody =
           new ModifiableInvoiceDto()
-              .accountingId(AccountingModels.UUID)
               .unitId(UnitModels.UUID)
               .usageHighTariff(1000.00)
               .usageLowTariff(750.00)
@@ -225,7 +179,7 @@ public class OpenZevInvoiceApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.invoices(),
+              UriFactory.accountings_invoices(AccountingModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -258,8 +212,7 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     void status404() {
       // arrange
-      final ModifiableInvoiceDto requestBody =
-          new ModifiableInvoiceDto().accountingId(AccountingModels.UUID).unitId(UnitModels.UUID);
+      final ModifiableInvoiceDto requestBody = new ModifiableInvoiceDto().unitId(UnitModels.UUID);
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -292,7 +245,6 @@ public class OpenZevInvoiceApiIntegrationTest {
 
       final ModifiableInvoiceDto requestBody =
           new ModifiableInvoiceDto()
-              .accountingId(AccountingModels.UUID)
               .unitId(UnitModels.UUID)
               .usageHighTariff(1500.00)
               .usageLowTariff(500.00)

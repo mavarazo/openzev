@@ -97,8 +97,10 @@ public class UriFactory {
         .toUri();
   }
 
-  public static URI invoices() {
-    return UriComponentsBuilder.fromPath("/v1/invoices").build().toUri();
+  public static URI accountings_invoices(final UUID accountingId) {
+    return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}/invoices")
+        .buildAndExpand(accountingId)
+        .toUri();
   }
 
   public static URI invoices(final UUID invoiceId) {
