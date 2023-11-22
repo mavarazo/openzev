@@ -14,6 +14,7 @@ public class InvoiceModels {
   public static Invoice getInvoice() {
     return Invoice.builder()
         .uuid(UUID)
+        .unit(UnitModels.getUnit())
         .usageHighTariff(1000.0)
         .usageLowTariff(750.0)
         .usageTotal(1750.0)

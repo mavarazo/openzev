@@ -2,6 +2,7 @@ package com.mav.openzev;
 
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Agreement;
+import com.mav.openzev.model.Document;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Ownership;
 import com.mav.openzev.model.Property;
@@ -48,14 +49,21 @@ public class TestDatabaseService implements InitializingBean {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void insertProperty(final Property property) {
+  public Document insertDocument(final Document document) {
+    entityManager.persist(document);
+    return document;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Property insertProperty(final Property property) {
     entityManager.persist(property);
-    log.info(
-        "Properties: {}",
-        entityManager.createQuery("select p from Property p").getResultList().size());
-    log.info(
-        "Owners: {}", entityManager.createQuery("select p from Owner p").getResultList().size());
-    log.info("Units: {}", entityManager.createQuery("select p from Unit p").getResultList().size());
+    return property;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Property updateProperty(final Property property) {
+    entityManager.merge(property);
+    return property;
   }
 
   @Deprecated
@@ -102,14 +110,6 @@ public class TestDatabaseService implements InitializingBean {
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void insertAccounting(final Accounting accounting) {
-
     entityManager.persist(accounting);
-
-    log.info(
-        "Accountings: {}",
-        entityManager.createQuery("select p from Accounting p").getResultList().size());
-    log.info(
-        "Invoices: {}",
-        entityManager.createQuery("select p from Invoice p").getResultList().size());
   }
 }

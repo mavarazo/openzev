@@ -19,6 +19,19 @@
 
             <column name="MODIFIED" type="TIMESTAMP(6)"/>
 
+            <column name="PERIOD_FROM" type="DATE"/>
+            <column name="PERIOD_UPTO" type="DATE"/>
+            <column name="SUBJECT" type="VARCHAR(255)"/>
+            <column name="AMOUNT_HT" type="DECIMAL(10, 2)"/>
+            <column name="AMOUNT_LT" type="DECIMAL(10, 2)"/>
+            <column name="AMOUNT_TOTAL" type="DECIMAL(10, 2)"/>
+
+            <column name="PROPERTY_ID" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="FK_ACCOUNTING_PROPERTY"
+                             references="OZEV_PROPERTIES(ID)"/>
+            </column>
+
             <column name="AGREEMENT_ID" type="BIGINT">
                 <constraints nullable="true"
                              foreignKeyName="FK_ACCOUNTING_AGREEMENT"
@@ -30,13 +43,6 @@
                              foreignKeyName="FK_ACCOUNTING_DOCUMENT"
                              references="OZEV_DOCUMENTS(ID)"/>
             </column>
-
-            <column name="PERIOD_FROM" type="DATE"/>
-            <column name="PERIOD_UPTO" type="DATE"/>
-            <column name="SUBJECT" type="VARCHAR(255)"/>
-            <column name="AMOUNT_HT" type="DECIMAL(10, 2)"/>
-            <column name="AMOUNT_LT" type="DECIMAL(10, 2)"/>
-            <column name="AMOUNT_TOTAL" type="DECIMAL(10, 2)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

@@ -12,7 +12,6 @@ import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.repository.AgreementRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
 import org.assertj.core.util.BigDecimalComparator;
 import org.junit.jupiter.api.AfterEach;
@@ -55,7 +54,9 @@ public class OpenZevAgreementApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertAgreement(AgreementModels.getAgreement());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addAgreement(AgreementModels.getAgreement()));
+
       // act
       final ResponseEntity<AgreementDto[]> response =
           restTemplate.exchange(
@@ -94,7 +95,8 @@ public class OpenZevAgreementApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertAgreement(AgreementModels.getAgreement());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addAgreement(AgreementModels.getAgreement()));
 
       // act
       final ResponseEntity<AgreementDto> response =
@@ -287,7 +289,8 @@ public class OpenZevAgreementApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertAgreement(AgreementModels.getAgreement());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addAgreement(AgreementModels.getAgreement()));
 
       final ModifiableAgreementDto requestBody =
           new ModifiableAgreementDto()
@@ -348,11 +351,12 @@ public class OpenZevAgreementApiIntegrationTest {
     @Test
     void status422() {
       // arrange
-
-      testDatabaseService.insertAgreement(
-          AgreementModels.getAgreement().toBuilder()
-              .accountings(Set.of(AccountingModels.getAccounting()))
-              .build());
+      final Agreement agreement = AgreementModels.getAgreement();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addAccounting(
+                  AccountingModels.getAccounting().toBuilder().agreement(agreement).build())
+              .addAgreement(agreement));
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -372,7 +376,8 @@ public class OpenZevAgreementApiIntegrationTest {
     @Test
     void status204() {
       // arrange
-      testDatabaseService.insertAgreement(AgreementModels.getAgreement());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addAgreement(AgreementModels.getAgreement()));
 
       // act
       final ResponseEntity<UUID> response =

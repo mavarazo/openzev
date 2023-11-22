@@ -41,6 +41,10 @@ public class Property extends AbstractEntity {
 
   @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
   @Builder.Default
+  private Set<Accounting> accountings = new HashSet<>();
+
+  @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
+  @Builder.Default
   private Set<Agreement> agreements = new HashSet<>();
 
   @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
@@ -50,6 +54,12 @@ public class Property extends AbstractEntity {
   @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
   @Builder.Default
   private Set<Unit> units = new HashSet<>();
+
+  public Property addAccounting(final Accounting accounting) {
+    accountings.add(accounting);
+    accounting.setProperty(this);
+    return this;
+  }
 
   public Property addAgreement(final Agreement agreement) {
     agreements.add(agreement);

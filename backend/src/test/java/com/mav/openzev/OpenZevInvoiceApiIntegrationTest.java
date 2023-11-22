@@ -6,7 +6,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.InvoiceDto;
 import com.mav.openzev.api.model.ModifiableInvoiceDto;
+import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.Invoice;
+import com.mav.openzev.model.InvoiceModels;
+import com.mav.openzev.model.PropertyModels;
+import com.mav.openzev.model.Unit;
+import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.InvoiceRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,7 +33,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -49,17 +53,18 @@ public class OpenZevInvoiceApiIntegrationTest {
   class GetInvoicesTests {
 
     @ParameterizedTest
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-          "/db/test-data/invoices.sql"
-        })
     @NullSource
-    @ValueSource(strings = {"86fb361f-a577-405e-af02-f524478d2e49"})
+    @ValueSource(strings = {"27bc46ee-4d28-492b-a849-e52dbc5ded1a"})
     void status200(final UUID accountingId) {
+      // arrange
+      final Unit unit = UnitModels.getUnit();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addUnit(unit)
+              .addAccounting(
+                  AccountingModels.getAccounting()
+                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+
       // act
       final ResponseEntity<InvoiceDto[]> response =
           restTemplate.exchange(
@@ -78,15 +83,16 @@ public class OpenZevInvoiceApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-          "/db/test-data/invoices.sql"
-        })
     void status200_unknown_Accounting() {
+      // arrange
+      final Unit unit = UnitModels.getUnit();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addUnit(unit)
+              .addAccounting(
+                  AccountingModels.getAccounting()
+                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+
       // act
       final ResponseEntity<InvoiceDto[]> response =
           restTemplate.exchange(
@@ -113,7 +119,7 @@ public class OpenZevInvoiceApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.invoices("3394bcab-a426-45dd-8038-6ad347c1dd3b"),
+              UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               ErrorDto.class);
@@ -124,24 +130,25 @@ public class OpenZevInvoiceApiIntegrationTest {
           .extracting(ResponseEntity::getBody)
           .returns("invoice_not_found", ErrorDto::getCode)
           .returns(
-              "invoice with id '3394bcab-a426-45dd-8038-6ad347c1dd3b' not found",
+              "invoice with id '414d2033-3b17-4e68-b69e-e483db0dc90b' not found",
               ErrorDto::getMessage);
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-          "/db/test-data/invoices.sql"
-        })
     void status200() {
+      // arrange
+      final Unit unit = UnitModels.getUnit();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addUnit(unit)
+              .addAccounting(
+                  AccountingModels.getAccounting()
+                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+
       // act
       final ResponseEntity<InvoiceDto> response =
           restTemplate.exchange(
-              UriFactory.invoices("3394bcab-a426-45dd-8038-6ad347c1dd3b"),
+              UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               InvoiceDto.class);
@@ -152,12 +159,8 @@ public class OpenZevInvoiceApiIntegrationTest {
           .satisfies(
               r ->
                   assertThat(r.getBody())
-                      .returns(
-                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
-                          InvoiceDto::getAccountingId)
-                      .returns(
-                          UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"),
-                          InvoiceDto::getUnitId)
+                      .returns(AccountingModels.UUID, InvoiceDto::getAccountingId)
+                      .returns(UnitModels.UUID, InvoiceDto::getUnitId)
                       .returns(1000.00, InvoiceDto::getUsageHighTariff)
                       .returns(750.00, InvoiceDto::getUsageLowTariff)
                       .returns(1750.00, InvoiceDto::getUsageTotal)
@@ -196,19 +199,21 @@ public class OpenZevInvoiceApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql"
-        })
     void status201() {
+      // arrange
+      final Unit unit = UnitModels.getUnit();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addUnit(unit)
+              .addAccounting(
+                  AccountingModels.getAccounting()
+                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+
       // arrange
       final ModifiableInvoiceDto requestBody =
           new ModifiableInvoiceDto()
-              .accountingId(UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"))
-              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
+              .accountingId(AccountingModels.UUID)
+              .unitId(UnitModels.UUID)
               .usageHighTariff(1000.00)
               .usageLowTariff(750.00)
               .usageTotal(1750.00)
@@ -251,24 +256,15 @@ public class OpenZevInvoiceApiIntegrationTest {
   class ChangeInvoiceTests {
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql"
-        })
     void status404() {
       // arrange
       final ModifiableInvoiceDto requestBody =
-          new ModifiableInvoiceDto()
-              .accountingId(UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"))
-              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"));
+          new ModifiableInvoiceDto().accountingId(AccountingModels.UUID).unitId(UnitModels.UUID);
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.invoices("3394bcab-a426-45dd-8038-6ad347c1dd3b"),
+              UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -279,25 +275,25 @@ public class OpenZevInvoiceApiIntegrationTest {
           .extracting(ResponseEntity::getBody)
           .returns("invoice_not_found", ErrorDto::getCode)
           .returns(
-              "invoice with id '3394bcab-a426-45dd-8038-6ad347c1dd3b' not found",
+              "invoice with id '414d2033-3b17-4e68-b69e-e483db0dc90b' not found",
               ErrorDto::getMessage);
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-          "/db/test-data/invoices.sql"
-        })
     void status200() {
       // arrange
+      final Unit unit = UnitModels.getUnit();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addUnit(unit)
+              .addAccounting(
+                  AccountingModels.getAccounting()
+                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+
       final ModifiableInvoiceDto requestBody =
           new ModifiableInvoiceDto()
-              .accountingId(UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"))
-              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
+              .accountingId(AccountingModels.UUID)
+              .unitId(UnitModels.UUID)
               .usageHighTariff(1500.00)
               .usageLowTariff(500.00)
               .usageTotal(2000.00)
@@ -309,7 +305,7 @@ public class OpenZevInvoiceApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.invoices("3394bcab-a426-45dd-8038-6ad347c1dd3b"),
+              UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -344,7 +340,7 @@ public class OpenZevInvoiceApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.invoices("3394bcab-a426-45dd-8038-6ad347c1dd3b"),
+              UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -357,19 +353,21 @@ public class OpenZevInvoiceApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-          "/db/test-data/invoices.sql",
-        })
     void status204() {
+      // arrange
+      final Unit unit = UnitModels.getUnit();
+
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addUnit(unit)
+              .addAccounting(
+                  AccountingModels.getAccounting()
+                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.invoices("3394bcab-a426-45dd-8038-6ad347c1dd3b"),
+              UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               UUID.class);

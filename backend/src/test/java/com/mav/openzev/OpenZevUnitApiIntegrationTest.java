@@ -6,7 +6,6 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableUnitDto;
 import com.mav.openzev.api.model.UnitDto;
 import com.mav.openzev.model.AccountingModels;
-import com.mav.openzev.model.AgreementModels;
 import com.mav.openzev.model.InvoiceModels;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
@@ -330,11 +329,11 @@ public class OpenZevUnitApiIntegrationTest {
       final Unit unit = UnitModels.getUnit();
 
       testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addUnit(unit).addAgreement(AgreementModels.getAgreement()));
-
-      testDatabaseService.insertAccounting(
-          AccountingModels.getAccounting()
-              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
+          PropertyModels.getProperty()
+              .addUnit(unit)
+              .addAccounting(
+                  AccountingModels.getAccounting()
+                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
 
       // act
       final ResponseEntity<ErrorDto> response =

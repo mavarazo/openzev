@@ -3,6 +3,11 @@ package com.mav.openzev;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.ErrorDto;
+import com.mav.openzev.model.AccountingModels;
+import com.mav.openzev.model.Document;
+import com.mav.openzev.model.DocumentModels;
+import com.mav.openzev.model.Property;
+import com.mav.openzev.model.PropertyModels;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
@@ -20,7 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -42,7 +46,7 @@ public class OpenZevDocumentApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.documents(DocumentModels.UUID),
               HttpMethod.GET,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -55,23 +59,26 @@ public class OpenZevDocumentApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/documents.sql",
-          "/db/test-data/accountings.sql"
-        })
     @SneakyThrows
     void status200() {
       // arrange
+      final Property property =
+          testDatabaseService.insertProperty(
+              PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+
+      final Document document =
+          property.getAccountings().stream()
+              .findFirst()
+              .map(a -> testDatabaseService.insertDocument(DocumentModels.getDocument(a)))
+              .orElseThrow(IllegalArgumentException::new);
+
       final HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_PDF);
 
       // act
       final ResponseEntity<Resource> response =
           restTemplate.exchange(
-              UriFactory.documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.documents(DocumentModels.UUID),
               HttpMethod.GET,
               new HttpEntity<>(null, headers),
               Resource.class);
@@ -81,7 +88,7 @@ public class OpenZevDocumentApiIntegrationTest {
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
           .returns(
-              "a document",
+              "lorem ipsum",
               b -> {
                 try {
                   return b.getContentAsString(StandardCharsets.UTF_8);
@@ -100,7 +107,7 @@ public class OpenZevDocumentApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.documents(DocumentModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -113,19 +120,23 @@ public class OpenZevDocumentApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/documents.sql",
-          "/db/test-data/accountings.sql"
-        })
     @SneakyThrows
     void status200() {
+      // arrange
+      final Property property =
+          testDatabaseService.insertProperty(
+              PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+
+      final Document document =
+          property.getAccountings().stream()
+              .findFirst()
+              .map(a -> testDatabaseService.insertDocument(DocumentModels.getDocument(a)))
+              .orElseThrow(IllegalArgumentException::new);
+
       // act
       final ResponseEntity<Resource> response =
           restTemplate.exchange(
-              UriFactory.documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.documents(DocumentModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               Resource.class);

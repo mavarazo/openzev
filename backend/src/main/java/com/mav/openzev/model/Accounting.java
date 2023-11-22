@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -56,17 +56,28 @@ public class Accounting extends AbstractAuditEntity {
   @Column(name = "AMOUNT_TOTAL", nullable = false)
   private BigDecimal amountTotal;
 
+  @ManyToOne
+  @JoinColumn(name = "PROPERTY_ID", nullable = false)
+  private Property property;
+
   @OneToMany(mappedBy = "accounting", cascade = CascadeType.ALL)
   @Builder.Default
   private Set<Invoice> invoices = new HashSet<>();
 
-  @OneToOne
+  @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "DOCUMENT_ID", referencedColumnName = "ID")
   private Document document;
 
   public Accounting addInvoice(final Invoice invoice) {
     invoices.add(invoice);
     invoice.setAccounting(this);
+    return this;
+  }
+
+  public Accounting addDocument(final Document document) {
+    this.document = document;
+    document.setRefId(this.getId());
+    document.setRefType(this.getClass().getSimpleName());
     return this;
   }
 }

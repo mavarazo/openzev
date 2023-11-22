@@ -26,6 +26,12 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI properties_accountings(final UUID propertyId) {
+    return UriComponentsBuilder.fromPath("/v1/properties/{propertyId}/accountings")
+        .buildAndExpand(propertyId)
+        .toUri();
+  }
+
   public static URI properties_agreements(final UUID propertyId) {
     return UriComponentsBuilder.fromPath("/v1/properties/{propertyId}/agreements")
         .buildAndExpand(propertyId)
@@ -42,10 +48,6 @@ public class UriFactory {
     return UriComponentsBuilder.fromPath("/v1/properties/{propertyId}/units")
         .buildAndExpand(propertyId)
         .toUri();
-  }
-
-  public static URI units() {
-    return UriComponentsBuilder.fromPath("/v1/units").build().toUri();
   }
 
   public static URI units(final UUID unitId) {
@@ -83,17 +85,13 @@ public class UriFactory {
         .toUri();
   }
 
-  public static URI accountings() {
-    return UriComponentsBuilder.fromPath("/v1/accountings").build().toUri();
-  }
-
-  public static URI accountings(final String accountingId) {
+  public static URI accountings(final UUID accountingId) {
     return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}")
         .buildAndExpand(accountingId)
         .toUri();
   }
 
-  public static URI accountings_documents(final String accountingId) {
+  public static URI accountings_documents(final UUID accountingId) {
     return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}/documents")
         .buildAndExpand(accountingId)
         .toUri();
@@ -103,13 +101,13 @@ public class UriFactory {
     return UriComponentsBuilder.fromPath("/v1/invoices").build().toUri();
   }
 
-  public static URI invoices(final String invoiceId) {
+  public static URI invoices(final UUID invoiceId) {
     return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}")
         .buildAndExpand(invoiceId)
         .toUri();
   }
 
-  public static URI documents(final String documentId) {
+  public static URI documents(final UUID documentId) {
     return UriComponentsBuilder.fromPath("/v1/documents/{documentId}")
         .buildAndExpand(documentId)
         .toUri();
