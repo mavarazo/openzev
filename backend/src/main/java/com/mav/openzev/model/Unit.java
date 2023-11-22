@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -22,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "OZEV_UNITS")
 public class Unit extends AbstractEntity {
-    
+
   @Column(name = "ACTIVE")
   @Builder.Default
   private boolean active = true;

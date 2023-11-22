@@ -48,6 +48,10 @@
             <column name="PHONE_NR" type="VARCHAR(20)"/>
 
             <column name="MOBILE_NR" type="VARCHAR(20)"/>
+
+            <column name="PROPERTY_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_OWNER_PROPERTY" references="OZEV_PROPERTIES(ID)"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

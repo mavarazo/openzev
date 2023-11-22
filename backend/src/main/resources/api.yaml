@@ -61,111 +61,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/owners:
-    get:
-      operationId: getOwners
-      tags:
-        - Owner
-      responses:
-        '200':
-          description: Owners
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OwnerDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    post:
-      operationId: createOwner
-      tags:
-        - Owner
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableOwnerDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OwnerId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/owners/{ownerId}:
-    delete:
-      operationId: deleteOwner
-      tags:
-        - Owner
-      parameters:
-        - $ref: '#/components/parameters/OwnerParam'
-      responses:
-        '204':
-          description: Deleted
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    get:
-      operationId: getOwner
-      tags:
-        - Owner
-      parameters:
-        - $ref: '#/components/parameters/OwnerParam'
-      responses:
-        '200':
-          description: Owner
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OwnerDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      operationId: changeOwner
-      tags:
-        - Owner
-      parameters:
-        - $ref: '#/components/parameters/OwnerParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableOwnerDto'
-      responses:
-        '200':
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OwnerId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
   /v1/properties:
     get:
       operationId: getProperties
@@ -335,6 +230,115 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AgreementId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/properties/{propertyId}/owners:
+    get:
+      operationId: getOwners
+      tags:
+        - Owner
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
+      responses:
+        '200':
+          description: Owners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OwnerDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createOwner
+      tags:
+        - Owner
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableOwnerDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/owners/{ownerId}:
+    delete:
+      operationId: deleteOwner
+      tags:
+        - Owner
+      parameters:
+        - $ref: '#/components/parameters/OwnerParam'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      operationId: getOwner
+      tags:
+        - Owner
+      parameters:
+        - $ref: '#/components/parameters/OwnerParam'
+      responses:
+        '200':
+          description: Owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeOwner
+      tags:
+        - Owner
+      parameters:
+        - $ref: '#/components/parameters/OwnerParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableOwnerDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerId'
         default:
           description: Unexpected error
           content:

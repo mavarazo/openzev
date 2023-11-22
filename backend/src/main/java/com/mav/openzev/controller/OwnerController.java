@@ -7,7 +7,9 @@ import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.OwnerMapper;
 import com.mav.openzev.model.Owner;
+import com.mav.openzev.model.Property;
 import com.mav.openzev.repository.OwnerRepository;
+import com.mav.openzev.repository.PropertyRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class OwnerController implements OwnerApi {
 
   private final OwnerRepository ownerRepository;
+  private final PropertyRepository propertyRepository;
 
   private final OwnerMapper ownerMapper;
 
   @Override
-  public ResponseEntity<List<OwnerDto>> getOwners() {
+  public ResponseEntity<List<OwnerDto>> getOwners(final UUID propertyId) {
     return ResponseEntity.ok(
-        ownerRepository.findAll(Sort.sort(Owner.class).by(Owner::getUuid)).stream()
+        ownerRepository
+            .findByProperty_Uuid(propertyId, Sort.sort(Owner.class).by(Owner::getUuid))
+            .stream()
             .map(ownerMapper::mapToOwnerDto)
             .toList());
   }
@@ -43,9 +48,17 @@ public class OwnerController implements OwnerApi {
   }
 
   @Override
-  public ResponseEntity<UUID> createOwner(final ModifiableOwnerDto modifiableOwnerDto) {
-    final Owner owner = ownerRepository.save(ownerMapper.mapToOwner(modifiableOwnerDto));
-    return ResponseEntity.status(HttpStatus.CREATED).body(owner.getUuid());
+  @Transactional
+  public ResponseEntity<UUID> createOwner(
+      final UUID propertyId, final ModifiableOwnerDto modifiableOwnerDto) {
+    final Property property =
+        propertyRepository
+            .findByUuid(propertyId)
+            .orElseThrow(() -> NotFoundException.ofPropertyNotFound(propertyId));
+
+    final Owner owner = ownerMapper.mapToOwner(modifiableOwnerDto);
+    property.addOwner(owner);
+    return ResponseEntity.status(HttpStatus.CREATED).body(ownerRepository.save(owner).getUuid());
   }
 
   @Override

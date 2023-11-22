@@ -6,7 +6,13 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableOwnerDto;
 import com.mav.openzev.api.model.OwnerDto;
 import com.mav.openzev.model.Owner;
+import com.mav.openzev.model.OwnerModels;
+import com.mav.openzev.model.Ownership;
+import com.mav.openzev.model.PropertyModels;
+import com.mav.openzev.model.Unit;
+import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.OwnerRepository;
+import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -21,7 +27,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -41,12 +46,18 @@ public class OpenZevOwnerApiIntegrationTest {
   class GetOwnersTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status200() {
+      // arrange
+      testDatabaseService.insertOwner(
+          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+
       // act
       final ResponseEntity<OwnerDto[]> response =
           restTemplate.exchange(
-              UriFactory.owners(), HttpMethod.GET, HttpEntity.EMPTY, OwnerDto[].class);
+              UriFactory.properties_owners(PropertyModels.UUID),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              OwnerDto[].class);
 
       // assert
       assertThat(response)
@@ -76,8 +87,11 @@ public class OpenZevOwnerApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status200() {
+      // arrange
+      testDatabaseService.insertOwner(
+          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+
       // act
       final ResponseEntity<OwnerDto> response =
           restTemplate.exchange(
@@ -121,7 +135,7 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.owners(),
+              UriFactory.properties_owners(PropertyModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -133,6 +147,8 @@ public class OpenZevOwnerApiIntegrationTest {
     @Test
     void status201() {
       // arrange
+      testDatabaseService.insertProperty(PropertyModels.getProperty());
+
       final ModifiableOwnerDto requestBody =
           new ModifiableOwnerDto()
               .contractId("7f382429-6fc5-424b-84b6-3e6177db63d4")
@@ -149,7 +165,7 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.owners(),
+              UriFactory.properties_owners(PropertyModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -191,7 +207,6 @@ public class OpenZevOwnerApiIntegrationTest {
           "Anna,Barry,Stradun,30,,Grattavache",
           "Anna,Barry,Stradun,30,1624,"
         })
-    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status400(
         final String firstName,
         final String lastName,
@@ -200,6 +215,9 @@ public class OpenZevOwnerApiIntegrationTest {
         final String postalCode,
         final String city) {
       // arrange
+      testDatabaseService.insertOwner(
+          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+
       final ModifiableOwnerDto requestBody =
           new ModifiableOwnerDto()
               .firstName(firstName)
@@ -253,9 +271,11 @@ public class OpenZevOwnerApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status200() {
       // arrange
+      testDatabaseService.insertOwner(
+          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+
       final ModifiableOwnerDto requestBody =
           new ModifiableOwnerDto()
               .contractId("7f382429-6fc5-424b-84b6-3e6177db63d5")
@@ -324,14 +344,18 @@ public class OpenZevOwnerApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/owners.sql",
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/ownerships.sql"
-        })
     void status422() {
+      // arrange
+        final Owner owner = testDatabaseService.insertOwner(
+                OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+        final Unit unit = testDatabaseService.insertUnit(
+                UnitModels.getUnit().toBuilder().property(PropertyModels.getProperty()).build());
+        testDatabaseService.insertOwnership(Ownership.builder()
+                        .owner(owner)
+                        .unit(unit)
+                        .periodFrom(LocalDate.now())
+                .build());
+
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
@@ -348,8 +372,11 @@ public class OpenZevOwnerApiIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"/db/test-data/owners.sql"})
     void status204() {
+      // arrange
+      testDatabaseService.insertOwner(
+          OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
+
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
