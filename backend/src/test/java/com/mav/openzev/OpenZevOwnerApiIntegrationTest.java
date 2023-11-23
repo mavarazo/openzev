@@ -7,12 +7,11 @@ import com.mav.openzev.api.model.ModifiableOwnerDto;
 import com.mav.openzev.api.model.OwnerDto;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
-import com.mav.openzev.model.Ownership;
+import com.mav.openzev.model.OwnershipModels;
 import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.OwnerRepository;
-import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -347,9 +346,7 @@ public class OpenZevOwnerApiIntegrationTest {
 
       testDatabaseService.insertProperty(
           PropertyModels.getProperty().addOwner(owner).addUnit(unit));
-
-      testDatabaseService.insertOwnership(
-          Ownership.builder().owner(owner).unit(unit).periodFrom(LocalDate.now()).build());
+      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
 
       // act
       final ResponseEntity<ErrorDto> response =

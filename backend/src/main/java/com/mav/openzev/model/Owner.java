@@ -63,4 +63,10 @@ public class Owner extends AbstractEntity {
 
   @OneToMany(mappedBy = "owner")
   private Set<Ownership> ownerships;
+
+  public Owner addOwnership(final Ownership ownership) {
+    ownerships.add(ownership);
+    ownership.setOwner(this);
+    return this;
+  }
 }

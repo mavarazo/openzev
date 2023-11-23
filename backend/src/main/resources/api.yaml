@@ -802,16 +802,6 @@ paths:
         - Ownership
       parameters:
         - $ref: '#/components/parameters/UnitParam'
-        - name: validFrom
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: validUpto
-          in: query
-          schema:
-            type: string
-            format: date
       responses:
         '200':
           description: Ownerships
@@ -827,12 +817,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-
-  /v1/ownerships:
     post:
       operationId: createOwnership
       tags:
         - Ownership
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
       requestBody:
         required: true
         content:
@@ -1158,28 +1148,26 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/OwnershipId'
+        active:
+          type: boolean
         unitId:
           $ref: '#/components/schemas/UnitId'
         ownerId:
           $ref: '#/components/schemas/OwnerId'
         periodFrom:
-          $ref: '#/components/schemas/Date'
-        periodUpto:
           $ref: '#/components/schemas/Date'
 
     ModifiableOwnershipDto:
       type: object
       properties:
-        unitId:
-          $ref: '#/components/schemas/UnitId'
+        active:
+          type: boolean
+          default: true
         ownerId:
           $ref: '#/components/schemas/OwnerId'
         periodFrom:
           $ref: '#/components/schemas/Date'
-        periodUpto:
-          $ref: '#/components/schemas/Date'
       required:
-        - unitId
         - ownerId
         - periodFrom
 

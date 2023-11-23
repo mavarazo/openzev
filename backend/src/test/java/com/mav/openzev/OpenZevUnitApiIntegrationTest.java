@@ -9,12 +9,11 @@ import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.InvoiceModels;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
-import com.mav.openzev.model.Ownership;
+import com.mav.openzev.model.OwnershipModels;
 import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.UnitRepository;
-import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -300,14 +299,11 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     void status422_ownership() {
       // arrange
-      final Owner owner =
-          testDatabaseService.insertOwner(
-              OwnerModels.getOwner().toBuilder().property(PropertyModels.getProperty()).build());
-      final Unit unit =
-          testDatabaseService.insertUnit(
-              UnitModels.getUnit().toBuilder().property(PropertyModels.getProperty()).build());
-      testDatabaseService.insertOwnership(
-          Ownership.builder().owner(owner).unit(unit).periodFrom(LocalDate.now()).build());
+      final Owner owner = OwnerModels.getOwner();
+      final Unit unit = UnitModels.getUnit();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addUnit(unit).addOwner(owner));
+      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
 
       // act
       final ResponseEntity<ErrorDto> response =

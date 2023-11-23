@@ -50,7 +50,7 @@ public class UriFactory {
     return UriComponentsBuilder.fromPath("/v1/units/{unitId}").buildAndExpand(unitId).toUri();
   }
 
-  public static URI units_ownerships(final String unitId) {
+  public static URI units_ownerships(final UUID unitId) {
     return UriComponentsBuilder.fromPath("/v1/units/{unitId}/ownerships")
         .buildAndExpand(unitId)
         .toUri();
@@ -69,7 +69,7 @@ public class UriFactory {
     return UriComponentsBuilder.fromPath("/v1/ownerships").build().toUri();
   }
 
-  public static URI ownerships(final String ownershipId) {
+  public static URI ownerships(final UUID ownershipId) {
     return UriComponentsBuilder.fromPath("/v1/ownerships/{ownershipId}")
         .buildAndExpand(ownershipId)
         .toUri();
