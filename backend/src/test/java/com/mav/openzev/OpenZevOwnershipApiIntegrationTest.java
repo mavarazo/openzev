@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableOwnershipDto;
 import com.mav.openzev.api.model.OwnershipDto;
+import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
 import com.mav.openzev.model.Ownership;
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -124,11 +124,9 @@ public class OpenZevOwnershipApiIntegrationTest {
   @Nested
   class CreateOwnershipTests {
 
-    @Test
-    void status400() {
-      // arrange
-      final ModifiableOwnershipDto requestBody = new ModifiableOwnershipDto().ownerId(null);
-
+    @ParameterizedTest
+    @RequiredSource(value = ModifiableOwnershipDto.class)
+    void status400(final ModifiableOwnershipDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
@@ -185,14 +183,8 @@ public class OpenZevOwnershipApiIntegrationTest {
   class ChangeOwnershipTests {
 
     @ParameterizedTest
-    @CsvSource(
-        value = {"5e44e1f5-2447-4b3b-85da-c9f8ee2d8ca8, null", "null, 2020-01-01"},
-        nullValues = "null")
-    void status400(final UUID ownerId, final LocalDate periodFrom) {
-      // arrange
-      final ModifiableOwnershipDto requestBody =
-          new ModifiableOwnershipDto().ownerId(ownerId).periodFrom(periodFrom);
-
+    @RequiredSource(value = ModifiableOwnershipDto.class)
+    void status400(final ModifiableOwnershipDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(

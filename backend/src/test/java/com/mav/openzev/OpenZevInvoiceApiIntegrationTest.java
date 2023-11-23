@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.InvoiceDto;
 import com.mav.openzev.api.model.ModifiableInvoiceDto;
+import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.Invoice;
 import com.mav.openzev.model.InvoiceModels;
@@ -19,6 +20,7 @@ import org.assertj.core.util.BigDecimalComparator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -136,11 +138,9 @@ public class OpenZevInvoiceApiIntegrationTest {
   @Nested
   class CreateInvoiceTests {
 
-    @Test
-    void status400() {
-      // arrange
-      final ModifiableInvoiceDto requestBody = new ModifiableInvoiceDto().unitId(null);
-
+    @ParameterizedTest
+    @RequiredSource(ModifiableInvoiceDto.class)
+    void status400(final ModifiableInvoiceDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
@@ -208,6 +208,21 @@ public class OpenZevInvoiceApiIntegrationTest {
 
   @Nested
   class ChangeInvoiceTests {
+
+    @ParameterizedTest
+    @RequiredSource(ModifiableInvoiceDto.class)
+    void status400(final ModifiableInvoiceDto requestBody) {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.invoices(InvoiceModels.UUID),
+              HttpMethod.PUT,
+              new HttpEntity<>(requestBody, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response).returns(HttpStatus.BAD_REQUEST, ResponseEntity::getStatusCode);
+    }
 
     @Test
     void status404() {

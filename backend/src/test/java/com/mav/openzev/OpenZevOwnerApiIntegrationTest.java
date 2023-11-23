@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableOwnerDto;
 import com.mav.openzev.api.model.OwnerDto;
+import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
 import com.mav.openzev.model.OwnershipModels;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -125,12 +125,8 @@ public class OpenZevOwnerApiIntegrationTest {
   class CreateOwnerTests {
 
     @ParameterizedTest
-    @CsvSource(value = {"Anna,", ",Barry"})
-    void status400(final String firstName, final String lastName) {
-      // arrange
-      final ModifiableOwnerDto requestBody =
-          new ModifiableOwnerDto().firstName(firstName).lastName(lastName);
-
+    @RequiredSource(ModifiableOwnerDto.class)
+    void status400(final ModifiableOwnerDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
@@ -197,31 +193,8 @@ public class OpenZevOwnerApiIntegrationTest {
   class ChangeOwnerTests {
 
     @ParameterizedTest
-    @CsvSource(
-        value = {
-          ",Barry,Stradun,30,1624,Grattavache",
-          "Anna,,Stradun,30,1624,Grattavache",
-          "Anna,Barry,,30,1624,Grattavache",
-          "Anna,Barry,Stradun,,1624,Grattavache",
-          "Anna,Barry,Stradun,30,,Grattavache",
-          "Anna,Barry,Stradun,30,1624,"
-        })
-    void status400(
-        final String firstName,
-        final String lastName,
-        final String street,
-        final String houseNr,
-        final String postalCode,
-        final String city) {
-      final ModifiableOwnerDto requestBody =
-          new ModifiableOwnerDto()
-              .firstName(firstName)
-              .lastName(lastName)
-              .street(street)
-              .houseNr(houseNr)
-              .postalCode(postalCode)
-              .city(city);
-
+    @RequiredSource(ModifiableOwnerDto.class)
+    void status400(final ModifiableOwnerDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(

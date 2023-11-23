@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiablePropertyDto;
 import com.mav.openzev.api.model.PropertyDto;
+import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.Property;
 import com.mav.openzev.repository.PropertyRepository;
 import java.util.UUID;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -110,23 +110,8 @@ public class OpenZevPropertyApiIntegrationTest {
   class CreatePropertyTests {
 
     @ParameterizedTest
-    @CsvSource(
-        value = {
-          ",30,1624,Grattavache",
-          "Stradun,,1624,Grattavache",
-          "Stradun,30,,Grattavache",
-          "Stradun,30,1624,"
-        })
-    void status400(
-        final String street, final String houseNr, final String postalCode, final String city) {
-      // arrange
-      final ModifiablePropertyDto requestBody =
-          new ModifiablePropertyDto()
-              .street(street)
-              .houseNr(houseNr)
-              .postalCode(postalCode)
-              .city(city);
-
+    @RequiredSource(ModifiablePropertyDto.class)
+    void status400(final ModifiablePropertyDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
@@ -179,24 +164,8 @@ public class OpenZevPropertyApiIntegrationTest {
   class ChangePropertyTests {
 
     @ParameterizedTest
-    @Sql(scripts = {"/db/test-data/properties.sql"})
-    @CsvSource(
-        value = {
-          ",30,1624,Grattavache",
-          "Stradun,,1624,Grattavache",
-          "Stradun,30,,Grattavache",
-          "Stradun,30,1624,"
-        })
-    void status400(
-        final String street, final String houseNr, final String postalCode, final String city) {
-      // arrange
-      final ModifiablePropertyDto requestBody =
-          new ModifiablePropertyDto()
-              .street(street)
-              .houseNr(houseNr)
-              .postalCode(postalCode)
-              .city(city);
-
+    @RequiredSource(ModifiablePropertyDto.class)
+    void status400(final ModifiablePropertyDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(

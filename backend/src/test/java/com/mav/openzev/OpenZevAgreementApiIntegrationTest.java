@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.AgreementDto;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableAgreementDto;
+import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.AgreementModels;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -127,26 +127,8 @@ public class OpenZevAgreementApiIntegrationTest {
   class CreateAgreementTests {
 
     @ParameterizedTest
-    @CsvSource(
-        value = {
-          " , 2023-01-01, 2, 1",
-          "2023-01-01, , 2, 1",
-          "2023-01-01, 2023-01-01, , 1",
-          "2023-01-01, 2023-01-01, 2, ",
-        })
-    void status400(
-        final LocalDate periodFrom,
-        final LocalDate periodUpto,
-        final BigDecimal highTariff,
-        final BigDecimal lowTariff) {
-      // arrange
-      final ModifiableAgreementDto requestBody =
-          new ModifiableAgreementDto()
-              .periodFrom(periodFrom)
-              .periodUpto(periodUpto)
-              .highTariff(highTariff)
-              .lowTariff(lowTariff);
-
+    @RequiredSource(ModifiableAgreementDto.class)
+    void status400(final ModifiableAgreementDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
@@ -228,26 +210,8 @@ public class OpenZevAgreementApiIntegrationTest {
   class ChangeAgreementTests {
 
     @ParameterizedTest
-    @CsvSource(
-        value = {
-          " , 2023-01-01, 2, 1",
-          "2023-01-01, , 2, 1",
-          "2023-01-01, 2023-01-01, , 1",
-          "2023-01-01, 2023-01-01, 2, ",
-        })
-    void status400(
-        final LocalDate periodFrom,
-        final LocalDate periodUpto,
-        final BigDecimal highTariff,
-        final BigDecimal lowTariff) {
-      // arrange
-      final ModifiableAgreementDto requestBody =
-          new ModifiableAgreementDto()
-              .periodFrom(periodFrom)
-              .periodUpto(periodUpto)
-              .highTariff(highTariff)
-              .lowTariff(lowTariff);
-
+    @RequiredSource(ModifiableAgreementDto.class)
+    void status400(final ModifiableAgreementDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
@@ -327,7 +291,7 @@ public class OpenZevAgreementApiIntegrationTest {
                       .returns(_2024_09_01, Agreement::getApproved));
     }
   }
-  
+
   @Nested
   class DeleteAgreementTests {
 

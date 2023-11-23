@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableUnitDto;
 import com.mav.openzev.api.model.UnitDto;
+import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.InvoiceModels;
 import com.mav.openzev.model.Owner;
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -28,7 +28,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -114,11 +113,8 @@ public class OpenZevUnitApiIntegrationTest {
   class CreateUnitTests {
 
     @ParameterizedTest
-    @NullSource
-    void status400(final String subject) {
-      // arrange
-      final ModifiableUnitDto requestBody = new ModifiableUnitDto().subject(subject);
-
+    @RequiredSource(ModifiableUnitDto.class)
+    void status400(final ModifiableUnitDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
@@ -195,12 +191,8 @@ public class OpenZevUnitApiIntegrationTest {
   class ChangeUnitTests {
 
     @ParameterizedTest
-    @NullSource
-    @Sql(scripts = {"/db/test-data/properties.sql", "/db/test-data/units.sql"})
-    void status400(final String subject) {
-      // arrange
-      final ModifiableUnitDto requestBody = new ModifiableUnitDto().subject(subject);
-
+    @RequiredSource(ModifiableUnitDto.class)
+    void status400(final ModifiableUnitDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
