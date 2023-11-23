@@ -13,6 +13,10 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="ACTIVE" type="BOOLEAN" valueBoolean="TRUE">
+                <constraints nullable="false"/>
+            </column>
+
             <column name="CREATED" type="TIMESTAMP(6)">
                 <constraints nullable="false"/>
             </column>
@@ -30,7 +34,6 @@
             <column name="PERIOD_FROM" type="DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="PERIOD_UPTO" type="DATE"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

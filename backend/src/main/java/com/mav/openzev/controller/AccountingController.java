@@ -12,10 +12,11 @@ import com.mav.openzev.mapper.AccountingMapper;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Document;
+import com.mav.openzev.model.Property;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.AgreementRepository;
 import com.mav.openzev.repository.DocumentRepository;
-import java.util.ArrayList;
+import com.mav.openzev.repository.PropertyRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AccountingController implements AccountingApi {
 
   private final AccountingRepository accountingRepository;
+  private final PropertyRepository propertyRepository;
   private final AgreementRepository agreementRepository;
   private final DocumentRepository documentRepository;
 
@@ -39,14 +41,14 @@ public class AccountingController implements AccountingApi {
 
   @Override
   @Transactional
-  public ResponseEntity<List<AccountingDto>> getAccountings() {
-    final List<AccountingDto> result = new ArrayList<>();
-
-    accountingRepository.findAll(Sort.sort(Accounting.class).by(Accounting::getPeriodFrom)).stream()
-        .map(accountingMapper::mapToAccountingDto)
-        .forEach(result::add);
-
-    return ResponseEntity.ok(result);
+  public ResponseEntity<List<AccountingDto>> getAccountings(final UUID propertyId) {
+    return ResponseEntity.ok(
+        accountingRepository
+            .findByProperty_Uuid(
+                propertyId, Sort.sort(Accounting.class).by(Accounting::getPeriodFrom))
+            .stream()
+            .map(accountingMapper::mapToAccountingDto)
+            .toList());
   }
 
   @Override
@@ -60,9 +62,16 @@ public class AccountingController implements AccountingApi {
   }
 
   @Override
+  @Transactional
   public ResponseEntity<UUID> createAccounting(
-      final ModifiableAccountingDto modifiableAccountingDto) {
+      final UUID propertyId, final ModifiableAccountingDto modifiableAccountingDto) {
+    final Property property =
+        propertyRepository
+            .findByUuid(propertyId)
+            .orElseThrow(() -> NotFoundException.ofPropertyNotFound(propertyId));
+
     final Accounting accounting = accountingMapper.mapToAccounting(modifiableAccountingDto);
+    property.addAccounting(accounting);
     accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreementId()));
 
     return ResponseEntity.status(HttpStatus.CREATED)
@@ -148,7 +157,7 @@ public class AccountingController implements AccountingApi {
     document.setRefId(accounting.getId());
     document.setRefType(Accounting.class.getSimpleName());
     document.setName(content.getName());
-    document.setName(content.getOriginalFilename());
+    document.setFilename(content.getOriginalFilename());
     document.setMimeType(content.getContentType());
     document.setData(content.getBytes());
 

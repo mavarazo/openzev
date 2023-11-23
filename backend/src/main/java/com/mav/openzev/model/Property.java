@@ -1,5 +1,6 @@
 package com.mav.openzev.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -38,30 +39,43 @@ public class Property extends AbstractEntity {
   @Column(name = "CITY")
   private String city;
 
-  @OneToMany(mappedBy = "property")
+  @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
+  @Builder.Default
+  private Set<Accounting> accountings = new HashSet<>();
+
+  @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
   @Builder.Default
   private Set<Agreement> agreements = new HashSet<>();
 
-  @OneToMany(mappedBy = "property")
+  @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
   @Builder.Default
   private Set<Owner> owners = new HashSet<>();
 
-  @OneToMany(mappedBy = "property")
+  @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
   @Builder.Default
   private Set<Unit> units = new HashSet<>();
 
-  public void addAgreement(final Agreement agreement) {
+  public Property addAccounting(final Accounting accounting) {
+    accountings.add(accounting);
+    accounting.setProperty(this);
+    return this;
+  }
+
+  public Property addAgreement(final Agreement agreement) {
     agreements.add(agreement);
     agreement.setProperty(this);
+    return this;
   }
 
-  public void addOwner(final Owner owner) {
+  public Property addOwner(final Owner owner) {
     owners.add(owner);
     owner.setProperty(this);
+    return this;
   }
 
-  public void addUnit(final Unit unit) {
+  public Property addUnit(final Unit unit) {
     units.add(unit);
     unit.setProperty(this);
+    return this;
   }
 }

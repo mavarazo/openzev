@@ -14,6 +14,9 @@ public class AccountingModels {
 
   public static final LocalDate _2024_01_01 = LocalDate.of(2024, 1, 1);
   public static final LocalDate _2024_12_31 = LocalDate.of(2024, 12, 31);
+  public static final BigDecimal _1000 = BigDecimal.valueOf(1000);
+  public static final BigDecimal _500 = BigDecimal.valueOf(500);
+  public static final BigDecimal _1500 = BigDecimal.valueOf(1500);
 
   public static Accounting getAccounting() {
     return Accounting.builder()
@@ -21,9 +24,9 @@ public class AccountingModels {
         .subject(ABRECHNUNG_2024_ZAEHLER_1)
         .periodFrom(_2024_01_01)
         .periodUpto(_2024_12_31)
-        .amountHighTariff(BigDecimal.valueOf(1000))
-        .amountLowTariff(BigDecimal.valueOf(500))
-        .amountTotal(BigDecimal.valueOf(1500))
+        .amountHighTariff(_1000)
+        .amountLowTariff(_500)
+        .amountTotal(_1500)
         .build();
   }
 }

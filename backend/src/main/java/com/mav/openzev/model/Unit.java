@@ -45,4 +45,10 @@ public class Unit extends AbstractEntity {
 
   @OneToMany(mappedBy = "unit")
   private Set<Invoice> invoices;
+
+  public Unit addOwnership(final Ownership ownership) {
+    ownerships.add(ownership);
+    ownership.setUnit(this);
+    return this;
+  }
 }

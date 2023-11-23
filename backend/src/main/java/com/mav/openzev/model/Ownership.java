@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,10 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "OZEV_OWNERSHIPS")
 public class Ownership extends AbstractAuditEntity {
 
+  @Column(name = "ACTIVE")
+  @Builder.Default
+  private boolean active = true;
+
   @ManyToOne
   @JoinColumn(name = "UNIT_ID", nullable = false)
   private Unit unit;
@@ -31,7 +36,4 @@ public class Ownership extends AbstractAuditEntity {
 
   @Column(name = "PERIOD_FROM", nullable = false)
   private LocalDate periodFrom;
-
-  @Column(name = "PERIOD_UPTO")
-  private LocalDate periodUpto;
 }

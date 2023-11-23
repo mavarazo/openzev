@@ -1,25 +1,22 @@
 package com.mav.openzev.controller;
 
-import static java.util.Objects.isNull;
 
 import com.mav.openzev.api.InvoiceApi;
 import com.mav.openzev.api.model.InvoiceDto;
 import com.mav.openzev.api.model.ModifiableInvoiceDto;
 import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.mapper.InvoiceMapper;
-import com.mav.openzev.model.AbstractAuditEntity;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Invoice;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.InvoiceRepository;
 import com.mav.openzev.repository.UnitRepository;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,30 +35,23 @@ public class InvoiceController implements InvoiceApi {
 
   @Override
   public ResponseEntity<List<InvoiceDto>> getInvoices(final UUID accountingId) {
-    final List<InvoiceDto> result = new ArrayList<>();
-
-    final List<Invoice> invoices =
-        isNull(accountingId)
-            ? invoiceRepository.findAll()
-            : invoiceRepository.findAllByAccounting_Uuid(accountingId);
-    invoices.stream()
-        .sorted(Comparator.comparing(i -> i.getAccounting().getPeriodFrom()))
-        .sorted(Comparator.comparing(AbstractAuditEntity::getCreated))
-        .map(invoiceMapper::mapToInvoiceDto)
-        .forEach(result::add);
-
-    return ResponseEntity.ok(result);
+    return ResponseEntity.ok(
+        invoiceRepository
+            .findAllByAccounting_Uuid(
+                accountingId, Sort.sort(Invoice.class).by(Invoice::getCreated))
+            .stream()
+            .map(invoiceMapper::mapToInvoiceDto)
+            .toList());
   }
 
   @Override
   @Transactional
-  public ResponseEntity<UUID> createInvoice(final ModifiableInvoiceDto modifiableInvoiceDto) {
+  public ResponseEntity<UUID> createInvoice(
+      final UUID accountingId, final ModifiableInvoiceDto modifiableInvoiceDto) {
     final Accounting accounting =
         accountingRepository
-            .findByUuid(modifiableInvoiceDto.getAccountingId())
-            .orElseThrow(
-                () ->
-                    NotFoundException.ofAccountingNotFound(modifiableInvoiceDto.getAccountingId()));
+            .findByUuid(accountingId)
+            .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
 
     final Unit unit =
         unitRepository

@@ -48,13 +48,13 @@ public class Agreement extends AbstractAuditEntity {
   @Column(name = "APPROVED", nullable = false)
   private LocalDate approved;
 
-  @OneToMany(mappedBy = "agreement")
-  @Builder.Default
-  private Set<Accounting> accountings = new HashSet<>();
-
   @ManyToOne
   @JoinColumn(name = "PROPERTY_ID", nullable = false)
   private Property property;
+
+  @OneToMany(mappedBy = "agreement")
+  @Builder.Default
+  private Set<Accounting> accountings = new HashSet<>();
 
   public void addAccounting(final Accounting accounting) {
     accountings.add(accounting);

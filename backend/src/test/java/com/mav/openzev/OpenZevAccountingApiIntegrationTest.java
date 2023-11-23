@@ -7,10 +7,19 @@ import com.mav.openzev.api.model.DocumentDto;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
 import com.mav.openzev.model.Accounting;
+import com.mav.openzev.model.AccountingModels;
+import com.mav.openzev.model.Agreement;
+import com.mav.openzev.model.AgreementModels;
 import com.mav.openzev.model.Document;
+import com.mav.openzev.model.InvoiceModels;
+import com.mav.openzev.model.Property;
+import com.mav.openzev.model.PropertyModels;
+import com.mav.openzev.model.Unit;
+import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.DocumentRepository;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -29,7 +38,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -52,17 +60,18 @@ public class OpenZevAccountingApiIntegrationTest {
   class GetAccountingsTests {
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql"
-        })
     void status200() {
+      // arrange
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+
       // act
       final ResponseEntity<AccountingDto[]> response =
           restTemplate.exchange(
-              UriFactory.accountings(), HttpMethod.GET, HttpEntity.EMPTY, AccountingDto[].class);
+              UriFactory.properties_accountings(PropertyModels.UUID),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              AccountingDto[].class);
 
       // assert
       assertThat(response)
@@ -79,7 +88,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings(AccountingModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               ErrorDto.class);
@@ -90,22 +99,24 @@ public class OpenZevAccountingApiIntegrationTest {
           .extracting(ResponseEntity::getBody)
           .returns("accounting_not_found", ErrorDto::getCode)
           .returns(
-              "accounting with id '86fb361f-a577-405e-af02-f524478d2e49' not found",
+              "accounting with id '27bc46ee-4d28-492b-a849-e52dbc5ded1a' not found",
               ErrorDto::getMessage);
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql"
-        })
     void status200() {
+      // arrange
+      final Agreement agreement = AgreementModels.getAgreement();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addAccounting(
+                  AccountingModels.getAccounting().toBuilder().agreement(agreement).build())
+              .addAgreement(agreement));
+
       // act
       final ResponseEntity<AccountingDto> response =
           restTemplate.exchange(
-              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings(AccountingModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               AccountingDto.class);
@@ -116,20 +127,17 @@ public class OpenZevAccountingApiIntegrationTest {
           .satisfies(
               r ->
                   assertThat(r.getBody())
+                      .returns(AccountingModels.UUID, AccountingDto::getId)
+                      .returns(AgreementModels.UUID, AccountingDto::getAgreementId)
+                      .returns(AccountingModels._2024_01_01, AccountingDto::getPeriodFrom)
+                      .returns(AccountingModels._2024_12_31, AccountingDto::getPeriodUpto)
                       .returns(
-                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
-                          AccountingDto::getId)
-                      .returns(
-                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
-                          AccountingDto::getAgreementId)
-                      .returns(LocalDate.of(2023, 1, 1), AccountingDto::getPeriodFrom)
-                      .returns(LocalDate.of(2023, 12, 31), AccountingDto::getPeriodUpto)
-                      .returns("Abrechnung 2023", AccountingDto::getSubject)
+                          AccountingModels.ABRECHNUNG_2024_ZAEHLER_1, AccountingDto::getSubject)
                       .usingComparatorForType(
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(100), AccountingDto::getAmountHighTariff)
-                      .returns(BigDecimal.valueOf(75.00), AccountingDto::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175.00), AccountingDto::getAmountTotal));
+                      .returns(AccountingModels._1000, AccountingDto::getAmountHighTariff)
+                      .returns(AccountingModels._500, AccountingDto::getAmountLowTariff)
+                      .returns(AccountingModels._1500, AccountingDto::getAmountTotal));
     }
   }
 
@@ -137,12 +145,17 @@ public class OpenZevAccountingApiIntegrationTest {
   class CreateAccountingTests {
 
     @Test
-    @Sql(scripts = {"/db/test-data/properties.sql", "/db/test-data/agreements.sql"})
     void status201() {
+      // arrange
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addAccounting(AccountingModels.getAccounting())
+              .addAgreement(AgreementModels.getAgreement()));
+
       // arrange
       final ModifiableAccountingDto requestBody =
           new ModifiableAccountingDto()
-              .agreementId(UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"))
+              .agreementId(AgreementModels.UUID)
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31))
               .subject("Abrechnung 2023")
@@ -153,7 +166,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.accountings(),
+              UriFactory.properties_accountings(PropertyModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -168,9 +181,7 @@ public class OpenZevAccountingApiIntegrationTest {
           .hasValueSatisfying(
               accounting ->
                   assertThat(accounting)
-                      .returns(
-                          UUID.fromString("86fb361f-a577-405e-af02-f524478d2e49"),
-                          a -> a.getAgreement().getUuid())
+                      .returns(AgreementModels.UUID, a -> a.getAgreement().getUuid())
                       .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
                       .returns(LocalDate.of(2023, 12, 31), Accounting::getPeriodUpto)
                       .returns("Abrechnung 2023", Accounting::getSubject)
@@ -200,7 +211,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings(AccountingModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -211,19 +222,16 @@ public class OpenZevAccountingApiIntegrationTest {
           .extracting(ResponseEntity::getBody)
           .returns("accounting_not_found", ErrorDto::getCode)
           .returns(
-              "accounting with id '86fb361f-a577-405e-af02-f524478d2e49' not found",
+              "accounting with id '27bc46ee-4d28-492b-a849-e52dbc5ded1a' not found",
               ErrorDto::getMessage);
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql"
-        })
     void status200() {
       // arrange
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+
       final ModifiableAccountingDto requestBody =
           new ModifiableAccountingDto()
               .periodFrom(LocalDate.of(2023, 1, 1))
@@ -236,7 +244,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings(AccountingModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -271,7 +279,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings(AccountingModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -284,19 +292,20 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-          "/db/test-data/invoices.sql",
-        })
     void status422() {
+      // arrange
+      final Unit unit = UnitModels.getUnit();
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addUnit(unit)
+              .addAccounting(
+                  AccountingModels.getAccounting()
+                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings(AccountingModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -309,18 +318,15 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql",
-        })
     void status204() {
+      // arrange
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.accountings("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings(AccountingModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               UUID.class);
@@ -338,7 +344,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings_documents(AccountingModels.UUID),
               HttpMethod.GET,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -351,19 +357,30 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/documents.sql",
-          "/db/test-data/accountings.sql"
-        })
     @SneakyThrows
     void status200() {
+      final Property property =
+          testDatabaseService.insertProperty(
+              PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+
+      property
+          .getAccountings()
+          .forEach(
+              a ->
+                  testDatabaseService.insertDocument(
+                      Document.builder()
+                          .refId(a.getId())
+                          .refType(a.getClass().getSimpleName())
+                          .name("foo")
+                          .filename("foo.pdf")
+                          .mimeType(MediaType.APPLICATION_PDF_VALUE)
+                          .data("lorem ipsum".getBytes(StandardCharsets.UTF_8))
+                          .build()));
+
       // act
       final ResponseEntity<DocumentDto[]> response =
           restTemplate.exchange(
-              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings_documents(AccountingModels.UUID),
               HttpMethod.GET,
               new HttpEntity<>(null, null),
               DocumentDto[].class);
@@ -390,7 +407,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings_documents(AccountingModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, headers),
               ErrorDto.class);
@@ -403,13 +420,10 @@ public class OpenZevAccountingApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/agreements.sql",
-          "/db/test-data/accountings.sql"
-        })
     void status200() {
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+
       // arrange
       final HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -420,7 +434,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.accountings_documents("86fb361f-a577-405e-af02-f524478d2e49"),
+              UriFactory.accountings_documents(AccountingModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, headers),
               UUID.class);
@@ -436,10 +450,10 @@ public class OpenZevAccountingApiIntegrationTest {
               document ->
                   assertThat(document)
                       .isNotNull()
-                      .returns(999L, Document::getRefId)
+                      .doesNotReturn(null, Document::getRefId)
                       .returns(Accounting.class.getSimpleName(), Document::getRefType)
-                      .returns("dummy.pdf", Document::getName)
-                      .returns(null, Document::getFilename)
+                      .returns("content", Document::getName)
+                      .returns("dummy.pdf", Document::getFilename)
                       .returns(MediaType.APPLICATION_PDF_VALUE, Document::getMimeType)
                       .doesNotReturn(null, Document::getData));
     }

@@ -14,11 +14,12 @@ public interface AccountingMapper {
   @Mapping(target = "id", source = "uuid")
   @Mapping(target = "agreementId", source = "agreement.uuid")
   AccountingDto mapToAccountingDto(Accounting accounting);
-  
+
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "created", ignore = true)
   @Mapping(target = "modified", ignore = true)
+  @Mapping(target = "property", ignore = true)
   @Mapping(target = "agreement", ignore = true)
   @Mapping(target = "invoices", ignore = true)
   @Mapping(target = "document", ignore = true)
@@ -28,6 +29,7 @@ public interface AccountingMapper {
   @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "created", ignore = true)
   @Mapping(target = "modified", ignore = true)
+  @Mapping(target = "property", ignore = true)
   @Mapping(target = "agreement", ignore = true)
   @Mapping(target = "invoices", ignore = true)
   @Mapping(target = "document", ignore = true)

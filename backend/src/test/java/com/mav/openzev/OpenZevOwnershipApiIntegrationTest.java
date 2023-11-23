@@ -1,12 +1,18 @@
 package com.mav.openzev;
 
-import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableOwnershipDto;
 import com.mav.openzev.api.model.OwnershipDto;
+import com.mav.openzev.helper.RequiredSource;
+import com.mav.openzev.model.Owner;
+import com.mav.openzev.model.OwnerModels;
 import com.mav.openzev.model.Ownership;
+import com.mav.openzev.model.OwnershipModels;
+import com.mav.openzev.model.PropertyModels;
+import com.mav.openzev.model.Unit;
+import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.OwnershipRepository;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -14,7 +20,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -23,7 +28,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -43,89 +47,20 @@ public class OpenZevOwnershipApiIntegrationTest {
   class GetOwnershipsTests {
 
     @Test
-    void status404() {
-      // act
-      final ResponseEntity<ErrorDto> response =
-          restTemplate.exchange(
-              UriFactory.units_ownerships("414d2033-3b17-4e68-b69e-e483db0dc90b"),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              ErrorDto.class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
-          .extracting(ResponseEntity::getBody)
-          .returns("unit_not_found", ErrorDto::getCode)
-          .returns(
-              "unit with id '414d2033-3b17-4e68-b69e-e483db0dc90b' not found",
-              ErrorDto::getMessage);
-    }
-
-    @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
     void status200() {
+      // arrange
+      final Owner owner = OwnerModels.getOwner();
+      final Unit unit = UnitModels.getUnit();
+
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
+
+      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+
       // act
       final ResponseEntity<OwnershipDto[]> response =
           restTemplate.exchange(
-              UriFactory.units_ownerships("414d2033-3b17-4e68-b69e-e483db0dc90b"),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              OwnershipDto[].class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .satisfies(r -> assertThat(r.getBody()).hasSize(2));
-    }
-
-    @ParameterizedTest
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
-    @CsvSource(value = {"2022-01-01,", ",2023-12-31"})
-    void status200_filtered_by_either_validity(
-        final LocalDate validFrom, final LocalDate validUpto) {
-      // act
-      final ResponseEntity<OwnershipDto[]> response =
-          restTemplate.exchange(
-              UriFactory.units_ownerships(
-                  "414d2033-3b17-4e68-b69e-e483db0dc90b", validFrom, validUpto),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              OwnershipDto[].class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .satisfies(r -> assertThat(r.getBody()).hasSize(2));
-    }
-
-    @ParameterizedTest
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
-    @CsvSource(value = {"2022-01-01,2022-12-31"})
-    void status200_filtered_by_both_validity(final LocalDate validFrom, final LocalDate validUpto) {
-      // act
-      final ResponseEntity<OwnershipDto[]> response =
-          restTemplate.exchange(
-              UriFactory.units_ownerships(
-                  "414d2033-3b17-4e68-b69e-e483db0dc90b", validFrom, validUpto),
+              UriFactory.units_ownerships(UnitModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               OwnershipDto[].class);
@@ -141,17 +76,11 @@ public class OpenZevOwnershipApiIntegrationTest {
   class GetOwnershipTests {
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-        })
     void status404() {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.ownerships("414d2033-3b17-4e68-b69e-e483db0dc90b"),
+              UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               ErrorDto.class);
@@ -162,23 +91,24 @@ public class OpenZevOwnershipApiIntegrationTest {
           .extracting(ResponseEntity::getBody)
           .returns("ownership_not_found", ErrorDto::getCode)
           .returns(
-              "ownership with id '414d2033-3b17-4e68-b69e-e483db0dc90b' not found",
-              ErrorDto::getMessage);
+              "ownership with id '" + OwnershipModels.UUID + "' not found", ErrorDto::getMessage);
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
     void status200() {
+      // arrange
+      final Owner owner = OwnerModels.getOwner();
+      final Unit unit = UnitModels.getUnit();
+
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
+
+      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+
       // act
       final ResponseEntity<OwnershipDto> response =
           restTemplate.exchange(
-              UriFactory.ownerships("bbfe1426-3a77-40da-9947-f970adce3735"),
+              UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               OwnershipDto.class);
@@ -187,11 +117,7 @@ public class OpenZevOwnershipApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
           .satisfies(
-              r ->
-                  assertThat(r.getBody())
-                      .returns(
-                          UUID.fromString("bbfe1426-3a77-40da-9947-f970adce3735"),
-                          OwnershipDto::getId));
+              r -> assertThat(r.getBody()).returns(OwnershipModels.UUID, OwnershipDto::getId));
     }
   }
 
@@ -199,30 +125,12 @@ public class OpenZevOwnershipApiIntegrationTest {
   class CreateOwnershipTests {
 
     @ParameterizedTest
-    @CsvSource({
-      ",790772bd-6425-41af-9270-297eb0d42060,2023-01-01",
-      "414d2033-3b17-4e68-b69e-e483db0dc90b,,2023-01-01",
-      "414d2033-3b17-4e68-b69e-e483db0dc90b,790772bd-6425-41af-9270-297eb0d42060,",
-    })
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
-    void status400(final String unitId, final String ownerId, final LocalDate periodFrom) {
-      // arrange
-      final ModifiableOwnershipDto requestBody =
-          new ModifiableOwnershipDto()
-              .unitId(nonNull(unitId) ? UUID.fromString(unitId) : null)
-              .ownerId(nonNull(ownerId) ? UUID.fromString(ownerId) : null)
-              .periodFrom(periodFrom);
-
+    @RequiredSource(value = ModifiableOwnershipDto.class)
+    void status400(final ModifiableOwnershipDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.ownerships(),
+              UriFactory.units_ownerships(UnitModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -232,56 +140,22 @@ public class OpenZevOwnershipApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
-    void status422() {
-      // arrange
-      final ModifiableOwnershipDto requestBody =
-          new ModifiableOwnershipDto()
-              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
-              .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
-              .periodFrom(LocalDate.of(2023, 1, 1));
-
-      // act
-      final ResponseEntity<ErrorDto> response =
-          restTemplate.exchange(
-              UriFactory.ownerships(),
-              HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
-              ErrorDto.class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
-          .extracting(HttpEntity::getBody)
-          .returns("ownership_overlap", ErrorDto::getCode)
-          .returns("ownership '2023-01-01 - ' overlaps with '2023-01-01 - '", ErrorDto::getMessage);
-    }
-
-    @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-        })
     void status201() {
       // arrange
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty()
+              .addOwner(OwnerModels.getOwner())
+              .addUnit(UnitModels.getUnit()));
+
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
-              .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
-              .periodFrom(LocalDate.of(2023, 1, 1));
+              .ownerId(OwnerModels.UUID)
+              .periodFrom(LocalDate.of(2020, 1, 1));
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.ownerships(),
+              UriFactory.units_ownerships(UnitModels.UUID),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -301,9 +175,7 @@ public class OpenZevOwnershipApiIntegrationTest {
                           o -> o.getUnit().getUuid())
                       .returns(
                           UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"),
-                          o -> o.getOwner().getUuid())
-                      .returns(LocalDate.of(2023, 1, 1), Ownership::getPeriodFrom)
-                      .returns(null, Ownership::getPeriodUpto));
+                          o -> o.getOwner().getUuid()));
     }
   }
 
@@ -311,30 +183,12 @@ public class OpenZevOwnershipApiIntegrationTest {
   class ChangeOwnershipTests {
 
     @ParameterizedTest
-    @CsvSource({
-      ",790772bd-6425-41af-9270-297eb0d42060,2023-01-01",
-      "414d2033-3b17-4e68-b69e-e483db0dc90b,,2023-01-01",
-      "414d2033-3b17-4e68-b69e-e483db0dc90b,790772bd-6425-41af-9270-297eb0d42060,",
-    })
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
-    void status400(final String unitId, final String ownerId, final LocalDate periodFrom) {
-      // arrange
-      final ModifiableOwnershipDto requestBody =
-          new ModifiableOwnershipDto()
-              .unitId(nonNull(unitId) ? UUID.fromString(unitId) : null)
-              .ownerId(nonNull(ownerId) ? UUID.fromString(ownerId) : null)
-              .periodFrom(periodFrom);
-
+    @RequiredSource(value = ModifiableOwnershipDto.class)
+    void status400(final ModifiableOwnershipDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.ownerships("bbfe1426-3a77-40da-9947-f970adce3735"),
+              UriFactory.ownerships(UnitModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -344,25 +198,17 @@ public class OpenZevOwnershipApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-        })
     void status404() {
       // arrange
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
-              .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
-              .periodFrom(LocalDate.of(2023, 1, 1))
-              .periodUpto(LocalDate.of(2023, 12, 31));
+              .ownerId(OwnerModels.UUID)
+              .periodFrom(LocalDate.of(2020, 1, 1));
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.ownerships("bbfe1426-3a77-40da-9947-f970adce3735"),
+              UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -373,31 +219,30 @@ public class OpenZevOwnershipApiIntegrationTest {
           .extracting(ResponseEntity::getBody)
           .returns("ownership_not_found", ErrorDto::getCode)
           .returns(
-              "ownership with id 'bbfe1426-3a77-40da-9947-f970adce3735' not found",
-              ErrorDto::getMessage);
+              "ownership with id '" + OwnershipModels.UUID + "' not found", ErrorDto::getMessage);
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
     void status200() {
       // arrange
+      final Owner owner = OwnerModels.getOwner();
+      final Unit unit = UnitModels.getUnit();
+
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
+
+      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
-              .unitId(UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"))
-              .ownerId(UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"))
-              .periodFrom(LocalDate.of(2023, 1, 1))
-              .periodUpto(LocalDate.of(2023, 12, 31));
+              .active(false)
+              .ownerId(OwnerModels.UUID)
+              .periodFrom(LocalDate.of(2019, 1, 1));
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.ownerships("bbfe1426-3a77-40da-9947-f970adce3735"),
+              UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -410,19 +255,12 @@ public class OpenZevOwnershipApiIntegrationTest {
       assertThat(ownershipRepository.findByUuid(response.getBody()))
           .isPresent()
           .hasValueSatisfying(
-              unit ->
-                  assertThat(unit)
-                      .returns(
-                          UUID.fromString("bbfe1426-3a77-40da-9947-f970adce3735"),
-                          Ownership::getUuid)
-                      .returns(
-                          UUID.fromString("414d2033-3b17-4e68-b69e-e483db0dc90b"),
-                          o -> o.getUnit().getUuid())
-                      .returns(
-                          UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"),
-                          o -> o.getOwner().getUuid())
-                      .returns(LocalDate.of(2023, 1, 1), Ownership::getPeriodFrom)
-                      .returns(LocalDate.of(2023, 12, 31), Ownership::getPeriodUpto));
+              ownership ->
+                  assertThat(ownership)
+                      .returns(UnitModels.UUID, o -> o.getUnit().getUuid())
+                      .returns(OwnerModels.UUID, o -> o.getOwner().getUuid())
+                      .returns(false, Ownership::isActive)
+                      .returns(LocalDate.of(2019, 1, 1), Ownership::getPeriodFrom));
     }
   }
 
@@ -434,7 +272,7 @@ public class OpenZevOwnershipApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.ownerships("bbfe1426-3a77-40da-9947-f970adce3735"),
+              UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               ErrorDto.class);
@@ -447,18 +285,20 @@ public class OpenZevOwnershipApiIntegrationTest {
     }
 
     @Test
-    @Sql(
-        scripts = {
-          "/db/test-data/properties.sql",
-          "/db/test-data/units.sql",
-          "/db/test-data/owners.sql",
-          "/db/test-data/ownerships.sql"
-        })
     void status204() {
+      // arrange
+      final Owner owner = OwnerModels.getOwner();
+      final Unit unit = UnitModels.getUnit();
+
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
+
+      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.ownerships("bbfe1426-3a77-40da-9947-f970adce3735"),
+              UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.DELETE,
               new HttpEntity<>(null, null),
               UUID.class);

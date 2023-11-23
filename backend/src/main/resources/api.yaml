@@ -166,22 +166,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/properties/{propertyId}/units:
+  /v1/properties/{propertyId}/accountings:
     get:
-      operationId: getUnits
+      operationId: getAccountings
       tags:
-        - Unit
+        - Accounting
       parameters:
         - $ref: '#/components/parameters/PropertyParam'
       responses:
         '200':
-          description: Units
+          description: Accountings
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UnitDto'
+                  $ref: '#/components/schemas/AccountingDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createAccounting
+      tags:
+        - Accounting
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableAccountingDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingId'
         default:
           description: Unexpected error
           content:
@@ -285,72 +310,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/owners/{ownerId}:
-    delete:
-      operationId: deleteOwner
-      tags:
-        - Owner
-      parameters:
-        - $ref: '#/components/parameters/OwnerParam'
-      responses:
-        '204':
-          description: Deleted
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
+  /v1/properties/{propertyId}/units:
     get:
-      operationId: getOwner
+      operationId: getUnits
       tags:
-        - Owner
+        - Unit
       parameters:
-        - $ref: '#/components/parameters/OwnerParam'
+        - $ref: '#/components/parameters/PropertyParam'
       responses:
         '200':
-          description: Owner
+          description: Units
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnerDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitDto'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
-    put:
-      operationId: changeOwner
-      tags:
-        - Owner
-      parameters:
-        - $ref: '#/components/parameters/OwnerParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableOwnerDto'
-      responses:
-        '200':
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OwnerId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/units:
     post:
       operationId: createUnit
       tags:
         - Unit
+      parameters:
+        - $ref: '#/components/parameters/PropertyParam'
       requestBody:
         required: true
         content:
@@ -364,236 +351,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnitId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/units/{unitId}:
-    delete:
-      operationId: deleteUnit
-      tags:
-        - Unit
-      parameters:
-        - $ref: '#/components/parameters/UnitParam'
-      responses:
-        '204':
-          description: Deleted
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    get:
-      operationId: getUnit
-      tags:
-        - Unit
-      parameters:
-        - $ref: '#/components/parameters/UnitParam'
-      responses:
-        '200':
-          description: Unit
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnitDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      operationId: changeUnit
-      tags:
-        - Unit
-      parameters:
-        - $ref: '#/components/parameters/UnitParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableUnitDto'
-      responses:
-        '200':
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnitId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/units/{unitId}/ownerships:
-    get:
-      operationId: getOwnerships
-      tags:
-        - Ownership
-      parameters:
-        - $ref: '#/components/parameters/UnitParam'
-        - name: validFrom
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: validUpto
-          in: query
-          schema:
-            type: string
-            format: date
-      responses:
-        '200':
-          description: Ownerships
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OwnershipDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/ownerships:
-    post:
-      operationId: createOwnership
-      tags:
-        - Ownership
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableOwnershipDto'
-      responses:
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-        '200':
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OwnershipId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/ownerships/{ownershipId}:
-    delete:
-      operationId: deleteOwnership
-      tags:
-        - Ownership
-      parameters:
-        - $ref: '#/components/parameters/OwnershipParam'
-      responses:
-        '204':
-          description: Deleted
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    get:
-      operationId: getOwnership
-      tags:
-        - Ownership
-      parameters:
-        - $ref: '#/components/parameters/OwnershipParam'
-      responses:
-        '200':
-          description: Ownership
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OwnershipDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      operationId: changeOwnership
-      tags:
-        - Ownership
-      parameters:
-        - $ref: '#/components/parameters/OwnershipParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableOwnershipDto'
-      responses:
-        '200':
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OwnershipId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/accountings:
-    get:
-      operationId: getAccountings
-      tags:
-        - Accounting
-      responses:
-        '200':
-          description: Accountings
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccountingDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    post:
-      operationId: createAccounting
-      tags:
-        - Accounting
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableAccountingDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccountingId'
         default:
           description: Unexpected error
           content:
@@ -655,6 +412,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountingId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/accountings/{accountingId}/invoices:
+    get:
+      operationId: getInvoices
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      responses:
+        '200':
+          description: Invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvoiceDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createInvoice
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableInvoiceDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceId'
         default:
           description: Unexpected error
           content:
@@ -776,55 +581,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/invoices:
-    get:
-      operationId: getInvoices
-      tags:
-        - Invoice
-      parameters:
-        - name: accountingId
-          in: query
-          schema:
-            $ref: '#/components/schemas/AccountingId'
-      responses:
-        '200':
-          description: Invoices
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InvoiceDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    post:
-      operationId: createInvoice
-      tags:
-        - Invoice
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableInvoiceDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvoiceId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
   /v1/invoices/{invoiceId}:
     delete:
       operationId: deleteInvoice
@@ -910,6 +666,243 @@ paths:
               schema:
                 type: string
                 format: binary
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/owners/{ownerId}:
+    delete:
+      operationId: deleteOwner
+      tags:
+        - Owner
+      parameters:
+        - $ref: '#/components/parameters/OwnerParam'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      operationId: getOwner
+      tags:
+        - Owner
+      parameters:
+        - $ref: '#/components/parameters/OwnerParam'
+      responses:
+        '200':
+          description: Owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeOwner
+      tags:
+        - Owner
+      parameters:
+        - $ref: '#/components/parameters/OwnerParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableOwnerDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/units/{unitId}:
+    delete:
+      operationId: deleteUnit
+      tags:
+        - Unit
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      operationId: getUnit
+      tags:
+        - Unit
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      responses:
+        '200':
+          description: Unit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeUnit
+      tags:
+        - Unit
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableUnitDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/units/{unitId}/ownerships:
+    get:
+      operationId: getOwnerships
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      responses:
+        '200':
+          description: Ownerships
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OwnershipDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createOwnership
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/UnitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableOwnershipDto'
+      responses:
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipId'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/ownerships/{ownershipId}:
+    delete:
+      operationId: deleteOwnership
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/OwnershipParam'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    get:
+      operationId: getOwnership
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/OwnershipParam'
+      responses:
+        '200':
+          description: Ownership
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeOwnership
+      tags:
+        - Ownership
+      parameters:
+        - $ref: '#/components/parameters/OwnershipParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableOwnershipDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipId'
         default:
           description: Unexpected error
           content:
@@ -1140,8 +1133,6 @@ components:
         active:
           type: boolean
           default: true
-        propertyId:
-          $ref: '#/components/schemas/PropertyId'
         subject:
           type: string
         valueRatio:
@@ -1150,7 +1141,6 @@ components:
           description: meter point administration number
           type: string
       required:
-        - propertyId
         - subject
 
     OwnershipDto:
@@ -1158,28 +1148,26 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/OwnershipId'
+        active:
+          type: boolean
         unitId:
           $ref: '#/components/schemas/UnitId'
         ownerId:
           $ref: '#/components/schemas/OwnerId'
         periodFrom:
-          $ref: '#/components/schemas/Date'
-        periodUpto:
           $ref: '#/components/schemas/Date'
 
     ModifiableOwnershipDto:
       type: object
       properties:
-        unitId:
-          $ref: '#/components/schemas/UnitId'
+        active:
+          type: boolean
+          default: true
         ownerId:
           $ref: '#/components/schemas/OwnerId'
         periodFrom:
           $ref: '#/components/schemas/Date'
-        periodUpto:
-          $ref: '#/components/schemas/Date'
       required:
-        - unitId
         - ownerId
         - periodFrom
 
@@ -1290,8 +1278,6 @@ components:
     ModifiableInvoiceDto:
       type: object
       properties:
-        accountingId:
-          $ref: '#/components/schemas/AccountingId'
         unitId:
           $ref: '#/components/schemas/UnitId'
         usageHighTariff:
@@ -1312,7 +1298,6 @@ components:
         payed:
           $ref: '#/components/schemas/Date'
       required:
-        - accountingId
         - unitId
 
     DocumentDto:

@@ -1,6 +1,8 @@
 package com.mav.openzev;
 
+import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Agreement;
+import com.mav.openzev.model.Document;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Ownership;
 import com.mav.openzev.model.Property;
@@ -47,10 +49,24 @@ public class TestDatabaseService implements InitializingBean {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void insertProperty(final Property property) {
-    entityManager.persist(property);
+  public Document insertDocument(final Document document) {
+    entityManager.persist(document);
+    return document;
   }
 
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Property insertProperty(final Property property) {
+    entityManager.persist(property);
+    return property;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Property updateProperty(final Property property) {
+    entityManager.merge(property);
+    return property;
+  }
+
+  @Deprecated
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void insertAgreement(final Agreement agreement) {
     agreement.getProperty().addAgreement(agreement);
@@ -66,6 +82,7 @@ public class TestDatabaseService implements InitializingBean {
     entityManager.persist(agreement);
   }
 
+  @Deprecated
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Owner insertOwner(final Owner owner) {
     owner.getProperty().addOwner(owner);
@@ -81,6 +98,7 @@ public class TestDatabaseService implements InitializingBean {
     return ownership;
   }
 
+  @Deprecated
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Unit insertUnit(final Unit unit) {
     unit.getProperty().addUnit(unit);
@@ -88,5 +106,10 @@ public class TestDatabaseService implements InitializingBean {
     entityManager.persist(unit.getProperty());
     entityManager.persist(unit);
     return unit;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void insertAccounting(final Accounting accounting) {
+    entityManager.persist(accounting);
   }
 }

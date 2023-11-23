@@ -6,6 +6,7 @@ import com.mav.openzev.api.model.UnitDto;
 import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.UnitMapper;
+import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Property;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.repository.PropertyRepository;
@@ -13,6 +14,7 @@ import com.mav.openzev.repository.UnitRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,11 +32,12 @@ public class UnitController implements UnitApi {
   @Override
   @Transactional
   public ResponseEntity<List<UnitDto>> getUnits(final UUID propertyId) {
-    final Property property =
-        propertyRepository
-            .findByUuid(propertyId)
-            .orElseThrow(() -> NotFoundException.ofPropertyNotFound(propertyId));
-    return ResponseEntity.ok(property.getUnits().stream().map(unitMapper::mapToUnitDto).toList());
+    return ResponseEntity.ok(
+        unitRepository
+            .findByProperty_Uuid(propertyId, Sort.sort(Owner.class).by(Owner::getUuid))
+            .stream()
+            .map(unitMapper::mapToUnitDto)
+            .toList());
   }
 
   @Override
@@ -48,17 +51,15 @@ public class UnitController implements UnitApi {
 
   @Override
   @Transactional
-  public ResponseEntity<UUID> createUnit(final ModifiableUnitDto modifiableUnitDto) {
+  public ResponseEntity<UUID> createUnit(
+      final UUID propertyId, final ModifiableUnitDto modifiableUnitDto) {
     final Property property =
         propertyRepository
-            .findByUuid(modifiableUnitDto.getPropertyId())
-            .orElseThrow(
-                () -> NotFoundException.ofPropertyNotFound(modifiableUnitDto.getPropertyId()));
+            .findByUuid(propertyId)
+            .orElseThrow(() -> NotFoundException.ofPropertyNotFound(propertyId));
 
     final Unit unit = unitMapper.mapToUnit(modifiableUnitDto);
-    unit.setProperty(property);
-    property.getUnits().add(unit);
-
+    property.addUnit(unit);
     return ResponseEntity.status(HttpStatus.CREATED).body(unitRepository.save(unit).getUuid());
   }
 
