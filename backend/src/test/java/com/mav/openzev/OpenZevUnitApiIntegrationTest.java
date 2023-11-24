@@ -230,8 +230,8 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertUnit(
-          UnitModels.getUnit().toBuilder().property(PropertyModels.getProperty()).build());
+      testDatabaseService.insertProperty(
+          PropertyModels.getProperty().addUnit(UnitModels.getUnit()));
 
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
