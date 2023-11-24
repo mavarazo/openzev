@@ -20,7 +20,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class AddEditInvoiceComponent implements OnInit, OnDestroy {
   @Input() invoiceId: string | null;
-  @Input() accountingId: string | null;
+  @Input() accountingId: string;
 
   private destroy$ = new Subject<void>();
 
@@ -156,7 +156,7 @@ export class AddEditInvoiceComponent implements OnInit, OnDestroy {
 
   private addInvoice(invoice: ModifiableInvoiceDto) {
     this.invoiceService
-      .createInvoice(invoice)
+      .createInvoice(this.accountingId, invoice)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {

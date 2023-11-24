@@ -18,11 +18,7 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
   unitForm: FormGroup;
   isSubmitted: boolean = false;
 
-  constructor(
-    private unitService: UnitService,
-    private fb: FormBuilder,
-    private router: Router
-  ) {}
+  constructor(private unitService: UnitService, private router: Router) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -43,7 +39,7 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
   }
 
   private initForm() {
-    this.unitForm = this.fb.group({
+    this.unitForm = new FormBuilder().group({
       subject: [null, Validators.required],
       valueRatio: [null, Validators.pattern('^[0-9]*$')],
       mpan: [null],
@@ -68,7 +64,7 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
 
   private addUnit(unit: ModifiableUnitDto) {
     this.unitService
-      .createUnit(unit)
+      .createUnit(this.propertyId, unit)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
