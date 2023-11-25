@@ -26,22 +26,10 @@
             <column name="AMOUNT_LT" type="DECIMAL(10, 2)"/>
             <column name="AMOUNT_TOTAL" type="DECIMAL(10, 2)"/>
 
-            <column name="PROPERTY_ID" type="BIGINT">
-                <constraints nullable="false"
-                             foreignKeyName="FK_ACCOUNTING_PROPERTY"
-                             references="OZEV_PROPERTIES(ID)"/>
-            </column>
-
             <column name="AGREEMENT_ID" type="BIGINT">
                 <constraints nullable="true"
                              foreignKeyName="FK_ACCOUNTING_AGREEMENT"
                              references="OZEV_AGREEMENTS(ID)"/>
-            </column>
-
-            <column name="DOCUMENT_ID" type="BIGINT">
-                <constraints nullable="true"
-                             foreignKeyName="FK_ACCOUNTING_DOCUMENT"
-                             references="OZEV_DOCUMENTS(ID)"/>
             </column>
         </createTable>
     </changeSet>

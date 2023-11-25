@@ -15,13 +15,11 @@ public interface OwnerMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
-  @Mapping(target = "property", ignore = true)
   @Mapping(target = "ownerships", ignore = true)
   Owner mapToOwner(ModifiableOwnerDto modifiableOwnerDto);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
-  @Mapping(target = "property", ignore = true)
   @Mapping(target = "ownerships", ignore = true)
   void updateOwner(ModifiableOwnerDto modifiableOwnerDto, @MappingTarget Owner owner);
 }

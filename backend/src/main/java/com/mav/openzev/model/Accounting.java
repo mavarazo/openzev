@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Positive;
@@ -56,17 +55,14 @@ public class Accounting extends AbstractAuditEntity {
   @Column(name = "AMOUNT_TOTAL", nullable = false)
   private BigDecimal amountTotal;
 
-  @ManyToOne
-  @JoinColumn(name = "PROPERTY_ID", nullable = false)
-  private Property property;
-
   @OneToMany(mappedBy = "accounting", cascade = CascadeType.ALL)
   @Builder.Default
   private Set<Invoice> invoices = new HashSet<>();
 
-  @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "DOCUMENT_ID", referencedColumnName = "ID")
-  private Document document;
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "REF_ID", referencedColumnName = "ID")
+  @Builder.Default
+  private Set<Document> documents = new HashSet<>();
 
   public Accounting addInvoice(final Invoice invoice) {
     invoices.add(invoice);
@@ -75,7 +71,7 @@ public class Accounting extends AbstractAuditEntity {
   }
 
   public Accounting addDocument(final Document document) {
-    this.document = document;
+    this.documents.add(document);
     document.setRefId(this.getId());
     document.setRefType(this.getClass().getSimpleName());
     return this;

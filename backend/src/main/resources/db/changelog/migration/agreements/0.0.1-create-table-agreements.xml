@@ -28,10 +28,6 @@
             <column name="LOW_TARIFF" type="DECIMAL(5, 2)"/>
             <column name="HIGH_TARIFF" type="DECIMAL(5, 2)"/>
             <column name="APPROVED" type="DATE"/>
-
-            <column name="PROPERTY_ID" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="FK_AGREEMENT_PROPERTY" references="OZEV_PROPERTIES(ID)"/>
-            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

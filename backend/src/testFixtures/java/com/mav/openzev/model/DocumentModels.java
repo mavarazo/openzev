@@ -10,11 +10,9 @@ public class DocumentModels {
   public static final java.util.UUID UUID =
       java.util.UUID.fromString("2ce14304-c6bf-440a-9673-f5bfdf96982c");
 
-  public static Document getDocument(final Accounting accounting) {
+  public static Document getDocument() {
     return Document.builder()
         .uuid(UUID)
-        .refId(accounting.getId())
-        .refType(accounting.getClass().getSimpleName())
         .name("foo")
         .filename("foo.pdf")
         .mimeType("application/pdf")

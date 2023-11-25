@@ -3,11 +3,9 @@ package com.mav.openzev;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.ErrorDto;
+import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.AccountingModels;
-import com.mav.openzev.model.Document;
 import com.mav.openzev.model.DocumentModels;
-import com.mav.openzev.model.Property;
-import com.mav.openzev.model.PropertyModels;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
@@ -62,15 +60,8 @@ public class OpenZevDocumentApiIntegrationTest {
     @SneakyThrows
     void status200() {
       // arrange
-      final Property property =
-          testDatabaseService.insertProperty(
-              PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
-
-      final Document document =
-          property.getAccountings().stream()
-              .findFirst()
-              .map(a -> testDatabaseService.insertDocument(DocumentModels.getDocument(a)))
-              .orElseThrow(IllegalArgumentException::new);
+      final Accounting accounting = testDatabaseService.insert(AccountingModels.getAccounting());
+      testDatabaseService.merge(accounting.addDocument(DocumentModels.getDocument()));
 
       final HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_PDF);
@@ -123,15 +114,8 @@ public class OpenZevDocumentApiIntegrationTest {
     @SneakyThrows
     void status200() {
       // arrange
-      final Property property =
-          testDatabaseService.insertProperty(
-              PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
-
-      final Document document =
-          property.getAccountings().stream()
-              .findFirst()
-              .map(a -> testDatabaseService.insertDocument(DocumentModels.getDocument(a)))
-              .orElseThrow(IllegalArgumentException::new);
+      final Accounting accounting = testDatabaseService.insert(AccountingModels.getAccounting());
+      testDatabaseService.merge(accounting.addDocument(DocumentModels.getDocument()));
 
       // act
       final ResponseEntity<Resource> response =

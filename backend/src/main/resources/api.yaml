@@ -61,118 +61,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
-  /v1/properties:
-    get:
-      operationId: getProperties
-      tags:
-        - Property
-      responses:
-        '200':
-          description: Units
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PropertyDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    post:
-      operationId: createProperty
-      tags:
-        - Property
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiablePropertyDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PropertyId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/properties/{propertyId}:
-    delete:
-      operationId: deleteProperty
-      tags:
-        - Property
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      responses:
-        '204':
-          description: Deleted
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    get:
-      operationId: getProperty
-      tags:
-        - Property
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      responses:
-        '200':
-          description: Property
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PropertyDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      operationId: changeProperty
-      tags:
-        - Property
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiablePropertyDto'
-      responses:
-        '200':
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PropertyId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/properties/{propertyId}/accountings:
+  /v1/accountings:
     get:
       operationId: getAccountings
       tags:
         - Accounting
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
       responses:
         '200':
           description: Accountings
@@ -192,8 +85,6 @@ paths:
       operationId: createAccounting
       tags:
         - Accounting
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
       requestBody:
         required: true
         content:
@@ -206,151 +97,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountingId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/properties/{propertyId}/agreements:
-    get:
-      operationId: getAgreements
-      tags:
-        - Agreement
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      responses:
-        '200':
-          description: Agreements
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AgreementDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    post:
-      operationId: createAgreement
-      tags:
-        - Agreement
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableAgreementDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AgreementId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/properties/{propertyId}/owners:
-    get:
-      operationId: getOwners
-      tags:
-        - Owner
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      responses:
-        '200':
-          description: Owners
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OwnerDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    post:
-      operationId: createOwner
-      tags:
-        - Owner
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableOwnerDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OwnerId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/properties/{propertyId}/units:
-    get:
-      operationId: getUnits
-      tags:
-        - Unit
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      responses:
-        '200':
-          description: Units
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UnitDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    post:
-      operationId: createUnit
-      tags:
-        - Unit
-      parameters:
-        - $ref: '#/components/parameters/PropertyParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableUnitDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnitId'
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -411,55 +158,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountingId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/accountings/{accountingId}/invoices:
-    get:
-      operationId: getInvoices
-      tags:
-        - Invoice
-      parameters:
-        - $ref: '#/components/parameters/AccountingParam'
-      responses:
-        '200':
-          description: Invoices
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InvoiceDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    post:
-      operationId: createInvoice
-      tags:
-        - Invoice
-      parameters:
-        - $ref: '#/components/parameters/AccountingParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableInvoiceDto'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvoiceId'
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -512,7 +211,154 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DocumentId'
+                $ref: '#/components/schemas/Id'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/accountings/{accountingId}/invoices:
+    get:
+      operationId: getInvoices
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      responses:
+        '200':
+          description: Invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvoiceDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createInvoice
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/AccountingParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableInvoiceDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/invoices/{invoiceId}:
+    delete:
+      operationId: deleteInvoice
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/InvoiceParam'
+      responses:
+        '204':
+          description: Deleted
+    get:
+      operationId: getInvoice
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/InvoiceParam'
+      responses:
+        '200':
+          description: Invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: changeInvoice
+      tags:
+        - Invoice
+      parameters:
+        - $ref: '#/components/parameters/InvoiceParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableInvoiceDto'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/agreements:
+    get:
+      operationId: getAgreements
+      tags:
+        - Agreement
+      responses:
+        '200':
+          description: Agreements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AgreementDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createAgreement
+      tags:
+        - Agreement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableAgreementDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -573,62 +419,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AgreementId'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-
-  /v1/invoices/{invoiceId}:
-    delete:
-      operationId: deleteInvoice
-      tags:
-        - Invoice
-      parameters:
-        - $ref: '#/components/parameters/InvoiceParam'
-      responses:
-        '204':
-          description: Deleted
-    get:
-      operationId: getInvoice
-      tags:
-        - Invoice
-      parameters:
-        - $ref: '#/components/parameters/InvoiceParam'
-      responses:
-        '200':
-          description: Invoice
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvoiceDto'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDto'
-    put:
-      operationId: changeInvoice
-      tags:
-        - Invoice
-      parameters:
-        - $ref: '#/components/parameters/InvoiceParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifiableInvoiceDto'
-      responses:
-        '200':
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvoiceId'
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -666,6 +457,50 @@ paths:
               schema:
                 type: string
                 format: binary
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/owners:
+    get:
+      operationId: getOwners
+      tags:
+        - Owner
+      responses:
+        '200':
+          description: Owners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OwnerDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createOwner
+      tags:
+        - Owner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableOwnerDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -726,7 +561,51 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnerId'
+                $ref: '#/components/schemas/Id'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/units:
+    get:
+      operationId: getUnits
+      tags:
+        - Unit
+      responses:
+        '200':
+          description: Units
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    post:
+      operationId: createUnit
+      tags:
+        - Unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableUnitDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -787,7 +666,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnitId'
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -841,7 +720,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnershipId'
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -902,7 +781,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnershipId'
+                $ref: '#/components/schemas/Id'
         default:
           description: Unexpected error
           content:
@@ -917,87 +796,52 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/OwnerId'
-
-    PropertyParam:
-      name: propertyId
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/PropertyId'
+        $ref: '#/components/schemas/Id'
 
     UnitParam:
       name: unitId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/UnitId'
+        $ref: '#/components/schemas/Id'
 
     OwnershipParam:
       name: ownershipId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/OwnershipId'
+        $ref: '#/components/schemas/Id'
 
     AccountingParam:
       name: accountingId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/AccountingId'
+        $ref: '#/components/schemas/Id'
 
     DocumentParam:
       name: documentId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/DocumentId'
+        $ref: '#/components/schemas/Id'
 
     AgreementParam:
       name: agreementId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/AgreementId'
+        $ref: '#/components/schemas/Id'
 
     InvoiceParam:
       name: invoiceId
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/InvoiceId'
+        $ref: '#/components/schemas/Id'
 
   schemas:
-    OwnerId:
-      type: string
-      format: uuid
-
-    PropertyId:
-      type: string
-      format: uuid
-
-    UnitId:
-      type: string
-      format: uuid
-
-    OwnershipId:
-      type: string
-      format: uuid
-
-    AccountingId:
-      type: string
-      format: uuid
-
-    DocumentId:
-      type: string
-      format: uuid
-
-    AgreementId:
-      type: string
-      format: uuid
-
-    InvoiceId:
+    Id:
       type: string
       format: uuid
 
@@ -1013,7 +857,7 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/OwnerId'
+          $ref: '#/components/schemas/Id'
         active:
           type: boolean
         contractId:
@@ -1073,50 +917,11 @@ components:
         - postalCode
         - city
 
-    PropertyDto:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/PropertyId'
-        active:
-          type: boolean
-          default: true
-        street:
-          type: string
-        houseNr:
-          type: string
-        postalCode:
-          type: string
-        city:
-          type: string
-
-    ModifiablePropertyDto:
-      type: object
-      properties:
-        active:
-          type: boolean
-          default: true
-        street:
-          type: string
-        houseNr:
-          type: string
-        postalCode:
-          type: string
-        city:
-          type: string
-      required:
-        - street
-        - houseNr
-        - postalCode
-        - city
-
     UnitDto:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/UnitId'
-        propertyId:
-          $ref: '#/components/schemas/PropertyId'
+          $ref: '#/components/schemas/Id'
         active:
           type: boolean
         subject:
@@ -1147,13 +952,13 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/OwnershipId'
+          $ref: '#/components/schemas/Id'
         active:
           type: boolean
         unitId:
-          $ref: '#/components/schemas/UnitId'
+          $ref: '#/components/schemas/Id'
         ownerId:
-          $ref: '#/components/schemas/OwnerId'
+          $ref: '#/components/schemas/Id'
         periodFrom:
           $ref: '#/components/schemas/Date'
 
@@ -1164,7 +969,7 @@ components:
           type: boolean
           default: true
         ownerId:
-          $ref: '#/components/schemas/OwnerId'
+          $ref: '#/components/schemas/Id'
         periodFrom:
           $ref: '#/components/schemas/Date'
       required:
@@ -1175,9 +980,9 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/AccountingId'
+          $ref: '#/components/schemas/Id'
         agreementId:
-          $ref: '#/components/schemas/AgreementId'
+          $ref: '#/components/schemas/Id'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
@@ -1195,7 +1000,7 @@ components:
       type: object
       properties:
         agreementId:
-          $ref: '#/components/schemas/AgreementId'
+          $ref: '#/components/schemas/Id'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
@@ -1215,9 +1020,7 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/AgreementId'
-        propertyId:
-          $ref: '#/components/schemas/PropertyId'
+          $ref: '#/components/schemas/Id'
         periodFrom:
           $ref: '#/components/schemas/Date'
         periodUpto:
@@ -1252,11 +1055,11 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/InvoiceId'
+          $ref: '#/components/schemas/Id'
         accountingId:
-          $ref: '#/components/schemas/AccountingId'
+          $ref: '#/components/schemas/Id'
         unitId:
-          $ref: '#/components/schemas/UnitId'
+          $ref: '#/components/schemas/Id'
         usageHighTariff:
           type: number
           format: double
@@ -1279,7 +1082,7 @@ components:
       type: object
       properties:
         unitId:
-          $ref: '#/components/schemas/UnitId'
+          $ref: '#/components/schemas/Id'
         usageHighTariff:
           type: number
           format: double
@@ -1304,7 +1107,7 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/DocumentId'
+          $ref: '#/components/schemas/Id'
         name:
           type: string
         filename:

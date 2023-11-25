@@ -4,7 +4,6 @@ package com.mav.openzev.exception;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Owner;
-import com.mav.openzev.model.Property;
 import com.mav.openzev.model.Unit;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -51,11 +50,4 @@ public class ValidationException extends RuntimeException {
         "agreement with id '%s' is in use by accounting(s)"
             .formatted(agreement.getUuid().toString()));
   }
-
-    public static ValidationException ofPropertyHasUnit(final Property property) {
-        return new ValidationException(
-                "property_has_unit",
-                "property with id '%s' is in use by unit(s)"
-                        .formatted(property.getUuid().toString()));
-    }
 }

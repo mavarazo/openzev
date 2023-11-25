@@ -1,8 +1,0 @@
-INSERT INTO PUBLIC.OZEV_UNITS(id, "uuid", active, subject, value_ratio, mpan, property_id)
-VALUES (999,
-        '414d2033-3b17-4e68-b69e-e483db0dc90b',
-        true,
-        'EG/1.OG rechts',
-        125,
-        'e4e2043a-05b1-4735-a5ea-8f972115df17',
-        999);

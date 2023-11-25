@@ -11,7 +11,6 @@ import com.mav.openzev.model.InvoiceModels;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
 import com.mav.openzev.model.OwnershipModels;
-import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.UnitRepository;
@@ -49,16 +48,12 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addUnit(UnitModels.getUnit()));
+      testDatabaseService.insert(UnitModels.getUnit());
 
       // act
       final ResponseEntity<UnitDto[]> response =
           restTemplate.exchange(
-              UriFactory.properties_units(PropertyModels.UUID),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              UnitDto[].class);
+              UriFactory.units(), HttpMethod.GET, HttpEntity.EMPTY, UnitDto[].class);
 
       // assert
       assertThat(response)
@@ -86,8 +81,7 @@ public class OpenZevUnitApiIntegrationTest {
 
     @Test
     void status200() {
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addUnit(UnitModels.getUnit()));
+      testDatabaseService.insert(UnitModels.getUnit());
 
       // act
       final ResponseEntity<UnitDto> response =
@@ -118,7 +112,7 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.properties_units(PropertyModels.UUID),
+              UriFactory.units(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -128,32 +122,8 @@ public class OpenZevUnitApiIntegrationTest {
     }
 
     @Test
-    void status404() {
-      // arrange
-      final ModifiableUnitDto requestBody =
-          new ModifiableUnitDto()
-              .subject("EG/1.OG rechts");
-
-      // act
-      final ResponseEntity<ErrorDto> response =
-          restTemplate.exchange(
-              UriFactory.properties_units(PropertyModels.UUID),
-              HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
-              ErrorDto.class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
-          .extracting(ResponseEntity::getBody)
-          .returns("property_not_found", ErrorDto::getCode);
-    }
-
-    @Test
     void status201() {
       // arrange
-      testDatabaseService.insertProperty(PropertyModels.getProperty());
-
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
               .subject("EG/1.OG rechts")
@@ -163,10 +133,7 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.properties_units(PropertyModels.UUID),
-              HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
-              UUID.class);
+              UriFactory.units(), HttpMethod.POST, new HttpEntity<>(requestBody, null), UUID.class);
 
       // assert
       assertThat(response)
@@ -230,8 +197,7 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addUnit(UnitModels.getUnit()));
+      testDatabaseService.insert(UnitModels.getUnit());
 
       final ModifiableUnitDto requestBody =
           new ModifiableUnitDto()
@@ -291,11 +257,9 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     void status422_ownership() {
       // arrange
-      final Owner owner = OwnerModels.getOwner();
-      final Unit unit = UnitModels.getUnit();
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addUnit(unit).addOwner(owner));
-      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+      final Owner owner = testDatabaseService.insert(OwnerModels.getOwner());
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(OwnershipModels.getOwnership(owner, unit));
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -314,14 +278,11 @@ public class OpenZevUnitApiIntegrationTest {
 
     @Test
     void status422_invoice() {
-      final Unit unit = UnitModels.getUnit();
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
 
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addUnit(unit)
-              .addAccounting(
-                  AccountingModels.getAccounting()
-                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+      testDatabaseService.insert(
+          AccountingModels.getAccounting()
+              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -341,8 +302,7 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     void status204() {
       // arrange
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addUnit(UnitModels.getUnit()));
+      testDatabaseService.insert(UnitModels.getUnit());
 
       // act
       final ResponseEntity<UUID> response =

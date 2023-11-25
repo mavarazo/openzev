@@ -11,14 +11,12 @@ import org.mapstruct.MappingTarget;
 public interface UnitMapper {
 
   @Mapping(target = "id", source = "uuid")
-  @Mapping(target = "propertyId", source = "property.uuid")
   @Mapping(target = "mpan", source = "meterPointAdministrationNumber")
   UnitDto mapToUnitDto(Unit unit);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "meterPointAdministrationNumber", source = "mpan")
-  @Mapping(target = "property", ignore = true)
   @Mapping(target = "ownerships", ignore = true)
   @Mapping(target = "invoices", ignore = true)
   Unit mapToUnit(ModifiableUnitDto modifiableUnitDto);
@@ -26,7 +24,6 @@ public interface UnitMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "meterPointAdministrationNumber", source = "mpan")
-  @Mapping(target = "property", ignore = true)
   @Mapping(target = "ownerships", ignore = true)
   @Mapping(target = "invoices", ignore = true)
   void updateUnit(ModifiableUnitDto modifiableUnitDto, @MappingTarget Unit unit);
