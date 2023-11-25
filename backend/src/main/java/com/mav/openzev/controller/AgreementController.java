@@ -7,9 +7,7 @@ import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.AgreementMapper;
 import com.mav.openzev.model.Agreement;
-import com.mav.openzev.model.Property;
 import com.mav.openzev.repository.AgreementRepository;
-import com.mav.openzev.repository.PropertyRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AgreementController implements AgreementApi {
 
   private final AgreementRepository agreementRepository;
-  private final PropertyRepository propertyRepository;
 
   private final AgreementMapper agreementMapper;
 
   @Override
-  public ResponseEntity<List<AgreementDto>> getAgreements(final UUID propertyId) {
+  public ResponseEntity<List<AgreementDto>> getAgreements() {
     return ResponseEntity.ok(
         agreementRepository
-            .findByProperty_Uuid(
-                propertyId, Sort.sort(Agreement.class).by(Agreement::getPeriodFrom))
+            .findAll(Sort.sort(Agreement.class).by(Agreement::getPeriodFrom))
             .stream()
             .map(agreementMapper::mapToAgreementDto)
             .toList());
@@ -50,15 +46,8 @@ public class AgreementController implements AgreementApi {
 
   @Override
   @Transactional
-  public ResponseEntity<UUID> createAgreement(
-      final UUID propertyId, final ModifiableAgreementDto modifiableAgreementDto) {
-    final Property property =
-        propertyRepository
-            .findByUuid(propertyId)
-            .orElseThrow(() -> NotFoundException.ofPropertyNotFound(propertyId));
-
+  public ResponseEntity<UUID> createAgreement(final ModifiableAgreementDto modifiableAgreementDto) {
     final Agreement agreement = agreementMapper.mapToAgreement(modifiableAgreementDto);
-    property.addAgreement(agreement);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(agreementRepository.save(agreement).getUuid());
   }

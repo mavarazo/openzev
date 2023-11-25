@@ -11,15 +11,13 @@ import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.AgreementModels;
 import com.mav.openzev.model.Document;
+import com.mav.openzev.model.DocumentModels;
 import com.mav.openzev.model.InvoiceModels;
-import com.mav.openzev.model.Property;
-import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.DocumentRepository;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -62,16 +60,12 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+      testDatabaseService.insert(AccountingModels.getAccounting());
 
       // act
       final ResponseEntity<AccountingDto[]> response =
           restTemplate.exchange(
-              UriFactory.properties_accountings(PropertyModels.UUID),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              AccountingDto[].class);
+              UriFactory.accountings(), HttpMethod.GET, HttpEntity.EMPTY, AccountingDto[].class);
 
       // assert
       assertThat(response)
@@ -106,12 +100,11 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      final Agreement agreement = AgreementModels.getAgreement();
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addAccounting(
-                  AccountingModels.getAccounting().toBuilder().agreement(agreement).build())
-              .addAgreement(agreement));
+        final Agreement agreement = testDatabaseService.insert(AgreementModels.getAgreement());
+        testDatabaseService.insert(
+          AccountingModels.getAccounting().toBuilder()
+              .agreement(agreement)
+              .build());
 
       // act
       final ResponseEntity<AccountingDto> response =
@@ -147,10 +140,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     void status201() {
       // arrange
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addAccounting(AccountingModels.getAccounting())
-              .addAgreement(AgreementModels.getAgreement()));
+      testDatabaseService.insert(AgreementModels.getAgreement());
 
       // arrange
       final ModifiableAccountingDto requestBody =
@@ -166,7 +156,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.properties_accountings(PropertyModels.UUID),
+              UriFactory.accountings(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -229,8 +219,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+      testDatabaseService.insert(AccountingModels.getAccounting());
 
       final ModifiableAccountingDto requestBody =
           new ModifiableAccountingDto()
@@ -294,13 +283,10 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     void status422() {
       // arrange
-      final Unit unit = UnitModels.getUnit();
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addUnit(unit)
-              .addAccounting(
-                  AccountingModels.getAccounting()
-                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(
+          AccountingModels.getAccounting()
+              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -320,8 +306,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     void status204() {
       // arrange
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+      testDatabaseService.insert(AccountingModels.getAccounting());
 
       // act
       final ResponseEntity<UUID> response =
@@ -359,23 +344,9 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     @SneakyThrows
     void status200() {
-      final Property property =
-          testDatabaseService.insertProperty(
-              PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
-
-      property
-          .getAccountings()
-          .forEach(
-              a ->
-                  testDatabaseService.insertDocument(
-                      Document.builder()
-                          .refId(a.getId())
-                          .refType(a.getClass().getSimpleName())
-                          .name("foo")
-                          .filename("foo.pdf")
-                          .mimeType(MediaType.APPLICATION_PDF_VALUE)
-                          .data("lorem ipsum".getBytes(StandardCharsets.UTF_8))
-                          .build()));
+      // arrange
+      final Accounting accounting = testDatabaseService.insert(AccountingModels.getAccounting());
+      testDatabaseService.merge(accounting.addDocument(DocumentModels.getDocument()));
 
       // act
       final ResponseEntity<DocumentDto[]> response =
@@ -421,8 +392,7 @@ public class OpenZevAccountingApiIntegrationTest {
 
     @Test
     void status200() {
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addAccounting(AccountingModels.getAccounting()));
+      testDatabaseService.insert(AccountingModels.getAccounting());
 
       // arrange
       final HttpHeaders headers = new HttpHeaders();

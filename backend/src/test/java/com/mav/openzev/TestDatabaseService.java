@@ -5,7 +5,6 @@ import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Document;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Ownership;
-import com.mav.openzev.model.Property;
 import com.mav.openzev.model.Unit;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -37,7 +36,7 @@ public class TestDatabaseService implements InitializingBean {
 
     entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
   }
-
+  
   @Override
   public void afterPropertiesSet() {
     tableNames =
@@ -49,67 +48,44 @@ public class TestDatabaseService implements InitializingBean {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Document insertDocument(final Document document) {
+  public Agreement insert(final Agreement agreement) {
+    entityManager.persist(agreement);
+    return agreement;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Accounting insert(final Accounting accounting) {
+    entityManager.persist(accounting);
+    return accounting;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Accounting merge(final Accounting accounting) {
+    entityManager.merge(accounting);
+    return accounting;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Document insert(final Document document) {
     entityManager.persist(document);
     return document;
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Property insertProperty(final Property property) {
-    entityManager.persist(property);
-    return property;
-  }
-
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Property updateProperty(final Property property) {
-    entityManager.merge(property);
-    return property;
-  }
-
-  @Deprecated
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void insertAgreement(final Agreement agreement) {
-    agreement.getProperty().addAgreement(agreement);
-    agreement
-        .getAccountings()
-        .forEach(
-            accounting -> {
-              accounting.setAgreement(agreement);
-              entityManager.persist(accounting);
-            });
-
-    entityManager.persist(agreement.getProperty());
-    entityManager.persist(agreement);
-  }
-
-  @Deprecated
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Owner insertOwner(final Owner owner) {
-    owner.getProperty().addOwner(owner);
-
-    entityManager.persist(owner.getProperty());
+  public Owner insert(final Owner owner) {
     entityManager.persist(owner);
     return owner;
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Ownership insertOwnership(final Ownership ownership) {
+  public Ownership insert(final Ownership ownership) {
     entityManager.persist(ownership);
     return ownership;
   }
 
-  @Deprecated
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Unit insertUnit(final Unit unit) {
-    unit.getProperty().addUnit(unit);
-
-    entityManager.persist(unit.getProperty());
+  public Unit insert(final Unit unit) {
     entityManager.persist(unit);
     return unit;
-  }
-
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void insertAccounting(final Accounting accounting) {
-    entityManager.persist(accounting);
   }
 }

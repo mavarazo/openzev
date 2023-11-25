@@ -10,7 +10,6 @@ import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
 import com.mav.openzev.model.Ownership;
 import com.mav.openzev.model.OwnershipModels;
-import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.OwnershipRepository;
@@ -49,13 +48,9 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      final Owner owner = OwnerModels.getOwner();
-      final Unit unit = UnitModels.getUnit();
-
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
-
-      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+      final Owner owner = testDatabaseService.insert(OwnerModels.getOwner());
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(OwnershipModels.getOwnership(owner, unit));
 
       // act
       final ResponseEntity<OwnershipDto[]> response =
@@ -97,13 +92,9 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      final Owner owner = OwnerModels.getOwner();
-      final Unit unit = UnitModels.getUnit();
-
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
-
-      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+      final Owner owner = testDatabaseService.insert(OwnerModels.getOwner());
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(OwnershipModels.getOwnership(owner, unit));
 
       // act
       final ResponseEntity<OwnershipDto> response =
@@ -142,10 +133,8 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     void status201() {
       // arrange
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addOwner(OwnerModels.getOwner())
-              .addUnit(UnitModels.getUnit()));
+      testDatabaseService.insert(OwnerModels.getOwner());
+      testDatabaseService.insert(UnitModels.getUnit());
 
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
@@ -225,13 +214,9 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      final Owner owner = OwnerModels.getOwner();
-      final Unit unit = UnitModels.getUnit();
-
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
-
-      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+      final Owner owner = testDatabaseService.insert(OwnerModels.getOwner());
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(OwnershipModels.getOwnership(owner, unit));
 
       final ModifiableOwnershipDto requestBody =
           new ModifiableOwnershipDto()
@@ -287,13 +272,9 @@ public class OpenZevOwnershipApiIntegrationTest {
     @Test
     void status204() {
       // arrange
-      final Owner owner = OwnerModels.getOwner();
-      final Unit unit = UnitModels.getUnit();
-
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty().addOwner(owner).addUnit(unit));
-
-      testDatabaseService.insertOwnership(OwnershipModels.getOwnership(owner, unit));
+      final Owner owner = testDatabaseService.insert(OwnerModels.getOwner());
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(OwnershipModels.getOwnership(owner, unit));
 
       // act
       final ResponseEntity<UUID> response =

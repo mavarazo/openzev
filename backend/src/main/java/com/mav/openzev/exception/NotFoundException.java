@@ -52,9 +52,4 @@ public class NotFoundException extends RuntimeException {
     return new NotFoundException(
         "document_not_found", "document with id '%s' not found".formatted(documentId.toString()));
     }
-
-  public static RuntimeException ofPropertyNotFound(final UUID propertyId) {
-    return new NotFoundException(
-        "property_not_found", "property with id '%s' not found".formatted(propertyId.toString()));
-  }
 }

@@ -19,7 +19,6 @@ public class AgreementModels {
   public static Agreement getAgreement() {
     return Agreement.builder()
         .uuid(UUID)
-        .property(PropertyModels.getProperty())
         .periodFrom(_2024_01_01)
         .periodUpto(_2024_12_31)
         .highTariff(_0_25)

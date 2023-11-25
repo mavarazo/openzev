@@ -2,8 +2,6 @@ package com.mav.openzev.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
@@ -47,10 +45,6 @@ public class Agreement extends AbstractAuditEntity {
 
   @Column(name = "APPROVED", nullable = false)
   private LocalDate approved;
-
-  @ManyToOne
-  @JoinColumn(name = "PROPERTY_ID", nullable = false)
-  private Property property;
 
   @OneToMany(mappedBy = "agreement")
   @Builder.Default

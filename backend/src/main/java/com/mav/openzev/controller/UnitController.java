@@ -7,9 +7,7 @@ import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.UnitMapper;
 import com.mav.openzev.model.Owner;
-import com.mav.openzev.model.Property;
 import com.mav.openzev.model.Unit;
-import com.mav.openzev.repository.PropertyRepository;
 import com.mav.openzev.repository.UnitRepository;
 import java.util.List;
 import java.util.UUID;
@@ -25,17 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class UnitController implements UnitApi {
 
   private final UnitRepository unitRepository;
-  private final PropertyRepository propertyRepository;
-
   private final UnitMapper unitMapper;
 
   @Override
   @Transactional
-  public ResponseEntity<List<UnitDto>> getUnits(final UUID propertyId) {
+  public ResponseEntity<List<UnitDto>> getUnits() {
     return ResponseEntity.ok(
-        unitRepository
-            .findByProperty_Uuid(propertyId, Sort.sort(Owner.class).by(Owner::getUuid))
-            .stream()
+        unitRepository.findAll(Sort.sort(Owner.class).by(Owner::getUuid)).stream()
             .map(unitMapper::mapToUnitDto)
             .toList());
   }
@@ -51,15 +45,8 @@ public class UnitController implements UnitApi {
 
   @Override
   @Transactional
-  public ResponseEntity<UUID> createUnit(
-      final UUID propertyId, final ModifiableUnitDto modifiableUnitDto) {
-    final Property property =
-        propertyRepository
-            .findByUuid(propertyId)
-            .orElseThrow(() -> NotFoundException.ofPropertyNotFound(propertyId));
-
+  public ResponseEntity<UUID> createUnit(final ModifiableUnitDto modifiableUnitDto) {
     final Unit unit = unitMapper.mapToUnit(modifiableUnitDto);
-    property.addUnit(unit);
     return ResponseEntity.status(HttpStatus.CREATED).body(unitRepository.save(unit).getUuid());
   }
 

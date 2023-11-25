@@ -16,6 +16,7 @@ import {
 })
 export class AddEditAccountingComponent implements OnInit, OnDestroy {
   @Input() accountingId: string | undefined;
+  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
@@ -27,7 +28,6 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
   constructor(
     private accountingService: AccountingService,
     private agreementService: AgreementService,
-    private fb: FormBuilder,
     private router: Router
   ) {}
 
@@ -43,7 +43,7 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
         });
     }
 
-    this.agreements$ = this.agreementService.getAgreements();
+    this.agreements$ = this.agreementService.getAgreements(this.propertyId);
   }
 
   ngOnDestroy() {
@@ -52,7 +52,7 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
   }
 
   private initForm() {
-    this.accountingForm = this.fb.group({
+    this.accountingForm = new FormBuilder().group({
       periodFrom: [null, Validators.required],
       periodUpto: [null, Validators.required],
       subject: [null, Validators.required],
@@ -105,7 +105,7 @@ export class AddEditAccountingComponent implements OnInit, OnDestroy {
 
   private addAccounting(accounting: ModifiableAccountingDto) {
     this.accountingService
-      .createAccounting(accounting)
+      .createAccounting(this.propertyId, accounting)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {

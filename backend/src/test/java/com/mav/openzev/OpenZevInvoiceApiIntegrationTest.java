@@ -9,7 +9,6 @@ import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.Invoice;
 import com.mav.openzev.model.InvoiceModels;
-import com.mav.openzev.model.PropertyModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.InvoiceRepository;
@@ -50,13 +49,10 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      final Unit unit = UnitModels.getUnit();
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addUnit(unit)
-              .addAccounting(
-                  AccountingModels.getAccounting()
-                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(
+          AccountingModels.getAccounting()
+              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
 
       // act
       final ResponseEntity<InvoiceDto[]> response =
@@ -99,13 +95,10 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      final Unit unit = UnitModels.getUnit();
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addUnit(unit)
-              .addAccounting(
-                  AccountingModels.getAccounting()
-                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(
+          AccountingModels.getAccounting()
+              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
 
       // act
       final ResponseEntity<InvoiceDto> response =
@@ -156,13 +149,10 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     void status201() {
       // arrange
-      final Unit unit = UnitModels.getUnit();
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addUnit(unit)
-              .addAccounting(
-                  AccountingModels.getAccounting()
-                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(
+          AccountingModels.getAccounting()
+              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
 
       // arrange
       final ModifiableInvoiceDto requestBody =
@@ -250,13 +240,10 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      final Unit unit = UnitModels.getUnit();
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addUnit(unit)
-              .addAccounting(
-                  AccountingModels.getAccounting()
-                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(
+          AccountingModels.getAccounting()
+              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
 
       final ModifiableInvoiceDto requestBody =
           new ModifiableInvoiceDto()
@@ -322,14 +309,10 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     void status204() {
       // arrange
-      final Unit unit = UnitModels.getUnit();
-
-      testDatabaseService.insertProperty(
-          PropertyModels.getProperty()
-              .addUnit(unit)
-              .addAccounting(
-                  AccountingModels.getAccounting()
-                      .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build())));
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(
+          AccountingModels.getAccounting()
+              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
 
       // act
       final ResponseEntity<UUID> response =

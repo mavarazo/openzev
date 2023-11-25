@@ -14,6 +14,7 @@ import {
 })
 export class AddEditAgreementComponent implements OnInit, OnDestroy {
   @Input() agreementId: string | null;
+  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
@@ -22,7 +23,6 @@ export class AddEditAgreementComponent implements OnInit, OnDestroy {
 
   constructor(
     private agreementService: AgreementService,
-    private fb: FormBuilder,
     private router: Router
   ) {}
 
@@ -45,7 +45,7 @@ export class AddEditAgreementComponent implements OnInit, OnDestroy {
   }
 
   private initForm() {
-    this.agreementForm = this.fb.group({
+    this.agreementForm = new FormBuilder().group({
       periodFrom: [null, Validators.required],
       periodUpto: [null, Validators.required],
       highTariff: [
@@ -77,7 +77,7 @@ export class AddEditAgreementComponent implements OnInit, OnDestroy {
 
   private addAgreement(agreement: ModifiableAgreementDto) {
     this.agreementService
-      .createAgreement(agreement)
+      .createAgreement(this.propertyId, agreement)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {

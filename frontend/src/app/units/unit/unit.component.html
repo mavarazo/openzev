@@ -87,7 +87,7 @@
           <tbody *ngFor="let ownership of ownerships">
           <tr>
             <td>{{ ownership.owner?.firstName }} {{ ownership.owner?.lastName }}</td>
-            <td>{{ ownership.periodFrom | date }} - {{ ownership.periodUpto | date}}</td>
+            <td>{{ ownership.periodFrom | date }}</td>
             <td class="text-end">
               <div class="btn-group btn-group-sm" role="group">
                 <button type="button" class="btn btn-outline-primary" routerLink="ownerships/{{ownership.id}}/edit">

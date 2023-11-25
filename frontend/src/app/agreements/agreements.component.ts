@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AgreementDto, AgreementService } from '../../generated-source/api';
 
@@ -8,11 +8,13 @@ import { AgreementDto, AgreementService } from '../../generated-source/api';
   styleUrls: ['./agreements.component.scss'],
 })
 export class AgreementsComponent implements OnInit {
+  @Input() propertyId: string;
+
   agreements$: Observable<AgreementDto[]>;
 
   constructor(private agreementService: AgreementService) {}
 
   ngOnInit(): void {
-    this.agreements$ = this.agreementService.getAgreements();
+    this.agreements$ = this.agreementService.getAgreements(this.propertyId);
   }
 }

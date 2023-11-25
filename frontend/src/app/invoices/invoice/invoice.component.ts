@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
-  combineLatest,
   EMPTY,
   forkJoin,
   map,
@@ -72,14 +71,14 @@ export class InvoiceComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     );
 
-    this.ownerships$ = combineLatest([this.accounting$, this.unit$]).pipe(
-      switchMap(([a, u]) =>
+    this.unit$.pipe(
+      switchMap((u) =>
         this.ownershipService
-          .getOwnerships(u.id!, a.periodFrom, a.periodUpto)
+          .getOwnerships(u.id!)
           .pipe(
-            switchMap((ownerships: OwnershipDto[]) =>
+            switchMap((ownerships) =>
               forkJoin(
-                ownerships.map((ownership: OwnershipDto) =>
+                ownerships.map((ownership) =>
                   this.loadOwnerForOwnership(ownership)
                 )
               )

@@ -14,17 +14,14 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class AddEditOwnerComponent implements OnInit, OnDestroy {
   @Input() ownerId: string | null;
+  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
   ownerForm: FormGroup;
   isSubmitted: boolean = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private ownerService: OwnerService
-  ) {}
+  constructor(private ownerService: OwnerService, private router: Router) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -43,7 +40,7 @@ export class AddEditOwnerComponent implements OnInit, OnDestroy {
   }
 
   private initForm() {
-    this.ownerForm = this.fb.group({
+    this.ownerForm = new FormBuilder().group({
       contractId: [''],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -72,7 +69,7 @@ export class AddEditOwnerComponent implements OnInit, OnDestroy {
 
   private addOwner(owner: ModifiableOwnerDto) {
     this.ownerService
-      .createOwner(owner)
+      .createOwner(this.propertyId, owner)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {

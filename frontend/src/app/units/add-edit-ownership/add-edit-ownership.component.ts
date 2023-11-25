@@ -35,14 +35,13 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
     private unitService: UnitService,
     private ownerService: OwnerService,
     private ownershipService: OwnershipService,
-    private fb: FormBuilder,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.initForm();
 
-    this.owners$ = this.ownerService.getOwners();
+    this.owners$ = this.ownerService.getOwners(this.propertyId);
 
     if (this.unitId) {
       this.unit$ = this.unitService.getUnit(this.unitId);
@@ -63,17 +62,15 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   }
 
   private initForm() {
-    this.ownershipForm = this.fb.group({
+    this.ownershipForm = new FormBuilder().group({
       ownerId: [null, Validators.required],
       periodFrom: [null, Validators.required],
-      periodUpto: [null],
     });
   }
 
   submit() {
     if (this.ownershipForm.valid) {
       const ownership = {
-        unitId: this.unitId,
         ...this.ownershipForm.value,
       } as ModifiableOwnershipDto;
 
@@ -87,7 +84,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
 
   private add(ownership: ModifiableOwnershipDto) {
     this.ownershipService
-      .createOwnership(ownership)
+      .createOwnership(this.unitId, ownership)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
