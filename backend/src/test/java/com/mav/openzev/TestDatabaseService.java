@@ -6,6 +6,8 @@ import com.mav.openzev.model.Document;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Ownership;
 import com.mav.openzev.model.Unit;
+import com.mav.openzev.model.config.ZevConfig;
+import com.mav.openzev.model.config.ZevRepresentativeConfig;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Table;
@@ -87,5 +89,17 @@ public class TestDatabaseService implements InitializingBean {
   public Unit insert(final Unit unit) {
     entityManager.persist(unit);
     return unit;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public ZevConfig insert(final ZevConfig zevConfig) {
+    entityManager.persist(zevConfig);
+    return zevConfig;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public ZevRepresentativeConfig insert(final ZevRepresentativeConfig zevRepresentativeConfig) {
+    entityManager.persist(zevRepresentativeConfig);
+    return zevRepresentativeConfig;
   }
 }
