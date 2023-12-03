@@ -1,0 +1,35 @@
+delete:
+  operationId: deleteDocument
+  tags:
+    - Document
+  parameters:
+    - $ref: '../parameters/documents.yaml#/DocumentParam'
+  responses:
+    '204':
+      description: Deleted
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+get:
+  operationId: getDocument
+  tags:
+    - Document
+  parameters:
+    - $ref: '../parameters/documents.yaml#/DocumentParam'
+  responses:
+    '200':
+      description: Document
+      content:
+        '*/*':
+          schema:
+            type: string
+            format: binary
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

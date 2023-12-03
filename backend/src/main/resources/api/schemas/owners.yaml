@@ -1,0 +1,63 @@
+OwnerDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    active:
+      type: boolean
+    contractId:
+      type: string
+    firstName:
+      type: string
+    lastName:
+      type: string
+    email:
+      type: string
+      format: email
+    street:
+      type: string
+    houseNr:
+      type: string
+    postalCode:
+      type: string
+    city:
+      type: string
+    phoneNr:
+      type: string
+    mobileNr:
+      type: string
+
+ModifiableOwnerDto:
+  type: object
+  properties:
+    active:
+      type: boolean
+      default: true
+    contractId:
+      type: string
+    firstName:
+      type: string
+    lastName:
+      type: string
+    email:
+      type: string
+      format: email
+    street:
+      type: string
+    houseNr:
+      type: string
+    postalCode:
+      type: string
+    city:
+      type: string
+    phoneNr:
+      type: string
+    mobileNr:
+      type: string
+  required:
+    - firstName
+    - lastName
+    - street
+    - houseNr
+    - postalCode
+    - city

@@ -1,0 +1,40 @@
+get:
+  operationId: getZevRepresentativeConfig
+  tags:
+    - Config
+  responses:
+    '200':
+      description: Settings for ZEV
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/configs.yaml#/ZevRepresentativeConfigDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: saveZevRepresentativeConfig
+  tags:
+    - Config
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/configs.yaml#/ModifiableZevRepresentativeConfigDto'
+  responses:
+    '200':
+      description: Saved
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

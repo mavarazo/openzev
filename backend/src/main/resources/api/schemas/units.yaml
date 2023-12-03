@@ -1,0 +1,30 @@
+UnitDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    active:
+      type: boolean
+    subject:
+      type: string
+    valueRatio:
+      type: integer
+    mpan:
+      description: meter point administration number
+      type: string
+
+ModifiableUnitDto:
+  type: object
+  properties:
+    active:
+      type: boolean
+      default: true
+    subject:
+      type: string
+    valueRatio:
+      type: integer
+    mpan:
+      description: meter point administration number
+      type: string
+  required:
+    - subject

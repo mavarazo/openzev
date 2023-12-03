@@ -1,0 +1,59 @@
+delete:
+  operationId: deleteOwner
+  tags:
+    - Owner
+  parameters:
+    - $ref: '../parameters/owners.yaml#/OwnerParam'
+  responses:
+    '204':
+      description: Deleted
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+get:
+  operationId: getOwner
+  tags:
+    - Owner
+  parameters:
+    - $ref: '../parameters/owners.yaml#/OwnerParam'
+  responses:
+    '200':
+      description: Owner
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/owners.yaml#/OwnerDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeOwner
+  tags:
+    - Owner
+  parameters:
+    - $ref: '../parameters/owners.yaml#/OwnerParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/owners.yaml#/ModifiableOwnerDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

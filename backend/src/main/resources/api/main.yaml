@@ -1,0 +1,62 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: OpenZEV API
+
+paths:
+  /v1/accountings:
+    $ref: './paths/v1-accountings.yaml'
+
+  /v1/accountings/{accountingId}:
+    $ref: './paths/v1-accountings-id.yaml'
+
+  /v1/accountings/{accountingId}/documents:
+    $ref: './paths/v1-accountings-id-documents.yaml'
+
+  /v1/accountings/{accountingId}/invoices:
+    $ref: './paths/v1-accountings-id-invoices.yaml'
+
+  /v1/invoices/{invoiceId}:
+    $ref: './paths/v1-invoices-id.yaml'
+
+  /v1/agreements:
+    $ref: './paths/v1-agreements.yaml'
+
+  /v1/agreements/{agreementId}:
+    $ref: './paths/v1-agreements-id.yaml'
+
+  /v1/configs/zev:
+    $ref: './paths/v1-configs-zev.yaml'
+
+  /v1/configs/zev-representative:
+    $ref: './paths/v1-configs-zev-representative.yaml'
+
+  /v1/dashboard/owners:
+    $ref: './paths/v1-dashboard-owners.yaml'
+
+  /v1/dashboard/units:
+    $ref: './paths/v1-dashboard-units.yaml'
+
+  /v1/dashboard/accountings:
+    $ref: './paths/v1-dashboard-accountings.yaml'
+
+  /v1/documents/{documentId}:
+    $ref: './paths/v1-documents-id.yaml'
+
+  /v1/owners:
+    $ref: './paths/v1-owners.yaml'
+
+  /v1/owners/{ownerId}:
+    $ref: './paths/v1-owners-id.yaml'
+
+  /v1/units:
+    $ref: './paths/v1-units.yaml'
+
+  /v1/units/{unitId}:
+    $ref: './paths/v1-units-id.yaml'
+
+  /v1/units/{unitId}/ownerships:
+    $ref: './paths/v1-units-id-ownerships.yaml'
+
+  /v1/ownerships/{ownershipId}:
+    $ref: './paths/v1-ownerships-id.yaml'

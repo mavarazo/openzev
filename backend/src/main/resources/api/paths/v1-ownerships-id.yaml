@@ -1,0 +1,59 @@
+delete:
+  operationId: deleteOwnership
+  tags:
+    - Ownership
+  parameters:
+    - $ref: '../parameters/ownerships.yaml#/OwnershipParam'
+  responses:
+    '204':
+      description: Deleted
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+get:
+  operationId: getOwnership
+  tags:
+    - Ownership
+  parameters:
+    - $ref: '../parameters/ownerships.yaml#/OwnershipParam'
+  responses:
+    '200':
+      description: Ownership
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ownerships.yaml#/OwnershipDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeOwnership
+  tags:
+    - Ownership
+  parameters:
+    - $ref: '../parameters/ownerships.yaml#/OwnershipParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/ownerships.yaml#/ModifiableOwnershipDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

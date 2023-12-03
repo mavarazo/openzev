@@ -1,0 +1,27 @@
+OwnershipDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    active:
+      type: boolean
+    unitId:
+      $ref: './commons.yaml#/Id'
+    ownerId:
+      $ref: './commons.yaml#/Id'
+    periodFrom:
+      $ref: './commons.yaml#/Date'
+
+ModifiableOwnershipDto:
+  type: object
+  properties:
+    active:
+      type: boolean
+      default: true
+    ownerId:
+      $ref: './commons.yaml#/Id'
+    periodFrom:
+      $ref: './commons.yaml#/Date'
+  required:
+    - ownerId
+    - periodFrom

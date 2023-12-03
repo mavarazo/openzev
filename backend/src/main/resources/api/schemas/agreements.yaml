@@ -1,0 +1,34 @@
+AgreementDto:
+  type: object
+  properties:
+    id:
+      $ref: '../schemas/commons.yaml#/Id'
+    periodFrom:
+      $ref: '../schemas/commons.yaml#/Date'
+    periodUpto:
+      $ref: '../schemas/commons.yaml#/Date'
+    highTariff:
+      type: number
+    lowTariff:
+      type: number
+    approved:
+      $ref: '../schemas/commons.yaml#/Date'
+
+ModifiableAgreementDto:
+  type: object
+  properties:
+    periodFrom:
+      $ref: '../schemas/commons.yaml#/Date'
+    periodUpto:
+      $ref: '../schemas/commons.yaml#/Date'
+    highTariff:
+      type: number
+    lowTariff:
+      type: number
+    approved:
+      $ref: '../schemas/commons.yaml#/Date'
+  required:
+    - periodFrom
+    - periodUpto
+    - highTariff
+    - lowTariff

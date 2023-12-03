@@ -1,0 +1,22 @@
+DocumentDto:
+  type: object
+  properties:
+    id:
+      $ref: '../schemas/commons.yaml#/Id'
+    name:
+      type: string
+    filename:
+      type: string
+    mimeType:
+      type: string
+
+ModifiableDocumentDto:
+  type: object
+  properties:
+    name:
+      type: string
+    mimeType:
+      type: string
+    content:
+      type: string
+      format: binary

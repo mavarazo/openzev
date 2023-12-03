@@ -1,0 +1,17 @@
+get:
+  operationId: getOwnerOverview
+  tags:
+    - Dashboard
+  responses:
+    '200':
+      description: Owner overview
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/dashboard.yaml#/OwnerOverviewDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

@@ -64,7 +64,7 @@ tasks.compileJava {
 
 tasks.openApiGenerate {
     generatorName.set("spring")
-    inputSpec.set("$projectDir/src/main/resources/api.yaml")
+    inputSpec.set("$projectDir/src/main/resources/api/main.yaml")
     outputDir.set("$projectDir/build/generated")
     apiPackage.set("com.mav.openzev.api")
     modelPackage.set("com.mav.openzev.api.model")
@@ -74,7 +74,12 @@ tasks.openApiGenerate {
             "interfaceOnly" to "true",
             "openApiNullable" to "false",
             "useSpringBoot3" to "true",
-            "useTags" to "true"
+            "useTags" to "true",
+            "skipDefaultInterface" to "true",
     )
     )
+}
+
+tasks.openApiValidate {
+    inputSpec.set("$projectDir/src/main/resources/api/main.yaml")
 }

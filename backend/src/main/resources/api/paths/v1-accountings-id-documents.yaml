@@ -1,0 +1,51 @@
+get:
+  operationId: getAccountingDocuments
+  tags:
+    - Accounting
+    - Document
+  parameters:
+    - $ref: '../parameters/accountings.yaml#/AccountingParam'
+  responses:
+    '200':
+      description: Documents
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/documents.yaml#/DocumentDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createAccountingDocument
+  tags:
+    - Accounting
+    - Documents
+  parameters:
+    - $ref: '../parameters/accountings.yaml#/AccountingParam'
+  requestBody:
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            content:
+              type: string
+              format: binary
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
