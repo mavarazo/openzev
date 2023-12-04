@@ -14,7 +14,6 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class AddEditOwnerComponent implements OnInit, OnDestroy {
   @Input() ownerId: string | null;
-  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
@@ -69,7 +68,7 @@ export class AddEditOwnerComponent implements OnInit, OnDestroy {
 
   private addOwner(owner: ModifiableOwnerDto) {
     this.ownerService
-      .createOwner(this.propertyId, owner)
+      .createOwner(owner)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {

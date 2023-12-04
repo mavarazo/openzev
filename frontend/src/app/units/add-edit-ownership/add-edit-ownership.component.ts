@@ -20,7 +20,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   @Input() ownershipId: string | null;
   @Input() unitId: string;
-  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
@@ -41,7 +40,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
 
-    this.owners$ = this.ownerService.getOwners(this.propertyId);
+    this.owners$ = this.ownerService.getOwners();
 
     if (this.unitId) {
       this.unit$ = this.unitService.getUnit(this.unitId);
@@ -89,12 +88,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (id) => {
           this.reset();
-          this.router.navigate([
-            'properties',
-            this.propertyId,
-            'units',
-            this.unitId,
-          ]);
+          this.router.navigate(['units', this.unitId]);
         },
         error: (error) => {
           console.error(error);
@@ -110,12 +104,7 @@ export class AddEditOwnershipComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.reset();
-          this.router.navigate([
-            'properties',
-            this.propertyId,
-            'units',
-            this.unitId,
-          ]);
+          this.router.navigate(['units', this.unitId]);
         },
         error: (error) => {
           console.error(error);

@@ -1,9 +1,15 @@
-.nav {
+.sidebar-nav {
+  @extend .nav;
   --bs-link-color: $white;
   --bs-link-hover-color: $white;
 }
 
-.nav-link {
+.sidebar-nav-item {
+  @extend .nav-item;
+}
+
+.sidebar-nav-link {
+  @extend .nav-link;
   --bs-nav-link-padding-y: 0.625rem;
   --bs-nav-link-padding-x: 1.625rem;
 
