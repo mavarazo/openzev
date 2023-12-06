@@ -150,12 +150,12 @@ export class AccountingComponent implements OnInit, OnDestroy {
 
   openOrDownloadDocument(document: DocumentDto) {
     if (document.id) {
-      if ('application/pdf' === document.mimeType) {
+      if ('application/pdf' === document.mediaType) {
         this.documentService
           .getDocument(document.id)
           .pipe(takeUntil(this.destroy$))
           .subscribe((file: Blob) => {
-            const pdfBlob = new Blob([file], { type: document.mimeType });
+            const pdfBlob = new Blob([file], { type: document.mediaType });
             const fileURL = URL.createObjectURL(pdfBlob);
             window.open(fileURL, '_blank');
           });

@@ -7,16 +7,7 @@ DocumentDto:
       type: string
     filename:
       type: string
-    mimeType:
+    mediaType:
       type: string
-
-ModifiableDocumentDto:
-  type: object
-  properties:
-    name:
+    thumbnail:
       type: string
-    mimeType:
-      type: string
-    content:
-      type: string
-      format: binary

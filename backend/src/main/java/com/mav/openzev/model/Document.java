@@ -33,11 +33,16 @@ public class Document extends AbstractAuditEntity {
   @Column(name = "FILENAME")
   private String filename;
 
-  @Column(name = "MIME_TYPE", nullable = false)
-  private String mimeType;
+  @Column(name = "MEDIA_TYPE", nullable = false)
+  private String mediaType;
 
   @Lob
   @JdbcType(BinaryJdbcType.class)
   @Column(name = "DATA", nullable = false, columnDefinition = "LONGBLOB")
   private byte[] data;
+
+  @Lob
+  @JdbcType(BinaryJdbcType.class)
+  @Column(name = "THUMBNAIL", nullable = false, columnDefinition = "LONGBLOB")
+  private byte[] thumbnail;
 }

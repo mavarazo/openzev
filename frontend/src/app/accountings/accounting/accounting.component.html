@@ -132,8 +132,12 @@
               </thead>
               <tbody *ngFor="let document of documents">
               <tr>
-                <td (click)="openOrDownloadDocument(document)"
-                    style="cursor: pointer">{{ document.name }}</td>
+                <td (click)="openOrDownloadDocument(document)" style="cursor: pointer">
+                  <span [ngbTooltip]="thumbnailTooltip"
+                        placement="auto"
+                        [tooltipContext]="{ thumbnail: 'data:image/jpg;base64,' + document.thumbnail}">
+                  {{ document.name }}</span>
+                </td>
                 <td class="text-end">
                   <div class="btn-group btn-group-sm" role="group">
                     <button class="btn btn-outline-primary" (click)="downloadDocument(document)">
@@ -220,6 +224,10 @@
     </ng-container>
   </div>
 </div>
+
+<ng-template #thumbnailTooltip let-thumbnail="thumbnail">
+  <img src="{{thumbnail}}" height="256"/>
+</ng-template>
 
 <ng-template #loading>
   Loading...

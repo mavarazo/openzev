@@ -29,13 +29,18 @@
             <column name="NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+
             <column name="FILENAME" type="VARCHAR(255)"/>
-            <column name="MIME_TYPE" type="VARCHAR(255)">
+
+            <column name="MEDIA_TYPE" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+
             <column name="DATA" type="BYTEA">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="THUMBNAIL" type="BYTEA"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

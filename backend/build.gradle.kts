@@ -36,7 +36,8 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
-
+    implementation("org.apache.pdfbox:pdfbox:3.0.1")
+    
     runtimeOnly("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("org.postgresql:postgresql")
 
