@@ -8,6 +8,7 @@ import { AccountingComponent } from './accounting/accounting.component';
 import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
 import { AccountingsComponent } from './accountings.component';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { AccountingsComponent } from './accountings.component';
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
+    NgbTooltipModule,
   ],
   providers: [DatePipe],
 })

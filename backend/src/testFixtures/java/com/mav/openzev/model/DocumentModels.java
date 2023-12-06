@@ -15,8 +15,9 @@ public class DocumentModels {
         .uuid(UUID)
         .name("foo")
         .filename("foo.pdf")
-        .mimeType("application/pdf")
+        .mediaType("application/pdf")
         .data("lorem ipsum".getBytes(StandardCharsets.UTF_8))
+        .thumbnail("dolor".getBytes(StandardCharsets.UTF_8))
         .build();
   }
 }

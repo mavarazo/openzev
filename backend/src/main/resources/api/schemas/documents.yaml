@@ -1,0 +1,13 @@
+DocumentDto:
+  type: object
+  properties:
+    id:
+      $ref: '../schemas/commons.yaml#/Id'
+    name:
+      type: string
+    filename:
+      type: string
+    mediaType:
+      type: string
+    thumbnail:
+      type: string

@@ -6,15 +6,18 @@ import com.mav.openzev.api.AccountingApi;
 import com.mav.openzev.api.model.AccountingDto;
 import com.mav.openzev.api.model.DocumentDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
+import com.mav.openzev.exception.BadRequestException;
 import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.AccountingMapper;
+import com.mav.openzev.mapper.DocumentMapper;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Document;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.AgreementRepository;
 import com.mav.openzev.repository.DocumentRepository;
+import com.mav.openzev.service.DocumentService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,9 @@ public class AccountingController implements AccountingApi {
   private final DocumentRepository documentRepository;
 
   private final AccountingMapper accountingMapper;
+  private final DocumentMapper documentMapper;
+
+  private final DocumentService documentService;
 
   @Override
   @Transactional
@@ -122,13 +128,7 @@ public class AccountingController implements AccountingApi {
                 Accounting.class.getSimpleName(),
                 Sort.sort(Document.class).by(Document::getCreated))
             .stream()
-            .map(
-                d ->
-                    new DocumentDto()
-                        .id(d.getUuid())
-                        .name(d.getName())
-                        .filename(d.getFilename())
-                        .mimeType(d.getMimeType()))
+            .map(documentMapper::mapToDocumentDto)
             .toList();
 
     return ResponseEntity.ok(documents);
@@ -138,20 +138,16 @@ public class AccountingController implements AccountingApi {
   @Override
   public ResponseEntity<UUID> createAccountingDocument(
       final UUID accountingId, final MultipartFile content) {
+    if (isNull(content) || isNull(content.getContentType())) {
+      throw BadRequestException.ofMultipartFileRequired();
+    }
+
     final Accounting accounting =
         accountingRepository
             .findByUuid(accountingId)
             .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
 
-    final Document document = new Document();
-    document.setRefId(accounting.getId());
-    document.setRefType(Accounting.class.getSimpleName());
-    document.setName(content.getName());
-    document.setFilename(content.getOriginalFilename());
-    document.setMimeType(content.getContentType());
-    document.setData(content.getBytes());
-
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(documentRepository.save(document).getUuid());
+    final Document document = documentService.createDocument(content, accounting);
+    return ResponseEntity.status(HttpStatus.CREATED).body(document.getUuid());
   }
 }

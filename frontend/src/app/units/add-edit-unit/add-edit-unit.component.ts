@@ -11,7 +11,6 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class AddEditUnitComponent implements OnInit, OnDestroy {
   @Input() unitId: string | null;
-  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
@@ -50,7 +49,6 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
     this.isSubmitted = true;
     if (this.unitForm.valid) {
       const unit = {
-        propertyId: this.propertyId,
         ...this.unitForm.value,
       } as ModifiableUnitDto;
 
@@ -64,12 +62,12 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
 
   private addUnit(unit: ModifiableUnitDto) {
     this.unitService
-      .createUnit(this.propertyId, unit)
+      .createUnit(unit)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {
           this.reset();
-          this.router.navigate(['/properties', this.propertyId, 'units', id]);
+          this.router.navigate(['units', id]);
         },
         error: (error) => {
           console.error(error);
@@ -84,12 +82,7 @@ export class AddEditUnitComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.reset();
-          this.router.navigate([
-            '/properties',
-            this.propertyId,
-            'units',
-            this.unitId,
-          ]);
+          this.router.navigate(['units', this.unitId]);
         },
         error: (error) => {
           console.error(error);

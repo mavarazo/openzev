@@ -1,6 +1,7 @@
 package com.mav.openzev.controller;
 
 import com.mav.openzev.api.model.ErrorDto;
+import com.mav.openzev.exception.BadRequestException;
 import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
 import lombok.AccessLevel;
@@ -12,6 +13,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionController {
+
+  @ExceptionHandler(value = {BadRequestException.class})
+  static ResponseEntity<ErrorDto> handleBadRequestException(final BadRequestException exception) {
+    return ResponseEntity.status(BadRequestException.getStatusCode())
+        .body(new ErrorDto().code(exception.getCode()).message(exception.getMessage()));
+  }
 
   @ExceptionHandler(value = {NotFoundException.class})
   static ResponseEntity<ErrorDto> handleNotFoundException(final NotFoundException exception) {

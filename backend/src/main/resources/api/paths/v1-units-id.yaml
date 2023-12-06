@@ -1,0 +1,59 @@
+delete:
+  operationId: deleteUnit
+  tags:
+    - Unit
+  parameters:
+    - $ref: '../parameters/units.yaml#/UnitParam'
+  responses:
+    '204':
+      description: Deleted
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+get:
+  operationId: getUnit
+  tags:
+    - Unit
+  parameters:
+    - $ref: '../parameters/units.yaml#/UnitParam'
+  responses:
+    '200':
+      description: Unit
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/units.yaml#/UnitDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeUnit
+  tags:
+    - Unit
+  parameters:
+    - $ref: '../parameters/units.yaml#/UnitParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/units.yaml#/ModifiableUnitDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

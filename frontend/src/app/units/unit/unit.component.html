@@ -1,20 +1,9 @@
 <div class="d-flex align-items-center justify-content-between pb-3">
-  <ng-container *ngIf="{unit: unit$ | async, property: property$ | async} as header">
+  <ng-container *ngIf="{unit: unit$ | async} as header">
     <div>
       <h4>
         {{header.unit?.subject}}
       </h4>
-
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#" routerLink="/properties/{{header.property?.id}}">
-            {{header.property?.street}} {{header.property?.houseNr}}
-            , {{header.property?.postalCode}} {{header.property?.city}}
-          </a>
-          </li>
-        </ol>
-      </nav>
-
     </div>
   </ng-container>
 

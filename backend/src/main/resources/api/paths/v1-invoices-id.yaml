@@ -1,0 +1,53 @@
+delete:
+  operationId: deleteInvoice
+  tags:
+    - Invoice
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  responses:
+    '204':
+      description: Deleted
+get:
+  operationId: getInvoice
+  tags:
+    - Invoice
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  responses:
+    '200':
+      description: Invoice
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/invoices.yaml#/InvoiceDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeInvoice
+  tags:
+    - Invoice
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/invoices.yaml#/ModifiableInvoiceDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

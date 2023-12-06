@@ -1,0 +1,42 @@
+get:
+  operationId: getOwners
+  tags:
+    - Owner
+  responses:
+    '200':
+      description: Owners
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/owners.yaml#/OwnerDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createOwner
+  tags:
+    - Owner
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/owners.yaml#/ModifiableOwnerDto'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

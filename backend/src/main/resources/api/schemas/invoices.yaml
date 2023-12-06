@@ -1,0 +1,51 @@
+InvoiceDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    accountingId:
+      $ref: './commons.yaml#/Id'
+    unitId:
+      $ref: './commons.yaml#/Id'
+    usageHighTariff:
+      type: number
+      format: double
+    usageLowTariff:
+      type: number
+      format: double
+    usageTotal:
+      type: number
+      format: double
+    amountHighTariff:
+      type: number
+    amountLowTariff:
+      type: number
+    amountTotal:
+      type: number
+    payed:
+      $ref: './commons.yaml#/Date'
+
+ModifiableInvoiceDto:
+  type: object
+  properties:
+    unitId:
+      $ref: './commons.yaml#/Id'
+    usageHighTariff:
+      type: number
+      format: double
+    usageLowTariff:
+      type: number
+      format: double
+    usageTotal:
+      type: number
+      format: double
+    amountHighTariff:
+      type: number
+    amountLowTariff:
+      type: number
+    amountTotal:
+      type: number
+    payed:
+      $ref: './commons.yaml#/Date'
+  required:
+    - unitId

@@ -3,6 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
+    path: 'configs',
+    loadChildren: () =>
+      import('./configs/configs.module').then((_) => _.ConfigsModule),
+  },
+  {
     path: 'dashboard',
     loadChildren: () =>
       import('./dashboard/dashboard.module').then((_) => _.DashboardModule),
@@ -25,9 +30,9 @@ const routes: Routes = [
       import('./owners/owners.module').then((_) => _.OwnersModule),
   },
   {
-    path: 'properties',
+    path: 'units',
     loadChildren: () =>
-      import('./properties/properties.module').then((_) => _.PropertiesModule),
+      import('./units/units.module').then((_) => _.UnitsModule),
   },
   {
     path: '',

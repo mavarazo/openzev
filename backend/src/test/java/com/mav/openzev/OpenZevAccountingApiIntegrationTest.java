@@ -367,6 +367,29 @@ public class OpenZevAccountingApiIntegrationTest {
   class CreateDocumentTests {
 
     @Test
+    void status400_multipart_required() {
+      // arrange
+      final HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+      final MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.accountings_documents(AccountingModels.UUID),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, headers),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.BAD_REQUEST, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("multipart_file_required", ErrorDto::getCode);
+    }
+
+    @Test
     void status404() {
       // arrange
       final HttpHeaders headers = new HttpHeaders();
@@ -424,8 +447,9 @@ public class OpenZevAccountingApiIntegrationTest {
                       .returns(Accounting.class.getSimpleName(), Document::getRefType)
                       .returns("content", Document::getName)
                       .returns("dummy.pdf", Document::getFilename)
-                      .returns(MediaType.APPLICATION_PDF_VALUE, Document::getMimeType)
-                      .doesNotReturn(null, Document::getData));
+                      .returns(MediaType.APPLICATION_PDF_VALUE, Document::getMediaType)
+                      .doesNotReturn(null, Document::getData)
+                      .doesNotReturn(null, Document::getThumbnail));
     }
   }
 }

@@ -1,0 +1,42 @@
+get:
+  operationId: getUnits
+  tags:
+    - Unit
+  responses:
+    '200':
+      description: Units
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/units.yaml#/UnitDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createUnit
+  tags:
+    - Unit
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/units.yaml#/ModifiableUnitDto'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

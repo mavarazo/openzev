@@ -6,8 +6,8 @@
     "generators": {
       "v1": {
         "generatorName": "typescript-angular",
-        "output": "#{cwd}/src/generated-source/#{name}",
-        "glob": "./../backend/src/main/resources/api.yaml",
+        "output": "#{cwd}/src/generated-source/api",
+        "glob": "./../backend/src/main/resources/api/main.yaml",
         "additionalProperties": {
           "ngVersion": "15.2.9",
           "npmName": "restClient",

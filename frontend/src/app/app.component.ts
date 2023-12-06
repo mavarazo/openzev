@@ -32,9 +32,9 @@ export class AppComponent {
         link: '/owners',
       },
       {
-        label: 'Properties',
+        label: 'Units',
         icon: 'bi bi-houses',
-        link: '/properties',
+        link: '/units',
       },
     ];
   }

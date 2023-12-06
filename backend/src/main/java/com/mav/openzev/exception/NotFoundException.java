@@ -42,14 +42,23 @@ public class NotFoundException extends RuntimeException {
         "ownership with id '%s' not found".formatted(ownershipId.toString()));
   }
 
-    public static NotFoundException ofAgreementNotFound(final UUID agreementId) {
-        return new NotFoundException(
-                "agreement_not_found",
-                "agreement with id '%s' not found".formatted(agreementId.toString()));
-    }
+  public static NotFoundException ofAgreementNotFound(final UUID agreementId) {
+    return new NotFoundException(
+        "agreement_not_found",
+        "agreement with id '%s' not found".formatted(agreementId.toString()));
+  }
 
   public static NotFoundException ofDocumentNotFound(final UUID documentId) {
     return new NotFoundException(
         "document_not_found", "document with id '%s' not found".formatted(documentId.toString()));
-    }
+  }
+
+  public static NotFoundException ofZevConfigNotFound() {
+    return new NotFoundException("zev_config_not_found", "ZevConfig not found");
+  }
+
+  public static NotFoundException ofZevRepresentativeConfigNotFound() {
+    return new NotFoundException(
+        "zev_representative_config_not_found", "ZevRepresentativeConfig not found");
+  }
 }

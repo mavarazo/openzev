@@ -1,0 +1,59 @@
+delete:
+  operationId: deleteAgreement
+  tags:
+    - Agreement
+  parameters:
+    - $ref: '../parameters/agreements.yaml#/AgreementParam'
+  responses:
+    '204':
+      description: Deleted
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+get:
+  operationId: getAgreement
+  tags:
+    - Agreement
+  parameters:
+    - $ref: '../parameters/agreements.yaml#/AgreementParam'
+  responses:
+    '200':
+      description: Agreement
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/agreements.yaml#/AgreementDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeAgreement
+  tags:
+    - Agreement
+  parameters:
+    - $ref: '../parameters/agreements.yaml#/AgreementParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/agreements.yaml#/ModifiableAgreementDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

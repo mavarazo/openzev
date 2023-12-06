@@ -1,0 +1,17 @@
+get:
+  operationId: getUnitOverview
+  tags:
+    - Dashboard
+  responses:
+    '200':
+      description: Unit overview
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/dashboard.yaml#/UnitOverviewDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

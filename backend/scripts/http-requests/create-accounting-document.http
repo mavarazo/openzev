@@ -1,0 +1,9 @@
+POST http://localhost:8001/v1/accountings/fa1f7bd9-a8c5-4ffe-ae52-69575ec1eae4/documents
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="content"; filename="dummy.pdf";
+Content-Type: application/pdf
+
+// The 'input.txt' file will be uploaded
+< /Users/mav/Downloads/dummy.pdf

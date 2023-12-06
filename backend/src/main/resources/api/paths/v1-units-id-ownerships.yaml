@@ -1,0 +1,52 @@
+get:
+  operationId: getOwnerships
+  tags:
+    - Ownership
+  parameters:
+    - $ref: '../parameters/units.yaml#/UnitParam'
+  responses:
+    '200':
+      description: Ownerships
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/ownerships.yaml#/OwnershipDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createOwnership
+  tags:
+    - Ownership
+  parameters:
+    - $ref: '../parameters/units.yaml#/UnitParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/ownerships.yaml#/ModifiableOwnershipDto'
+  responses:
+    '422':
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

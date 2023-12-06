@@ -1,0 +1,39 @@
+AccountingDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    agreementId:
+      $ref: './commons.yaml#/Id'
+    periodFrom:
+      $ref: './commons.yaml#/Date'
+    periodUpto:
+      $ref: './commons.yaml#/Date'
+    subject:
+      type: string
+    amountHighTariff:
+      type: number
+    amountLowTariff:
+      type: number
+    amountTotal:
+      type: number
+
+ModifiableAccountingDto:
+  type: object
+  properties:
+    agreementId:
+      $ref: './commons.yaml#/Id'
+    periodFrom:
+      $ref: './commons.yaml#/Date'
+    periodUpto:
+      $ref: './commons.yaml#/Date'
+    subject:
+      type: string
+    amountHighTariff:
+      type: number
+    amountLowTariff:
+      type: number
+    amountTotal:
+      type: number
+  required:
+    - subject

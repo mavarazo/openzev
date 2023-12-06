@@ -38,6 +38,14 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI configs_zev() {
+    return UriComponentsBuilder.fromPath("/v1/configs/zev").build().toUri();
+  }
+
+  public static URI configs_zev_representative() {
+    return UriComponentsBuilder.fromPath("/v1/configs/zev-representative").build().toUri();
+  }
+
   public static URI dashboard_accountings() {
     return UriComponentsBuilder.fromPath("/v1/dashboard").path("/accountings").build().toUri();
   }

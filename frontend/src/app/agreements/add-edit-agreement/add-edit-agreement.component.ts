@@ -14,7 +14,6 @@ import {
 })
 export class AddEditAgreementComponent implements OnInit, OnDestroy {
   @Input() agreementId: string | null;
-  @Input() propertyId: string;
 
   private destroy$ = new Subject<void>();
 
@@ -77,7 +76,7 @@ export class AddEditAgreementComponent implements OnInit, OnDestroy {
 
   private addAgreement(agreement: ModifiableAgreementDto) {
     this.agreementService
-      .createAgreement(this.propertyId, agreement)
+      .createAgreement(agreement)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (id) => {

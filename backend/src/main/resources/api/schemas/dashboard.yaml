@@ -1,0 +1,17 @@
+OwnerOverviewDto:
+  type: object
+  properties:
+    total:
+      type: integer
+
+UnitOverviewDto:
+  type: object
+  properties:
+    total:
+      type: integer
+
+AccountingOverviewDto:
+  type: object
+  properties:
+    total:
+      type: integer
