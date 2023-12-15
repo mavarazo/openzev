@@ -1,11 +1,14 @@
 package com.mav.openzev.controller;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import com.mav.openzev.api.AccountingApi;
-import com.mav.openzev.api.model.AccountingDto;
+import com.mav.openzev.api.model.AnyAccounting;
+import com.mav.openzev.api.model.AnyModifiableAccounting;
 import com.mav.openzev.api.model.DocumentDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
+import com.mav.openzev.api.model.ModifiableZevAccountingDto;
 import com.mav.openzev.exception.BadRequestException;
 import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.exception.ValidationException;
@@ -14,11 +17,13 @@ import com.mav.openzev.mapper.DocumentMapper;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Document;
+import com.mav.openzev.model.zev.ZevAccounting;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.AgreementRepository;
 import com.mav.openzev.repository.DocumentRepository;
 import com.mav.openzev.service.DocumentService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -44,46 +49,90 @@ public class AccountingController implements AccountingApi {
 
   @Override
   @Transactional
-  public ResponseEntity<List<AccountingDto>> getAccountings() {
+  public ResponseEntity<List<AnyAccounting>> getAccountings() {
     return ResponseEntity.ok(
         accountingRepository
             .findAll(Sort.sort(Accounting.class).by(Accounting::getPeriodFrom))
             .stream()
-            .map(accountingMapper::mapToAccountingDto)
+            .map(this::mapToAccounting)
             .toList());
+  }
+
+  private <T extends Accounting> AnyAccounting mapToAccounting(final T accounting) {
+    if (nonNull(accounting)) {
+      return accountingMapper.mapToAccountingDto(accounting);
+    }
+    return null;
   }
 
   @Override
   @Transactional
-  public ResponseEntity<AccountingDto> getAccounting(final UUID accountingId) {
-    return ResponseEntity.ok(
-        accountingRepository
-            .findByUuid(accountingId)
-            .map(accountingMapper::mapToAccountingDto)
-            .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId)));
+  public ResponseEntity<AnyAccounting> getAccounting(final UUID accountingId) {
+    final Optional<Accounting> optionalAccounting = accountingRepository.findByUuid(accountingId);
+
+    if (optionalAccounting.isEmpty()) {
+      throw NotFoundException.ofAccountingNotFound(accountingId);
+    }
+
+    final AnyAccounting anyAccounting =
+        switch (optionalAccounting.get()) {
+          case final ZevAccounting zevAccounting -> accountingMapper.mapToAccountingDto(
+              zevAccounting);
+          case final Accounting accounting -> accountingMapper.mapToAccountingDto(accounting);
+        };
+
+    return ResponseEntity.ok(anyAccounting);
   }
 
   @Override
   @Transactional
   public ResponseEntity<UUID> createAccounting(
-      final ModifiableAccountingDto modifiableAccountingDto) {
-    final Accounting accounting = accountingMapper.mapToAccounting(modifiableAccountingDto);
-    accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreementId()));
+      final AnyModifiableAccounting anyModifiableAccounting) {
 
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(accountingRepository.save(accounting).getUuid());
+    final Accounting accounting =
+        switch (anyModifiableAccounting) {
+          case final ModifiableAccountingDto modifiableAccountingDto -> saveAccounting(
+              modifiableAccountingDto);
+          case final ModifiableZevAccountingDto modifiableZevAccountingDto -> saveAccounting(
+              modifiableZevAccountingDto);
+          default -> throw new IllegalStateException(
+              "Unexpected value: " + anyModifiableAccounting);
+        };
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(accounting.getUuid());
+  }
+
+  private Accounting saveAccounting(final ModifiableAccountingDto modifiableAccountingDto) {
+    final Accounting accounting = accountingMapper.mapToAccounting(modifiableAccountingDto);
+    return accountingRepository.save(accounting);
+  }
+
+  private ZevAccounting saveAccounting(
+      final ModifiableZevAccountingDto modifiableZevAccountingDto) {
+    final ZevAccounting accounting = accountingMapper.mapToAccounting(modifiableZevAccountingDto);
+    accounting.setAgreement(getAgreement(modifiableZevAccountingDto.getAgreementId()));
+    return accountingRepository.save(accounting);
   }
 
   @Override
   @Transactional
   public ResponseEntity<UUID> changeAccounting(
-      final UUID accountingId, final ModifiableAccountingDto modifiableAccountingDto) {
+      final UUID accountingId, final AnyModifiableAccounting anyModifiableAccounting) {
+
     final Accounting accounting =
         accountingRepository
             .findByUuid(accountingId)
             .orElseThrow(() -> NotFoundException.ofAccountingNotFound(accountingId));
-    accountingMapper.updateAccounting(modifiableAccountingDto, accounting);
-    accounting.setAgreement(getAgreement(modifiableAccountingDto.getAgreementId()));
+
+    if (anyModifiableAccounting
+            instanceof final ModifiableZevAccountingDto modifiableZevAccountingDto
+        && accounting instanceof final ZevAccounting zevAccounting) {
+      accountingMapper.updateAccounting(modifiableZevAccountingDto, zevAccounting);
+      zevAccounting.setAgreement(getAgreement(modifiableZevAccountingDto.getAgreementId()));
+    } else if (anyModifiableAccounting
+        instanceof final ModifiableAccountingDto modifiableAccountingDto) {
+      accountingMapper.updateAccounting(modifiableAccountingDto, accounting);
+    }
 
     return ResponseEntity.ok(accountingRepository.save(accounting).getUuid());
   }

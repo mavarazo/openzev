@@ -1,5 +1,6 @@
 package com.mav.openzev.model;
 
+import com.mav.openzev.model.zev.ZevAccounting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -48,10 +49,10 @@ public class Agreement extends AbstractAuditEntity {
 
   @OneToMany(mappedBy = "agreement")
   @Builder.Default
-  private Set<Accounting> accountings = new HashSet<>();
+  private Set<ZevAccounting> zevAccountings = new HashSet<>();
 
-  public void addAccounting(final Accounting accounting) {
-    accountings.add(accounting);
-    accounting.setAgreement(this);
+  public void addAccounting(final ZevAccounting zevAccounting) {
+    zevAccountings.add(zevAccounting);
+    zevAccounting.setAgreement(this);
   }
 }

@@ -25,7 +25,10 @@ get:
       content:
         application/json:
           schema:
-            $ref: '../schemas/accountings.yaml#/AccountingDto'
+            title: AnyAccounting
+            oneOf:
+              - $ref: '../schemas/accountings.yaml#/AccountingDto'
+              - $ref: '../schemas/accountings.yaml#/ZevAccountingDto'
     default:
       description: Unexpected error
       content:
@@ -43,7 +46,12 @@ put:
     content:
       application/json:
         schema:
-          $ref: '../schemas/accountings.yaml#/ModifiableAccountingDto'
+          title: AnyModifiableAccounting
+          oneOf:
+            - $ref: '../schemas/accountings.yaml#/ModifiableAccountingDto'
+            - $ref: '../schemas/accountings.yaml#/ModifiableZevAccountingDto'
+          discriminator:
+            propertyName: type
   responses:
     '200':
       description: Updated

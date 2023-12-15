@@ -283,7 +283,7 @@ public class OpenZevAgreementApiIntegrationTest {
       // arrange
       final Agreement agreement = testDatabaseService.insert(AgreementModels.getAgreement());
       testDatabaseService.insert(
-          AccountingModels.getAccounting().toBuilder().agreement(agreement).build());
+          AccountingModels.getZevAccounting().toBuilder().agreement(agreement).build());
 
       // act
       final ResponseEntity<ErrorDto> response =

@@ -18,7 +18,7 @@ public interface AgreementMapper {
   @Mapping(target = "active", ignore = true)
   @Mapping(target = "created", ignore = true)
   @Mapping(target = "modified", ignore = true)
-  @Mapping(target = "accountings", ignore = true)
+  @Mapping(target = "zevAccountings", ignore = true)
   Agreement mapToAgreement(ModifiableAgreementDto modifiableAgreementDto);
 
   @Mapping(target = "id", ignore = true)
@@ -26,7 +26,7 @@ public interface AgreementMapper {
   @Mapping(target = "active", ignore = true)
   @Mapping(target = "created", ignore = true)
   @Mapping(target = "modified", ignore = true)
-  @Mapping(target = "accountings", ignore = true)
+  @Mapping(target = "zevAccountings", ignore = true)
   void updateAgreement(
       ModifiableAgreementDto modifiableAgreementDto, @MappingTarget Agreement agreement);
 }

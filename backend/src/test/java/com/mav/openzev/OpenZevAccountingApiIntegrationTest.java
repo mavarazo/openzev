@@ -6,6 +6,8 @@ import com.mav.openzev.api.model.AccountingDto;
 import com.mav.openzev.api.model.DocumentDto;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableAccountingDto;
+import com.mav.openzev.api.model.ModifiableZevAccountingDto;
+import com.mav.openzev.api.model.ZevAccountingDto;
 import com.mav.openzev.model.Accounting;
 import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.Agreement;
@@ -15,12 +17,14 @@ import com.mav.openzev.model.DocumentModels;
 import com.mav.openzev.model.InvoiceModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
+import com.mav.openzev.model.zev.ZevAccounting;
 import com.mav.openzev.repository.AccountingRepository;
 import com.mav.openzev.repository.DocumentRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.SneakyThrows;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.util.BigDecimalComparator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -44,7 +48,7 @@ import org.springframework.util.MultiValueMap;
 public class OpenZevAccountingApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
-  @Autowired private com.mav.openzev.TestDatabaseService testDatabaseService;
+  @Autowired private TestDatabaseService testDatabaseService;
 
   @Autowired private AccountingRepository accountingRepository;
   @Autowired private DocumentRepository documentRepository;
@@ -61,6 +65,7 @@ public class OpenZevAccountingApiIntegrationTest {
     void status200() {
       // arrange
       testDatabaseService.insert(AccountingModels.getAccounting());
+      testDatabaseService.insert(AccountingModels.getZevAccounting());
 
       // act
       final ResponseEntity<AccountingDto[]> response =
@@ -70,7 +75,7 @@ public class OpenZevAccountingApiIntegrationTest {
       // assert
       assertThat(response)
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .satisfies(r -> assertThat(r.getBody()).hasSize(1));
+          .satisfies(r -> assertThat(r.getBody()).hasSize(2));
     }
   }
 
@@ -100,11 +105,7 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-        final Agreement agreement = testDatabaseService.insert(AgreementModels.getAgreement());
-        testDatabaseService.insert(
-          AccountingModels.getAccounting().toBuilder()
-              .agreement(agreement)
-              .build());
+      testDatabaseService.insert(AccountingModels.getAccounting());
 
       // act
       final ResponseEntity<AccountingDto> response =
@@ -121,16 +122,47 @@ public class OpenZevAccountingApiIntegrationTest {
               r ->
                   assertThat(r.getBody())
                       .returns(AccountingModels.UUID, AccountingDto::getId)
-                      .returns(AgreementModels.UUID, AccountingDto::getAgreementId)
                       .returns(AccountingModels._2024_01_01, AccountingDto::getPeriodFrom)
                       .returns(AccountingModels._2024_12_31, AccountingDto::getPeriodUpto)
                       .returns(
                           AccountingModels.ABRECHNUNG_2024_ZAEHLER_1, AccountingDto::getSubject)
                       .usingComparatorForType(
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(AccountingModels._1000, AccountingDto::getAmountHighTariff)
-                      .returns(AccountingModels._500, AccountingDto::getAmountLowTariff)
                       .returns(AccountingModels._1500, AccountingDto::getAmountTotal));
+    }
+
+    @Test
+    void status200_zev() {
+      // arrange
+      final Agreement agreement = testDatabaseService.insert(AgreementModels.getAgreement());
+      testDatabaseService.insert(
+          AccountingModels.getZevAccounting().toBuilder().agreement(agreement).build());
+
+      // act
+      final ResponseEntity<ZevAccountingDto> response =
+          restTemplate.exchange(
+              UriFactory.accountings(AccountingModels.UUID),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              ZevAccountingDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+          .satisfies(
+              r ->
+                  assertThat(r.getBody())
+                      .returns(AccountingModels.UUID, ZevAccountingDto::getId)
+                      .returns(AgreementModels.UUID, ZevAccountingDto::getAgreementId)
+                      .returns(AccountingModels._2024_01_01, ZevAccountingDto::getPeriodFrom)
+                      .returns(AccountingModels._2024_12_31, ZevAccountingDto::getPeriodUpto)
+                      .returns(
+                          AccountingModels.ABRECHNUNG_2024_ZAEHLER_1, ZevAccountingDto::getSubject)
+                      .usingComparatorForType(
+                          BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
+                      .returns(AccountingModels._1000, ZevAccountingDto::getAmountHighTariff)
+                      .returns(AccountingModels._500, ZevAccountingDto::getAmountLowTariff)
+                      .returns(AccountingModels._1500, ZevAccountingDto::getAmountTotal));
     }
   }
 
@@ -140,11 +172,47 @@ public class OpenZevAccountingApiIntegrationTest {
     @Test
     void status201() {
       // arrange
-      testDatabaseService.insert(AgreementModels.getAgreement());
-
-      // arrange
       final ModifiableAccountingDto requestBody =
           new ModifiableAccountingDto()
+              .periodFrom(LocalDate.of(2023, 1, 1))
+              .periodUpto(LocalDate.of(2023, 12, 31))
+              .subject("Abrechnung 2023")
+              .amountTotal(BigDecimal.valueOf(175));
+
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.accountings(),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, null),
+              UUID.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
+          .doesNotReturn(null, HttpEntity::getBody);
+
+      assertThat(accountingRepository.findByUuid(response.getBody()))
+          .isPresent()
+          .hasValueSatisfying(
+              accounting ->
+                  assertThat(accounting)
+                      .asInstanceOf(InstanceOfAssertFactories.type(Accounting.class))
+                      .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
+                      .returns(LocalDate.of(2023, 12, 31), Accounting::getPeriodUpto)
+                      .returns("Abrechnung 2023", Accounting::getSubject)
+                      .usingComparatorForType(
+                          BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
+                      .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal));
+    }
+
+    @Test
+    void status201_zev() {
+      // arrange
+      testDatabaseService.insert(AgreementModels.getAgreement());
+
+      final ModifiableZevAccountingDto requestBody =
+          new ModifiableZevAccountingDto()
               .agreementId(AgreementModels.UUID)
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31))
@@ -171,15 +239,16 @@ public class OpenZevAccountingApiIntegrationTest {
           .hasValueSatisfying(
               accounting ->
                   assertThat(accounting)
+                      .asInstanceOf(InstanceOfAssertFactories.type(ZevAccounting.class))
                       .returns(AgreementModels.UUID, a -> a.getAgreement().getUuid())
-                      .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
-                      .returns(LocalDate.of(2023, 12, 31), Accounting::getPeriodUpto)
-                      .returns("Abrechnung 2023", Accounting::getSubject)
+                      .returns(LocalDate.of(2023, 1, 1), ZevAccounting::getPeriodFrom)
+                      .returns(LocalDate.of(2023, 12, 31), ZevAccounting::getPeriodUpto)
+                      .returns("Abrechnung 2023", ZevAccounting::getSubject)
                       .usingComparatorForType(
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(100), Accounting::getAmountHighTariff)
-                      .returns(BigDecimal.valueOf(75), Accounting::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal));
+                      .returns(BigDecimal.valueOf(100), ZevAccounting::getAmountHighTariff)
+                      .returns(BigDecimal.valueOf(75), ZevAccounting::getAmountLowTariff)
+                      .returns(BigDecimal.valueOf(175), ZevAccounting::getAmountTotal));
     }
   }
 
@@ -194,8 +263,6 @@ public class OpenZevAccountingApiIntegrationTest {
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 12, 31))
               .subject("Abrechnung 2023")
-              .amountHighTariff(BigDecimal.valueOf(100))
-              .amountLowTariff(BigDecimal.valueOf(75))
               .amountTotal(BigDecimal.valueOf(175));
 
       // act
@@ -226,6 +293,45 @@ public class OpenZevAccountingApiIntegrationTest {
               .periodFrom(LocalDate.of(2023, 1, 1))
               .periodUpto(LocalDate.of(2023, 3, 31))
               .subject("Abrechnung 01/2023")
+              .amountTotal(BigDecimal.valueOf(175));
+
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.accountings(AccountingModels.UUID),
+              HttpMethod.PUT,
+              new HttpEntity<>(requestBody, null),
+              UUID.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+          .doesNotReturn(null, HttpEntity::getBody);
+
+      assertThat(accountingRepository.findByUuid(response.getBody()))
+          .isPresent()
+          .hasValueSatisfying(
+              accounting ->
+                  assertThat(accounting)
+                      .asInstanceOf(InstanceOfAssertFactories.type(Accounting.class))
+                      .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
+                      .returns(LocalDate.of(2023, 3, 31), Accounting::getPeriodUpto)
+                      .returns("Abrechnung 01/2023", Accounting::getSubject)
+                      .usingComparatorForType(
+                          BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
+                      .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal));
+    }
+
+    @Test
+    void status200_zev() {
+      // arrange
+      testDatabaseService.insert(AccountingModels.getZevAccounting());
+
+      final ModifiableZevAccountingDto requestBody =
+          new ModifiableZevAccountingDto()
+              .periodFrom(LocalDate.of(2023, 1, 1))
+              .periodUpto(LocalDate.of(2023, 3, 31))
+              .subject("Abrechnung 01/2023")
               .amountHighTariff(BigDecimal.valueOf(100))
               .amountLowTariff(BigDecimal.valueOf(75))
               .amountTotal(BigDecimal.valueOf(175));
@@ -248,15 +354,16 @@ public class OpenZevAccountingApiIntegrationTest {
           .hasValueSatisfying(
               accounting ->
                   assertThat(accounting)
-                      .returns(null, Accounting::getAgreement)
-                      .returns(LocalDate.of(2023, 1, 1), Accounting::getPeriodFrom)
-                      .returns(LocalDate.of(2023, 3, 31), Accounting::getPeriodUpto)
-                      .returns("Abrechnung 01/2023", Accounting::getSubject)
+                      .asInstanceOf(InstanceOfAssertFactories.type(ZevAccounting.class))
+                      .returns(null, ZevAccounting::getAgreement)
+                      .returns(LocalDate.of(2023, 1, 1), ZevAccounting::getPeriodFrom)
+                      .returns(LocalDate.of(2023, 3, 31), ZevAccounting::getPeriodUpto)
+                      .returns("Abrechnung 01/2023", ZevAccounting::getSubject)
                       .usingComparatorForType(
                           BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(100), Accounting::getAmountHighTariff)
-                      .returns(BigDecimal.valueOf(75), Accounting::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175), Accounting::getAmountTotal));
+                      .returns(BigDecimal.valueOf(100), ZevAccounting::getAmountHighTariff)
+                      .returns(BigDecimal.valueOf(75), ZevAccounting::getAmountLowTariff)
+                      .returns(BigDecimal.valueOf(175), ZevAccounting::getAmountTotal));
     }
   }
 

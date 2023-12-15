@@ -3,37 +3,66 @@ AccountingDto:
   properties:
     id:
       $ref: './commons.yaml#/Id'
-    agreementId:
-      $ref: './commons.yaml#/Id'
     periodFrom:
       $ref: './commons.yaml#/Date'
     periodUpto:
       $ref: './commons.yaml#/Date'
     subject:
       type: string
-    amountHighTariff:
-      type: number
-    amountLowTariff:
-      type: number
     amountTotal:
       type: number
 
-ModifiableAccountingDto:
+ZevAccountingDto:
+  allOf:
+    - $ref: './accountings.yaml#/AccountingDto'
   type: object
   properties:
     agreementId:
       $ref: './commons.yaml#/Id'
+    amountHighTariff:
+      type: number
+    amountLowTariff:
+      type: number
+
+BaseModifiableDto:
+  type: object
+  properties:
     periodFrom:
       $ref: './commons.yaml#/Date'
     periodUpto:
       $ref: './commons.yaml#/Date'
     subject:
       type: string
-    amountHighTariff:
-      type: number
-    amountLowTariff:
-      type: number
     amountTotal:
       type: number
   required:
     - subject
+    - amountTotal
+
+ModifiableAccountingDto:
+  allOf:
+    - $ref: './accountings.yaml#/BaseModifiableDto'
+  type: object
+  properties:
+    type:
+      type: string
+      default: default
+  required:
+    - type
+
+ModifiableZevAccountingDto:
+  allOf:
+    - $ref: './accountings.yaml#/BaseModifiableDto'
+  type: object
+  properties:
+    type:
+      type: string
+      default: zev
+    agreementId:
+      $ref: './commons.yaml#/Id'
+    amountHighTariff:
+      type: number
+    amountLowTariff:
+      type: number
+  required:
+    - type

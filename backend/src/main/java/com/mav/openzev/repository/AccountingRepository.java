@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountingRepository extends JpaRepository<Accounting, Long> {
-
   Optional<Accounting> findByUuid(UUID uuid);
 }

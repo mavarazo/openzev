@@ -2,9 +2,13 @@ package com.mav.openzev.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
@@ -27,11 +31,10 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Entity
 @Table(name = "OZEV_ACCOUNTINGS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("DEFAULT")
 public class Accounting extends AbstractAuditEntity {
-
-  @ManyToOne
-  @JoinColumn(name = "AGREEMENT_ID")
-  private Agreement agreement;
 
   @Column(name = "PERIOD_FROM", nullable = false)
   private LocalDate periodFrom;
@@ -41,14 +44,6 @@ public class Accounting extends AbstractAuditEntity {
 
   @Column(name = "SUBJECT")
   private String subject;
-
-  @Digits(integer = 10, fraction = 2)
-  @Column(name = "AMOUNT_HT")
-  private BigDecimal amountHighTariff;
-
-  @Digits(integer = 10, fraction = 2)
-  @Column(name = "AMOUNT_LT")
-  private BigDecimal amountLowTariff;
 
   @Positive
   @Digits(integer = 10, fraction = 2)

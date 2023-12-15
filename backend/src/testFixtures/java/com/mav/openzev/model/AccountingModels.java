@@ -1,5 +1,6 @@
 package com.mav.openzev.model;
 
+import com.mav.openzev.model.zev.ZevAccounting;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -20,6 +21,16 @@ public class AccountingModels {
 
   public static Accounting getAccounting() {
     return Accounting.builder()
+        .uuid(UUID)
+        .subject(ABRECHNUNG_2024_ZAEHLER_1)
+        .periodFrom(_2024_01_01)
+        .periodUpto(_2024_12_31)
+        .amountTotal(_1500)
+        .build();
+  }
+
+  public static ZevAccounting getZevAccounting() {
+    return ZevAccounting.builder()
         .uuid(UUID)
         .subject(ABRECHNUNG_2024_ZAEHLER_1)
         .periodFrom(_2024_01_01)

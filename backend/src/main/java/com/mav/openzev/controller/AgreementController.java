@@ -73,7 +73,7 @@ public class AgreementController implements AgreementApi {
             .findByUuid(agreementId)
             .orElseThrow(() -> NotFoundException.ofAgreementNotFound(agreementId));
 
-    if (!agreement.getAccountings().isEmpty()) {
+    if (!agreement.getZevAccountings().isEmpty()) {
       throw ValidationException.ofAgreementHasAccounting(agreement);
     }
 

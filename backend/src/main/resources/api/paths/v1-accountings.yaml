@@ -10,7 +10,10 @@ get:
           schema:
             type: array
             items:
-              $ref: '../schemas/accountings.yaml#/AccountingDto'
+              title: AnyAccounting
+              oneOf:
+                - $ref: '../schemas/accountings.yaml#/AccountingDto'
+                - $ref: '../schemas/accountings.yaml#/ZevAccountingDto'
     default:
       description: Unexpected error
       content:
@@ -26,7 +29,12 @@ post:
     content:
       application/json:
         schema:
-          $ref: '../schemas/accountings.yaml#/ModifiableAccountingDto'
+          title: AnyModifiableAccounting
+          oneOf:
+            - $ref: '../schemas/accountings.yaml#/ModifiableAccountingDto'
+            - $ref: '../schemas/accountings.yaml#/ModifiableZevAccountingDto'
+          discriminator:
+            propertyName: type
   responses:
     '201':
       description: Created
