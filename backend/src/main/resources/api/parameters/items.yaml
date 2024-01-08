@@ -1,0 +1,6 @@
+ItemParam:
+  name: itemId
+  in: path
+  required: true
+  schema:
+    $ref: '../schemas/commons.yaml#/Id'

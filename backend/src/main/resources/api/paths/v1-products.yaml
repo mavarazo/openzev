@@ -1,0 +1,42 @@
+get:
+  operationId: getProducts
+  tags:
+    - Product
+  responses:
+    '200':
+      description: Products
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/products.yaml#/ProductDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createProduct
+  tags:
+    - Product
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/products.yaml#/ModifiableProductDto'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

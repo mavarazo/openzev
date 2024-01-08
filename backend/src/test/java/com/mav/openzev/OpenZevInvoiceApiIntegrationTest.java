@@ -3,19 +3,18 @@ package com.mav.openzev;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.ErrorDto;
+import com.mav.openzev.api.model.InvoiceDirection;
 import com.mav.openzev.api.model.InvoiceDto;
 import com.mav.openzev.api.model.ModifiableInvoiceDto;
+import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
-import com.mav.openzev.model.AccountingModels;
-import com.mav.openzev.model.Invoice;
 import com.mav.openzev.model.InvoiceModels;
+import com.mav.openzev.model.Owner;
+import com.mav.openzev.model.OwnerModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
-import com.mav.openzev.repository.InvoiceRepository;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
-import org.assertj.core.util.BigDecimalComparator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,8 +34,7 @@ public class OpenZevInvoiceApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
-
-  @Autowired private InvoiceRepository invoiceRepository;
+  @Autowired private JsonJacksonApprovals jsonJacksonApprovals;
 
   @AfterEach
   void tearDown() {
@@ -50,22 +48,21 @@ public class OpenZevInvoiceApiIntegrationTest {
     void status200() {
       // arrange
       final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
       testDatabaseService.insert(
-          AccountingModels.getAccounting()
-              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
+          InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
 
       // act
       final ResponseEntity<InvoiceDto[]> response =
           restTemplate.exchange(
-              UriFactory.accountings_invoices(AccountingModels.UUID),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              InvoiceDto[].class);
+              UriFactory.invoices(), HttpMethod.GET, HttpEntity.EMPTY, InvoiceDto[].class);
 
       // assert
       assertThat(response)
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .satisfies(r -> assertThat(r.getBody()).hasSize(1));
+          .doesNotReturn(null, ResponseEntity::getBody);
+
+      jsonJacksonApprovals.verifyAsJson(response.getBody());
     }
   }
 
@@ -96,9 +93,9 @@ public class OpenZevInvoiceApiIntegrationTest {
     void status200() {
       // arrange
       final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
       testDatabaseService.insert(
-          AccountingModels.getAccounting()
-              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
+          InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
 
       // act
       final ResponseEntity<InvoiceDto> response =
@@ -111,20 +108,9 @@ public class OpenZevInvoiceApiIntegrationTest {
       // assert
       assertThat(response)
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .satisfies(
-              r ->
-                  assertThat(r.getBody())
-                      .returns(AccountingModels.UUID, InvoiceDto::getAccountingId)
-                      .returns(UnitModels.UUID, InvoiceDto::getUnitId)
-                      .returns(1000.00, InvoiceDto::getUsageHighTariff)
-                      .returns(750.00, InvoiceDto::getUsageLowTariff)
-                      .returns(1750.00, InvoiceDto::getUsageTotal)
-                      .usingComparatorForType(
-                          BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(100), InvoiceDto::getAmountHighTariff)
-                      .returns(BigDecimal.valueOf(75), InvoiceDto::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175), InvoiceDto::getAmountTotal)
-                      .returns(LocalDate.of(2023, 6, 1), InvoiceDto::getPayed));
+          .doesNotReturn(null, ResponseEntity::getBody);
+
+      jsonJacksonApprovals.verifyAsJson(response.getBody());
     }
   }
 
@@ -137,7 +123,7 @@ public class OpenZevInvoiceApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.accountings_invoices(AccountingModels.UUID),
+              UriFactory.invoices(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -149,27 +135,22 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     void status201() {
       // arrange
-      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
-      testDatabaseService.insert(
-          AccountingModels.getAccounting()
-              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
+      testDatabaseService.insert(UnitModels.getUnit());
+      testDatabaseService.insert(OwnerModels.getOwner());
 
-      // arrange
       final ModifiableInvoiceDto requestBody =
           new ModifiableInvoiceDto()
               .unitId(UnitModels.UUID)
-              .usageHighTariff(1000.00)
-              .usageLowTariff(750.00)
-              .usageTotal(1750.00)
-              .amountHighTariff(BigDecimal.valueOf(100))
-              .amountLowTariff(BigDecimal.valueOf(75))
-              .amountTotal(BigDecimal.valueOf(175))
-              .payed(LocalDate.of(2023, 6, 1));
+              .recipientId(OwnerModels.UUID)
+              .status(com.mav.openzev.api.model.InvoiceStatus.DRAFT)
+              .direction(InvoiceDirection.OUTGOING)
+              .subject("Lorem ipsum")
+              .dueDate(LocalDate.of(2024, 1, 31));
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.accountings_invoices(AccountingModels.UUID),
+              UriFactory.invoices(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -179,20 +160,14 @@ public class OpenZevInvoiceApiIntegrationTest {
           .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
           .doesNotReturn(null, HttpEntity::getBody);
 
-      assertThat(invoiceRepository.findByUuid(response.getBody()))
-          .isPresent()
-          .hasValueSatisfying(
-              invoice ->
-                  assertThat(invoice)
-                      .returns(1000.00, Invoice::getUsageHighTariff)
-                      .returns(750.00, Invoice::getUsageLowTariff)
-                      .returns(1750.00, Invoice::getUsageTotal)
-                      .usingComparatorForType(
-                          BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(100), Invoice::getAmountHighTariff)
-                      .returns(BigDecimal.valueOf(75), Invoice::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(175), Invoice::getAmountTotal)
-                      .returns(LocalDate.of(2023, 6, 1), Invoice::getPayed));
+      jsonJacksonApprovals.verifyAsJson(
+          restTemplate
+              .exchange(
+                  UriFactory.invoices(response.getBody()),
+                  HttpMethod.GET,
+                  HttpEntity.EMPTY,
+                  InvoiceDto.class)
+              .getBody());
     }
   }
 
@@ -217,7 +192,14 @@ public class OpenZevInvoiceApiIntegrationTest {
     @Test
     void status404() {
       // arrange
-      final ModifiableInvoiceDto requestBody = new ModifiableInvoiceDto().unitId(UnitModels.UUID);
+      final ModifiableInvoiceDto requestBody =
+          new ModifiableInvoiceDto()
+              .unitId(UnitModels.UUID)
+              .recipientId(OwnerModels.UUID)
+              .status(com.mav.openzev.api.model.InvoiceStatus.DRAFT)
+              .direction(InvoiceDirection.OUTGOING)
+              .subject("Lorem ipsum")
+              .dueDate(LocalDate.of(2024, 1, 31));
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -238,23 +220,56 @@ public class OpenZevInvoiceApiIntegrationTest {
     }
 
     @Test
-    void status200() {
+    void status404_recipient_not_found() {
       // arrange
       final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
       testDatabaseService.insert(
-          AccountingModels.getAccounting()
-              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
+          InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
 
       final ModifiableInvoiceDto requestBody =
           new ModifiableInvoiceDto()
               .unitId(UnitModels.UUID)
-              .usageHighTariff(1500.00)
-              .usageLowTariff(500.00)
-              .usageTotal(2000.00)
-              .amountHighTariff(BigDecimal.valueOf(150))
-              .amountLowTariff(BigDecimal.valueOf(50))
-              .amountTotal(BigDecimal.valueOf(200))
-              .payed(LocalDate.of(2023, 4, 1));
+              .recipientId(UUID.fromString("2134b977-0d56-48ec-b85f-1c623ff934b7"))
+              .status(com.mav.openzev.api.model.InvoiceStatus.DRAFT)
+              .direction(InvoiceDirection.OUTGOING)
+              .subject("Lorem ipsum")
+              .dueDate(LocalDate.of(2024, 1, 31));
+
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.invoices(InvoiceModels.UUID),
+              HttpMethod.PUT,
+              new HttpEntity<>(requestBody, null),
+              ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("owner_not_found", ErrorDto::getCode)
+          .returns(
+              "owner with id '2134b977-0d56-48ec-b85f-1c623ff934b7' not found",
+              ErrorDto::getMessage);
+    }
+
+    @Test
+    void status200() {
+      // arrange
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
+      testDatabaseService.insert(
+          InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
+
+      final ModifiableInvoiceDto requestBody =
+          new ModifiableInvoiceDto()
+              .unitId(UnitModels.UUID)
+              .recipientId(OwnerModels.UUID)
+              .status(com.mav.openzev.api.model.InvoiceStatus.DRAFT)
+              .direction(InvoiceDirection.OUTGOING)
+              .subject("Lorem ipsum")
+              .dueDate(LocalDate.of(2024, 1, 31));
 
       // act
       final ResponseEntity<UUID> response =
@@ -269,20 +284,14 @@ public class OpenZevInvoiceApiIntegrationTest {
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
           .doesNotReturn(null, HttpEntity::getBody);
 
-      assertThat(invoiceRepository.findByUuid(response.getBody()))
-          .isPresent()
-          .hasValueSatisfying(
-              invoice ->
-                  assertThat(invoice)
-                      .returns(1500.00, Invoice::getUsageHighTariff)
-                      .returns(500.00, Invoice::getUsageLowTariff)
-                      .returns(2000.00, Invoice::getUsageTotal)
-                      .usingComparatorForType(
-                          BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(BigDecimal.valueOf(150), Invoice::getAmountHighTariff)
-                      .returns(BigDecimal.valueOf(50), Invoice::getAmountLowTariff)
-                      .returns(BigDecimal.valueOf(200), Invoice::getAmountTotal)
-                      .returns(LocalDate.of(2023, 4, 1), Invoice::getPayed));
+      jsonJacksonApprovals.verifyAsJson(
+          restTemplate
+              .exchange(
+                  UriFactory.invoices(response.getBody()),
+                  HttpMethod.GET,
+                  HttpEntity.EMPTY,
+                  InvoiceDto.class)
+              .getBody());
     }
   }
 
@@ -296,7 +305,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               ErrorDto.class);
 
       // assert
@@ -310,16 +319,16 @@ public class OpenZevInvoiceApiIntegrationTest {
     void status204() {
       // arrange
       final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
       testDatabaseService.insert(
-          AccountingModels.getAccounting()
-              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
+          InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               UUID.class);
 
       // assert

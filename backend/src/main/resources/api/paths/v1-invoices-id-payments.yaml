@@ -1,0 +1,46 @@
+get:
+  operationId: getPayments
+  tags:
+    - Payment
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  responses:
+    '200':
+      description: Invoices
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/payments.yaml#/PaymentDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createPayment
+  tags:
+    - Payment
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/payments.yaml#/ModifiablePaymentDto'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

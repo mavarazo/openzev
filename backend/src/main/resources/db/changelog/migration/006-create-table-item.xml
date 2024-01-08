@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
+
+    <changeSet author="mav" id="bdf5505f-d52d-4bc7-a307-311009a63137">
+        <createTable tableName="OZEV_ITEMS">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_OZEV_ITEM"/>
+            </column>
+
+            <column name="UUID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="CREATED" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="MODIFIED" type="TIMESTAMP(6)"/>
+
+            <column name="INVOICE_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_ITEM_INVOICE" references="OZEV_INVOICES(ID)"/>
+            </column>
+
+            <column name="PRODUCT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_ITEM_PRODUCT" references="OZEV_PRODUCTS(ID)"/>
+            </column>
+
+            <column name="NOTES" type="VARCHAR(255)"/>
+
+            <column name="QUANTITY" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="PRICE" type="DECIMAL(5, 2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

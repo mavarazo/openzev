@@ -1,7 +1,5 @@
 package com.mav.openzev.model;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -15,13 +13,10 @@ public class InvoiceModels {
     return Invoice.builder()
         .uuid(UUID)
         .unit(UnitModels.getUnit())
-        .usageHighTariff(1000.0)
-        .usageLowTariff(750.0)
-        .usageTotal(1750.0)
-        .amountHighTariff(BigDecimal.valueOf(100.00))
-        .amountLowTariff(BigDecimal.valueOf(75.00))
-        .amountTotal(BigDecimal.valueOf(175.00))
-        .payed(LocalDate.of(2023, 6, 1))
+        .recipient(OwnerModels.getOwner())
+        .status(InvoiceStatus.DRAFT)
+        .subject("Lorem ipsum")
+        .dueDate(Constants._2024_01_31)
         .build();
   }
 }

@@ -4,50 +4,44 @@ info:
   title: OpenZEV API
 
 paths:
-  /v1/accountings:
-    $ref: './paths/v1-accountings.yaml'
-
-  /v1/accountings/{accountingId}:
-    $ref: './paths/v1-accountings-id.yaml'
-
-  /v1/accountings/{accountingId}/documents:
-    $ref: './paths/v1-accountings-id-documents.yaml'
-
-  /v1/accountings/{accountingId}/invoices:
-    $ref: './paths/v1-accountings-id-invoices.yaml'
-
-  /v1/invoices/{invoiceId}:
-    $ref: './paths/v1-invoices-id.yaml'
-
-  /v1/agreements:
-    $ref: './paths/v1-agreements.yaml'
-
-  /v1/agreements/{agreementId}:
-    $ref: './paths/v1-agreements-id.yaml'
-
   /v1/configs/zev:
     $ref: './paths/v1-configs-zev.yaml'
 
   /v1/configs/zev-representative:
     $ref: './paths/v1-configs-zev-representative.yaml'
 
-  /v1/dashboard/owners:
-    $ref: './paths/v1-dashboard-owners.yaml'
-
-  /v1/dashboard/units:
-    $ref: './paths/v1-dashboard-units.yaml'
-
-  /v1/dashboard/accountings:
-    $ref: './paths/v1-dashboard-accountings.yaml'
-
   /v1/documents/{documentId}:
     $ref: './paths/v1-documents-id.yaml'
+
+  /v1/invoices:
+    $ref: './paths/v1-invoices.yaml'
+
+  /v1/invoices/{invoiceId}:
+    $ref: './paths/v1-invoices-id.yaml'
+
+  /v1/invoices/{invoiceId}/items:
+    $ref: './paths/v1-invoices-id-items.yaml'
+
+  /v1/invoices/{invoiceId}/payments:
+    $ref: './paths/v1-invoices-id-payments.yaml'
+
+  /v1/items/{itemId}:
+    $ref: './paths/v1-items-id.yaml'
 
   /v1/owners:
     $ref: './paths/v1-owners.yaml'
 
   /v1/owners/{ownerId}:
     $ref: './paths/v1-owners-id.yaml'
+
+  /v1/payments/{paymentId}:
+    $ref: './paths/v1-payments-id.yaml'
+
+  /v1/products:
+    $ref: './paths/v1-products.yaml'
+
+  /v1/products/{productId}:
+    $ref: './paths/v1-products-id.yaml'
 
   /v1/units:
     $ref: './paths/v1-units.yaml'

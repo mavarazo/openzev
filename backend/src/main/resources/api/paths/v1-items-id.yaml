@@ -1,0 +1,34 @@
+delete:
+  operationId: deleteItem
+  tags:
+    - Item
+  parameters:
+    - $ref: '../parameters/items.yaml#/ItemParam'
+  responses:
+    '204':
+      description: Deleted
+put:
+  operationId: changeItem
+  tags:
+    - item
+  parameters:
+    - $ref: '../parameters/items.yaml#/ItemParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/items.yaml#/ModifiableItemDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

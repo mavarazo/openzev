@@ -1,8 +1,6 @@
 package com.mav.openzev.exception;
 
 
-import com.mav.openzev.model.Accounting;
-import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Unit;
 import lombok.Getter;
@@ -35,19 +33,5 @@ public class ValidationException extends RuntimeException {
     return new ValidationException(
         "unit_has_invoice",
         "unit with id '%s' is in use by invoice(s)".formatted(unit.getUuid().toString()));
-  }
-
-  public static ValidationException ofAccountingHasInvoice(final Accounting accounting) {
-    return new ValidationException(
-        "accounting_has_invoice",
-        "accounting with id '%s' is in use by invoice(s)"
-            .formatted(accounting.getUuid().toString()));
-  }
-
-  public static ValidationException ofAgreementHasAccounting(final Agreement agreement) {
-    return new ValidationException(
-        "agreement_has_accounting",
-        "agreement with id '%s' is in use by accounting(s)"
-            .formatted(agreement.getUuid().toString()));
   }
 }

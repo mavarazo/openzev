@@ -1,0 +1,42 @@
+get:
+  operationId: getInvoices
+  tags:
+    - Invoice
+  responses:
+    '200':
+      description: Invoices
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/invoices.yaml#/InvoiceDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createInvoice
+  tags:
+    - Invoice
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/invoices.yaml#/ModifiableInvoiceDto'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

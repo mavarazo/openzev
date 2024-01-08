@@ -27,38 +27,50 @@ sourceSets {
 }
 
 dependencies {
+    annotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
     implementation(platform(SpringBootPlugin.BOM_COORDINATES))
 
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-    compileOnly("org.projectlombok:lombok:1.18.30")
+    developmentOnly(platform(SpringBootPlugin.BOM_COORDINATES))
 
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    testAnnotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
+    testImplementation(platform(SpringBootPlugin.BOM_COORDINATES))
 
-    implementation("org.springframework.boot:spring-boot-starter:3.1.0")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.0.4")
-    implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.4")
-    implementation("org.liquibase:liquibase-core:4.20.0")
+    testFixturesAnnotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
+    testFixturesImplementation(platform(SpringBootPlugin.BOM_COORDINATES))
+}
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
-    implementation("org.apache.pdfbox:pdfbox:3.0.1")
+dependencies {
+    annotationProcessor("org.projectlombok:lombok")
+    compileOnly("org.projectlombok:lombok")
 
-    runtimeOnly("org.springframework.boot:spring-boot-starter-validation:3.0.4")
-    runtimeOnly("org.postgresql:postgresql:42.5.4")
+    annotationProcessor(libs.mapstruct.processor)
+    implementation(libs.mapstruct)
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:3.0.4")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.liquibase:liquibase-core")
 
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
-    testCompileOnly("org.projectlombok:lombok:1.18.30")
+    implementation(libs.springdoc.openapi.starter.webmvc.ui)
+    implementation(libs.pdfbox)
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.0")
-    testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
-    testRuntimeOnly("com.h2database:h2:2.1.214")
+    runtimeOnly("org.springframework.boot:spring-boot-starter-validation")
+    runtimeOnly("org.postgresql:postgresql")
 
-    testFixturesAnnotationProcessor("org.projectlombok:lombok:1.18.30")
-    testFixturesCompileOnly("org.projectlombok:lombok:1.18.30")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    testAnnotationProcessor("org.projectlombok:lombok")
+    testCompileOnly("org.projectlombok:lombok")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation(libs.bundles.okhttp.mockwebserver)
+    testImplementation(libs.approvaltests)
+
+    testRuntimeOnly("com.h2database:h2")
+
+    testFixturesAnnotationProcessor("org.projectlombok:lombok")
+    testFixturesCompileOnly("org.projectlombok:lombok")
 }
 
 tasks.withType<Test> {

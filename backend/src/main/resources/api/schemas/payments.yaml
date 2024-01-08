@@ -1,0 +1,26 @@
+PaymentDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    invoiceId:
+      $ref: './commons.yaml#/Id'
+    amount:
+      type: number
+    received:
+      $ref: './commons.yaml#/Date'
+    notes:
+      type: string
+
+ModifiablePaymentDto:
+  type: object
+  properties:
+    amount:
+      type: number
+    received:
+      $ref: './commons.yaml#/Date'
+    notes:
+      type: string
+  required:
+    - amount
+    - received

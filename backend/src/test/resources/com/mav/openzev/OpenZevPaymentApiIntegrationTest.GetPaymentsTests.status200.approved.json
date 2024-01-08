@@ -1,0 +1,7 @@
+[ {
+  "id" : "guid_1",
+  "invoiceId" : "guid_2",
+  "amount" : 2.00,
+  "received" : "localdate(time)_1",
+  "notes" : null
+} ]

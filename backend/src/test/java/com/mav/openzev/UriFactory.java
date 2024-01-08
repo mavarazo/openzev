@@ -6,36 +6,30 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public class UriFactory {
 
-  public static URI accountings() {
-    return UriComponentsBuilder.fromPath("/v1/accountings").build().toUri();
+  public static URI invoices() {
+    return UriComponentsBuilder.fromPath("/v1/invoices").build().toUri();
   }
 
-  public static URI accountings(final UUID accountingId) {
-    return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}")
-        .buildAndExpand(accountingId)
+  public static URI invoices(final UUID invoiceId) {
+    return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}")
+        .buildAndExpand(invoiceId)
         .toUri();
   }
 
-  public static URI accountings_documents(final UUID accountingId) {
-    return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}/documents")
-        .buildAndExpand(accountingId)
+  public static URI invoices_items(final UUID invoiceId) {
+    return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}/items")
+        .buildAndExpand(invoiceId)
         .toUri();
   }
 
-  public static URI accountings_invoices(final UUID accountingId) {
-    return UriComponentsBuilder.fromPath("/v1/accountings/{accountingId}/invoices")
-        .buildAndExpand(accountingId)
+  public static URI invoices_payments(final UUID invoiceId) {
+    return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}/payments")
+        .buildAndExpand(invoiceId)
         .toUri();
   }
 
-  public static URI agreements() {
-    return UriComponentsBuilder.fromPath("/v1/agreements").build().toUri();
-  }
-
-  public static URI agreements(final UUID agreementId) {
-    return UriComponentsBuilder.fromPath("/v1/agreements/{agreementId}")
-        .buildAndExpand(agreementId)
-        .toUri();
+  public static URI items(final UUID itemId) {
+    return UriComponentsBuilder.fromPath("/v1/items/{itemId}").buildAndExpand(itemId).toUri();
   }
 
   public static URI configs_zev() {
@@ -46,27 +40,9 @@ public class UriFactory {
     return UriComponentsBuilder.fromPath("/v1/configs/zev-representative").build().toUri();
   }
 
-  public static URI dashboard_accountings() {
-    return UriComponentsBuilder.fromPath("/v1/dashboard").path("/accountings").build().toUri();
-  }
-
-  public static URI dashboard_units() {
-    return UriComponentsBuilder.fromPath("/v1/dashboard").path("/units").build().toUri();
-  }
-
-  public static URI dashboard_owners() {
-    return UriComponentsBuilder.fromPath("/v1/dashboard").path("/owners").build().toUri();
-  }
-
   public static URI documents(final UUID documentId) {
     return UriComponentsBuilder.fromPath("/v1/documents/{documentId}")
         .buildAndExpand(documentId)
-        .toUri();
-  }
-
-  public static URI invoices(final UUID invoiceId) {
-    return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}")
-        .buildAndExpand(invoiceId)
         .toUri();
   }
 
@@ -76,6 +52,22 @@ public class UriFactory {
 
   public static URI owners(final UUID ownerId) {
     return UriComponentsBuilder.fromPath("/v1/owners/{ownerId}").buildAndExpand(ownerId).toUri();
+  }
+
+  public static URI payments(final UUID paymentId) {
+    return UriComponentsBuilder.fromPath("/v1/payments/{paymentId}")
+        .buildAndExpand(paymentId)
+        .toUri();
+  }
+
+  public static URI products() {
+    return UriComponentsBuilder.fromPath("/v1/products").build().toUri();
+  }
+
+  public static URI products(final UUID productId) {
+    return UriComponentsBuilder.fromPath("/v1/products/{productId}")
+        .buildAndExpand(productId)
+        .toUri();
   }
 
   public static URI units() {

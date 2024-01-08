@@ -1,10 +1,12 @@
 package com.mav.openzev;
 
-import com.mav.openzev.model.Accounting;
-import com.mav.openzev.model.Agreement;
 import com.mav.openzev.model.Document;
+import com.mav.openzev.model.Invoice;
+import com.mav.openzev.model.Item;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.Ownership;
+import com.mav.openzev.model.Payment;
+import com.mav.openzev.model.Product;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.config.ZevConfig;
 import com.mav.openzev.model.config.ZevRepresentativeConfig;
@@ -27,6 +29,16 @@ public class TestDatabaseService implements InitializingBean {
 
   private List<String> tableNames;
 
+  @Override
+  public void afterPropertiesSet() {
+    tableNames =
+        entityManager.getMetamodel().getEntities().stream()
+            .filter(e -> e.getJavaType().getAnnotation(Table.class) != null)
+            .map(e -> e.getJavaType().getAnnotation(Table.class).name())
+            .filter(StringUtils::hasText)
+            .collect(Collectors.toList());
+  }
+
   @Transactional
   public void truncateAll() {
     entityManager.flush();
@@ -38,39 +50,23 @@ public class TestDatabaseService implements InitializingBean {
 
     entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
   }
-  
-  @Override
-  public void afterPropertiesSet() {
-    tableNames =
-        entityManager.getMetamodel().getEntities().stream()
-            .filter(e -> e.getJavaType().getAnnotation(Table.class) != null)
-            .map(e -> e.getJavaType().getAnnotation(Table.class).name())
-            .filter(StringUtils::hasText)
-            .collect(Collectors.toList());
-  }
-
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Agreement insert(final Agreement agreement) {
-    entityManager.persist(agreement);
-    return agreement;
-  }
-
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Accounting insert(final Accounting accounting) {
-    entityManager.persist(accounting);
-    return accounting;
-  }
-
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public Accounting merge(final Accounting accounting) {
-    entityManager.merge(accounting);
-    return accounting;
-  }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Document insert(final Document document) {
     entityManager.persist(document);
     return document;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Invoice insert(final Invoice invoice) {
+    entityManager.persist(invoice);
+    return invoice;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Item insert(final Item item) {
+    entityManager.persist(item);
+    return item;
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -83,6 +79,12 @@ public class TestDatabaseService implements InitializingBean {
   public Ownership insert(final Ownership ownership) {
     entityManager.persist(ownership);
     return ownership;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Product insert(final Product product) {
+    entityManager.persist(product);
+    return product;
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -101,5 +103,11 @@ public class TestDatabaseService implements InitializingBean {
   public ZevRepresentativeConfig insert(final ZevRepresentativeConfig zevRepresentativeConfig) {
     entityManager.persist(zevRepresentativeConfig);
     return zevRepresentativeConfig;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public Payment insert(final Payment payment) {
+    entityManager.persist(payment);
+    return payment;
   }
 }
