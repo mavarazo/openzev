@@ -26,8 +26,11 @@ public class OwnerController implements OwnerApi {
 
   @Override
   public ResponseEntity<List<OwnerDto>> getOwners() {
+    final Sort sortByFirstName = Sort.sort(Owner.class).by(Owner::getFirstName).ascending();
+    final Sort sortByLastName = Sort.sort(Owner.class).by(Owner::getLastName).ascending();
+
     return ResponseEntity.ok(
-        ownerRepository.findAll(Sort.sort(Owner.class).by(Owner::getUuid)).stream()
+        ownerRepository.findAll(sortByFirstName.and(sortByLastName)).stream()
             .map(ownerMapper::mapToOwnerDto)
             .toList());
   }
