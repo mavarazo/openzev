@@ -9,7 +9,7 @@ ProductDto:
       type: string
     notes:
       type: string
-    cost:
+    price:
       type: number
 
 ModifiableProductDto:
@@ -22,9 +22,9 @@ ModifiableProductDto:
       type: string
     notes:
       type: string
-    cost:
+    price:
       type: number
   required:
     - active
     - subject
-    - cost
+    - price

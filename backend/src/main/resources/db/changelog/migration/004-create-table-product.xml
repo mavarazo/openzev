@@ -29,7 +29,7 @@
 
             <column name="NOTES" type="VARCHAR(255)"/>
 
-            <column name="COST" type="DECIMAL(5, 2)"/>
+            <column name="PRICE" type="DECIMAL(5, 2)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

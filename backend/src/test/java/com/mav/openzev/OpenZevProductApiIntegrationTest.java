@@ -128,7 +128,7 @@ public class OpenZevProductApiIntegrationTest {
     void status200() {
       // arrange
       final ModifiableProductDto requestBody =
-          new ModifiableProductDto().subject("Lorem ipsum").cost(Constants.TWO).notes("dolor");
+          new ModifiableProductDto().subject("Lorem ipsum").price(Constants.TWO).notes("dolor");
 
       // act
       final ResponseEntity<UUID> response =
@@ -176,7 +176,7 @@ public class OpenZevProductApiIntegrationTest {
     void status404() {
       // arrange
       final ModifiableProductDto requestBody =
-          new ModifiableProductDto().subject("Lorem ipsum").cost(Constants.TWO);
+          new ModifiableProductDto().subject("Lorem ipsum").price(Constants.TWO);
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -196,7 +196,7 @@ public class OpenZevProductApiIntegrationTest {
       testDatabaseService.insert(ProductModels.getProduct());
 
       final ModifiableProductDto requestBody =
-          new ModifiableProductDto().subject("Lorem ipsum").cost(Constants.TWO);
+          new ModifiableProductDto().subject("Lorem ipsum").price(Constants.TWO);
 
       // act
       final ResponseEntity<UUID> response =

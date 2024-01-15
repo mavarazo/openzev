@@ -16,8 +16,8 @@ public class ItemModels {
         .invoice(invoice)
         .product(product)
         .quantity(Constants.ONE)
-        .price(product.getCost())
-        .amount(product.getCost().multiply(BigDecimal.valueOf(Constants.ONE)))
+        .price(product.getPrice())
+        .amount(product.getPrice().multiply(BigDecimal.valueOf(Constants.ONE)))
         .build();
   }
 }

@@ -34,6 +34,6 @@ public class Product extends AbstractAuditEntity {
 
   @Digits(integer = 5, fraction = 2)
   @Positive
-  @Column(name = "COST", nullable = false)
-  private BigDecimal cost;
+  @Column(name = "PRICE", nullable = false)
+  private BigDecimal price;
 }

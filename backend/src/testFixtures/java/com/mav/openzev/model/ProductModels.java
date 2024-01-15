@@ -14,7 +14,7 @@ public class ProductModels {
         .uuid(UUID)
         .active(true)
         .subject("Sedsociosqu")
-        .cost(Constants.TWO)
+        .price(Constants.TWO)
         .build();
   }
 }
