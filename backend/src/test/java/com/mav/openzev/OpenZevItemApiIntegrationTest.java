@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ItemDto;
 import com.mav.openzev.api.model.ModifiableItemDto;
+import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.Constants;
 import com.mav.openzev.model.Invoice;
@@ -42,6 +43,7 @@ public class OpenZevItemApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
+  @Autowired private JsonJacksonApprovals jsonJacksonApprovals;
 
   @Autowired private ItemRepository itemRepository;
   @Autowired private InvoiceRepository invoiceRepository;
@@ -91,6 +93,51 @@ public class OpenZevItemApiIntegrationTest {
 
       // assert
       assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
+    }
+  }
+
+  @Nested
+  class GetInvoiceTests {
+
+    @Test
+    void status404() {
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.items(ItemModels.UUID), HttpMethod.GET, HttpEntity.EMPTY, ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("item_not_found", ErrorDto::getCode)
+          .returns(
+              "item with id '4db55aea-203b-4d19-a8c7-abaa8cff39e8' not found",
+              ErrorDto::getMessage);
+    }
+
+    @Test
+    void status200() {
+      // arrange
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
+      final Invoice invoice =
+          testDatabaseService.insert(
+              InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
+      final Product product = testDatabaseService.insert(ProductModels.getProduct());
+      testDatabaseService.insert(ItemModels.getItem(invoice, product));
+
+      // act
+      final ResponseEntity<ItemDto> response =
+          restTemplate.exchange(
+              UriFactory.items(ItemModels.UUID), HttpMethod.GET, HttpEntity.EMPTY, ItemDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+          .doesNotReturn(null, ResponseEntity::getBody);
+
+      jsonJacksonApprovals.verifyAsJson(response.getBody());
     }
   }
 

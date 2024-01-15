@@ -7,6 +7,25 @@ delete:
   responses:
     '204':
       description: Deleted
+get:
+  operationId: getItem
+  tags:
+    - Item
+  parameters:
+    - $ref: '../parameters/items.yaml#/ItemParam'
+  responses:
+    '200':
+      description: Item
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/items.yaml#/ItemDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
 put:
   operationId: changeItem
   tags:

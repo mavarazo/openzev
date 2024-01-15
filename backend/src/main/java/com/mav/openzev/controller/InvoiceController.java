@@ -53,11 +53,8 @@ public class InvoiceController implements InvoiceApi {
 
   @Override
   public ResponseEntity<InvoiceDto> getInvoice(final UUID invoiceId) {
-    return ResponseEntity.ok(
-        invoiceRepository
-            .findByUuid(invoiceId)
-            .map(invoiceMapper::mapToInvoiceDto)
-            .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(invoiceId)));
+    final Invoice invoice = findInvoiceOrFail(invoiceId);
+    return ResponseEntity.ok(invoiceMapper.mapToInvoiceDto(invoice));
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.mav.openzev.controller;
 
+
 import com.mav.openzev.api.ItemApi;
 import com.mav.openzev.api.model.ItemDto;
 import com.mav.openzev.api.model.ModifiableItemDto;
@@ -31,10 +32,7 @@ public class ItemController implements ItemApi {
   @Override
   @Transactional
   public ResponseEntity<List<ItemDto>> getItems(final UUID invoiceId) {
-    final Invoice invoice =
-        invoiceRepository
-            .findByUuid(invoiceId)
-            .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(invoiceId));
+    final Invoice invoice = findInvoiceOrFail(invoiceId);
 
     return ResponseEntity.ok(
         invoice.getItems().stream()
@@ -47,16 +45,8 @@ public class ItemController implements ItemApi {
   @Transactional
   public ResponseEntity<UUID> createItem(
       final UUID invoiceId, final ModifiableItemDto modifiableItemDto) {
-    final Invoice invoice =
-        invoiceRepository
-            .findByUuid(invoiceId)
-            .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(invoiceId));
-
-    final Product product =
-        productRepository
-            .findByUuid(modifiableItemDto.getProductId())
-            .orElseThrow(
-                () -> NotFoundException.ofProductNotFound(modifiableItemDto.getProductId()));
+    final Invoice invoice = findInvoiceOrFail(invoiceId);
+    final Product product = findProductOrFail(modifiableItemDto.getProductId());
 
     final Item item = itemMapper.mapToItem(modifiableItemDto);
     item.setProduct(product);
@@ -65,18 +55,16 @@ public class ItemController implements ItemApi {
   }
 
   @Override
+  public ResponseEntity<ItemDto> getItem(final UUID itemId) {
+    final Item item = findItemOrFail(itemId);
+    return ResponseEntity.ok(itemMapper.mapToItemDto(item));
+  }
+
+  @Override
   public ResponseEntity<UUID> changeItem(
       final UUID itemId, final ModifiableItemDto modifiableItemDto) {
-    final Item item =
-        itemRepository
-            .findByUuid(itemId)
-            .orElseThrow(() -> NotFoundException.ofItemNotFound(itemId));
-
-    final Product product =
-        productRepository
-            .findByUuid(modifiableItemDto.getProductId())
-            .orElseThrow(
-                () -> NotFoundException.ofProductNotFound(modifiableItemDto.getProductId()));
+    final Item item = findItemOrFail(itemId);
+    final Product product = findProductOrFail(modifiableItemDto.getProductId());
 
     itemMapper.updateItem(modifiableItemDto, item);
     item.setProduct(product);
@@ -85,13 +73,25 @@ public class ItemController implements ItemApi {
 
   @Override
   public ResponseEntity<Void> deleteItem(final UUID itemId) {
+    itemRepository.delete(findItemOrFail(itemId));
+    return ResponseEntity.noContent().build();
+  }
+
+  private Item findItemOrFail(final UUID itemId) {
     return itemRepository
         .findByUuid(itemId)
-        .map(
-            item -> {
-              itemRepository.delete(item);
-              return ResponseEntity.noContent().<Void>build();
-            })
-        .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(itemId));
+        .orElseThrow(() -> NotFoundException.ofItemNotFound(itemId));
+  }
+
+  private Invoice findInvoiceOrFail(final UUID invoiceId) {
+    return invoiceRepository
+        .findByUuid(invoiceId)
+        .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(invoiceId));
+  }
+
+  private Product findProductOrFail(final UUID productId) {
+    return productRepository
+        .findByUuid(productId)
+        .orElseThrow(() -> NotFoundException.ofProductNotFound(productId));
   }
 }

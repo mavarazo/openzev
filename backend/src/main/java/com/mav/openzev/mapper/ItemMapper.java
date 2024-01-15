@@ -11,8 +11,8 @@ import org.mapstruct.MappingTarget;
 public interface ItemMapper {
 
   @Mapping(target = "id", source = "uuid")
-  @Mapping(target = "invoiceId", ignore = true)
-  @Mapping(target = "productId", ignore = true)
+  @Mapping(target = "invoiceId", source = "invoice.uuid")
+  @Mapping(target = "productId", source = "product.uuid")
   ItemDto mapToItemDto(Item invoice);
 
   @Mapping(target = "id", ignore = true)
