@@ -158,7 +158,8 @@ public class OpenZevItemApiIntegrationTest {
           new ModifiableItemDto()
               .productId(ProductModels.UUID)
               .quantity(Constants.ONE)
-              .price(Constants.TWO);
+              .price(Constants.TWO)
+              .amount(Constants.TWO);
 
       // act
       final ResponseEntity<UUID> response =
@@ -209,7 +210,8 @@ public class OpenZevItemApiIntegrationTest {
           new ModifiableItemDto()
               .productId(ProductModels.UUID)
               .quantity(Constants.ONE)
-              .price(Constants.TWO);
+              .price(Constants.TWO)
+              .amount(Constants.TWO);
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -235,7 +237,8 @@ public class OpenZevItemApiIntegrationTest {
           new ModifiableItemDto()
               .productId(ProductModels.UUID)
               .quantity(Constants.ONE)
-              .price(Constants.TWO);
+              .price(Constants.TWO)
+              .amount(Constants.TWO);
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -268,7 +271,8 @@ public class OpenZevItemApiIntegrationTest {
           new ModifiableItemDto()
               .productId(ProductModels.UUID)
               .quantity(Constants.ONE)
-              .price(Constants.TWO);
+              .price(Constants.TWO)
+              .amount(Constants.TWO);
 
       // act
       final ResponseEntity<UUID> response =
@@ -317,7 +321,8 @@ public class OpenZevItemApiIntegrationTest {
           new ModifiableItemDto()
               .productId(ProductModels.UUID)
               .quantity(Constants.ONE)
-              .price(Constants.TWO);
+              .price(Constants.TWO)
+              .amount(Constants.TWO);
 
       // act
       final ResponseEntity<ErrorDto> response =
@@ -346,7 +351,8 @@ public class OpenZevItemApiIntegrationTest {
           new ModifiableItemDto()
               .productId(UUID.randomUUID())
               .quantity(Constants.ONE)
-              .price(Constants.TWO);
+              .price(Constants.TWO)
+              .amount(Constants.TWO);
 
       // act
       final ResponseEntity<ErrorDto> response =

@@ -41,4 +41,8 @@ public class Item extends AbstractAuditEntity {
   @Digits(integer = 5, fraction = 2)
   @Column(name = "PRICE", nullable = false)
   private BigDecimal price;
+
+  @Digits(integer = 5, fraction = 2)
+  @Column(name = "AMOUNT", nullable = false)
+  private BigDecimal amount;
 }

@@ -4,5 +4,6 @@
   "productId" : "guid_3",
   "notes" : null,
   "quantity" : 1.0,
-  "price" : 2.00
+  "price" : 2.00,
+  "amount" : 2.00
 }
