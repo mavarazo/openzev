@@ -10,8 +10,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,6 +74,21 @@ public class Invoice extends AbstractAuditEntity {
   @JoinColumn(name = "REF_ID", referencedColumnName = "ID")
   @Builder.Default
   private Set<Document> documents = new HashSet<>();
+
+  public Set<Item> getItems() {
+    final Comparator<Item> compareByProductSubject =
+        Comparator.comparing(i -> i.getProduct().getSubject());
+    final Comparator<Item> compareByNotes = Comparator.comparing(Item::getNotes);
+    final Comparator<Item> compareByQuantity = Comparator.comparing(Item::getQuantity);
+    final Comparator<Item> compareByAmount = Comparator.comparing(Item::getAmount);
+    return items.stream()
+        .sorted(
+            compareByProductSubject
+                .thenComparing(compareByNotes)
+                .thenComparing(compareByQuantity)
+                .thenComparing(compareByAmount))
+        .collect(Collectors.toCollection(LinkedHashSet::new));
+  }
 
   public void addItem(final Item item) {
     item.setInvoice(this);

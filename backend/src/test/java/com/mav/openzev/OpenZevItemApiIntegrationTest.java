@@ -80,20 +80,6 @@ public class OpenZevItemApiIntegrationTest {
           .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
           .satisfies(r -> assertThat(r.getBody()).hasSize(1));
     }
-
-    @Test
-    void status404() {
-      // act
-      final ResponseEntity<ErrorDto> response =
-          restTemplate.exchange(
-              UriFactory.invoices_items(InvoiceModels.UUID),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              ErrorDto.class);
-
-      // assert
-      assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
-    }
   }
 
   @Nested

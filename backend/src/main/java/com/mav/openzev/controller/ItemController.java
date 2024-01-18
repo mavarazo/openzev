@@ -13,7 +13,6 @@ import com.mav.openzev.repository.InvoiceRepository;
 import com.mav.openzev.repository.ItemRepository;
 import com.mav.openzev.repository.ProductRepository;
 import jakarta.transaction.Transactional;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +31,10 @@ public class ItemController implements ItemApi {
   @Override
   @Transactional
   public ResponseEntity<List<ItemDto>> getItems(final UUID invoiceId) {
-    final Invoice invoice = findInvoiceOrFail(invoiceId);
-
     return ResponseEntity.ok(
-        invoice.getItems().stream()
-            .sorted(Comparator.comparing(item -> item.getProduct().getSubject()))
+        itemRepository
+            .findAllByInvoiceUuidOrderByProductSubjectAscNotesAscAmountAsc(invoiceId)
+            .stream()
             .map(itemMapper::mapToItemDto)
             .toList());
   }
