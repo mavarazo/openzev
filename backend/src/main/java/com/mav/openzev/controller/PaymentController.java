@@ -65,6 +65,7 @@ public class PaymentController implements PaymentApi {
   }
 
   @Override
+  @Transactional
   public ResponseEntity<UUID> changePayment(
       final UUID paymentId, final ModifiablePaymentDto modifiablePaymentDto) {
     final Payment payment =

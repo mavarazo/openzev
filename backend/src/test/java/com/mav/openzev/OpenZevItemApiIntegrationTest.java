@@ -130,50 +130,6 @@ public class OpenZevItemApiIntegrationTest {
   @Nested
   class CreateItemTests {
 
-    @Test
-    @Transactional
-    void status200() {
-      // arrange
-      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
-      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
-      testDatabaseService.insert(
-          InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
-      testDatabaseService.insert(ProductModels.getProduct());
-
-      final ModifiableItemDto requestBody =
-          new ModifiableItemDto()
-              .productId(ProductModels.UUID)
-              .quantity(Constants.ONE)
-              .price(Constants.TWO)
-              .amount(Constants.TWO);
-
-      // act
-      final ResponseEntity<UUID> response =
-          restTemplate.exchange(
-              UriFactory.invoices_items(InvoiceModels.UUID),
-              HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
-              UUID.class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .doesNotReturn(null, HttpEntity::getBody);
-
-      assertThat(invoiceRepository.findByUuid(response.getBody()))
-          .isPresent()
-          .hasValueSatisfying(
-              invoice ->
-                  assertThat(invoice.getItems())
-                      .hasSize(1)
-                      .singleElement()
-                      .returns(ProductModels.UUID, i -> i.getProduct().getUuid())
-                      .returns(Constants.ONE, Item::getQuantity)
-                      .usingComparatorForType(
-                          BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
-                      .returns(Constants.TWO, Item::getPrice));
-    }
-
     @ParameterizedTest
     @RequiredSource(ModifiableItemDto.class)
     void status400(final ModifiableItemDto requestBody) {
@@ -236,6 +192,50 @@ public class OpenZevItemApiIntegrationTest {
 
       // assert
       assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
+    }
+
+    @Test
+    @Transactional
+    void status200() {
+      // arrange
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
+      testDatabaseService.insert(
+          InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
+      testDatabaseService.insert(ProductModels.getProduct());
+
+      final ModifiableItemDto requestBody =
+          new ModifiableItemDto()
+              .productId(ProductModels.UUID)
+              .quantity(Constants.ONE)
+              .price(Constants.TWO)
+              .amount(Constants.TWO);
+
+      // act
+      final ResponseEntity<UUID> response =
+          restTemplate.exchange(
+              UriFactory.invoices_items(InvoiceModels.UUID),
+              HttpMethod.POST,
+              new HttpEntity<>(requestBody, null),
+              UUID.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+          .doesNotReturn(null, HttpEntity::getBody);
+
+      assertThat(invoiceRepository.findByUuid(response.getBody()))
+          .isPresent()
+          .hasValueSatisfying(
+              invoice ->
+                  assertThat(invoice.getItems())
+                      .hasSize(1)
+                      .singleElement()
+                      .returns(ProductModels.UUID, i -> i.getProduct().getUuid())
+                      .returns(Constants.ONE, Item::getQuantity)
+                      .usingComparatorForType(
+                          BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
+                      .returns(Constants.TWO, Item::getPrice));
     }
   }
 

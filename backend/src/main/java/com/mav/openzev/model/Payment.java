@@ -38,4 +38,18 @@ public class Payment extends AbstractAuditEntity {
 
   @Column(name = "NOTES")
   private String notes;
+
+  public void setInvoice(final Invoice invoice) {
+    this.invoice = invoice;
+    updateInvoice();
+  }
+
+  public void setAmount(final BigDecimal amount) {
+    this.amount = amount;
+    updateInvoice();
+  }
+
+  private void updateInvoice() {
+    invoice.afterPayments();
+  }
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -75,6 +76,11 @@ public class Invoice extends AbstractAuditEntity {
   @Builder.Default
   private Set<Document> documents = new HashSet<>();
 
+  public void addItem(final Item item) {
+    item.setInvoice(this);
+    items.add(item);
+  }
+
   public Set<Item> getItems() {
     final Comparator<Item> compareByProductSubject =
         Comparator.comparing(i -> i.getProduct().getSubject());
@@ -90,8 +96,17 @@ public class Invoice extends AbstractAuditEntity {
         .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
-  public void addItem(final Item item) {
-    item.setInvoice(this);
-    items.add(item);
+  public BigDecimal getTotal() {
+    return items.stream().map(Item::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  public BigDecimal getPaid() {
+    return payments.stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  public void afterPayments() {
+    if (getPaid().compareTo(getTotal()) >= 0) {
+      status = InvoiceStatus.PAID;
+    }
   }
 }

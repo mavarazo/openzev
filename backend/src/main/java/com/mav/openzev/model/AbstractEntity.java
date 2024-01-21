@@ -34,7 +34,7 @@ public abstract class AbstractEntity {
   private UUID uuid;
 
   @PrePersist
-  public void onPrePersist() {
+  protected void onPrePersist() {
     if (ObjectUtils.isEmpty(uuid)) {
       uuid = UUID.randomUUID();
     }
