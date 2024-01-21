@@ -28,7 +28,7 @@ public class Item extends AbstractAuditEntity {
   private Invoice invoice;
 
   @ManyToOne
-  @JoinColumn(name = "PRODUCT_ID", nullable = false)
+  @JoinColumn(name = "PRODUCT_ID")
   private Product product;
 
   @Column(name = "NOTES")

@@ -1,5 +1,6 @@
 package com.mav.openzev.controller;
 
+import static java.util.Objects.isNull;
 
 import com.mav.openzev.api.ItemApi;
 import com.mav.openzev.api.model.ItemDto;
@@ -14,6 +15,7 @@ import com.mav.openzev.repository.ItemRepository;
 import com.mav.openzev.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,10 +46,9 @@ public class ItemController implements ItemApi {
   public ResponseEntity<UUID> createItem(
       final UUID invoiceId, final ModifiableItemDto modifiableItemDto) {
     final Invoice invoice = findInvoiceOrFail(invoiceId);
-    final Product product = findProductOrFail(modifiableItemDto.getProductId());
 
     final Item item = itemMapper.mapToItem(modifiableItemDto);
-    item.setProduct(product);
+    findProduct(modifiableItemDto.getProductId()).ifPresent(item::setProduct);
     invoice.addItem(item);
     return ResponseEntity.ok(invoiceRepository.save(invoice).getUuid());
   }
@@ -62,10 +63,9 @@ public class ItemController implements ItemApi {
   public ResponseEntity<UUID> changeItem(
       final UUID itemId, final ModifiableItemDto modifiableItemDto) {
     final Item item = findItemOrFail(itemId);
-    final Product product = findProductOrFail(modifiableItemDto.getProductId());
 
     itemMapper.updateItem(modifiableItemDto, item);
-    item.setProduct(product);
+    findProduct(modifiableItemDto.getProductId()).ifPresent(item::setProduct);
     return ResponseEntity.ok(itemRepository.save(item).getUuid());
   }
 
@@ -87,9 +87,12 @@ public class ItemController implements ItemApi {
         .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(invoiceId));
   }
 
-  private Product findProductOrFail(final UUID productId) {
-    return productRepository
-        .findByUuid(productId)
-        .orElseThrow(() -> NotFoundException.ofProductNotFound(productId));
+  private Optional<Product> findProduct(final UUID productId) {
+    return isNull(productId)
+        ? Optional.empty()
+        : Optional.ofNullable(
+            productRepository
+                .findByUuid(productId)
+                .orElseThrow(() -> NotFoundException.ofProductNotFound(productId)));
   }
 }

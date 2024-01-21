@@ -24,7 +24,7 @@
             </column>
 
             <column name="PRODUCT_ID" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="FK_ITEM_PRODUCT" references="OZEV_PRODUCTS(ID)"/>
+                <constraints foreignKeyName="FK_ITEM_PRODUCT" references="OZEV_PRODUCTS(ID)"/>
             </column>
 
             <column name="NOTES" type="VARCHAR(255)"/>
