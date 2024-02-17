@@ -2,14 +2,12 @@ package com.mav.openzev;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mav.openzev.api.model.BankAccountDto;
 import com.mav.openzev.api.model.ErrorDto;
-import com.mav.openzev.api.model.ModifiableProductDto;
-import com.mav.openzev.api.model.ProductDto;
+import com.mav.openzev.api.model.ModifiableBankAccountDto;
 import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
-import com.mav.openzev.model.Constants;
-import com.mav.openzev.model.ProductModels;
-import jakarta.transaction.Transactional;
+import com.mav.openzev.model.BankAccountModels;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -26,7 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class OpenZevProductApiIntegrationTest {
+public class OpenZevBankAccountApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
@@ -38,17 +36,20 @@ public class OpenZevProductApiIntegrationTest {
   }
 
   @Nested
-  class GetProductsTests {
+  class GetBankAccountsTests {
 
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insert(ProductModels.getProduct());
+      testDatabaseService.insert(BankAccountModels.getBankAccount());
 
       // act
-      final ResponseEntity<ProductDto[]> response =
+      final ResponseEntity<BankAccountDto[]> response =
           restTemplate.exchange(
-              UriFactory.products(), HttpMethod.GET, HttpEntity.EMPTY, ProductDto[].class);
+              UriFactory.settings_bank_accounts(),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              BankAccountDto[].class);
 
       // assert
       assertThat(response)
@@ -60,35 +61,14 @@ public class OpenZevProductApiIntegrationTest {
   }
 
   @Nested
-  class GetProductTests {
-
-    @Test
-    void status200() {
-      // arrange
-      testDatabaseService.insert(ProductModels.getProduct());
-
-      // act
-      final ResponseEntity<ProductDto> response =
-          restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID),
-              HttpMethod.GET,
-              HttpEntity.EMPTY,
-              ProductDto.class);
-
-      // assert
-      assertThat(response)
-          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .doesNotReturn(null, HttpEntity::getBody);
-
-      jsonJacksonApprovals.verifyAsJson(response.getBody());
-    }
+  class GetBankAccountTests {
 
     @Test
     void status404() {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID),
+              UriFactory.settings_bank_accounts(BankAccountModels.UUID),
               HttpMethod.GET,
               HttpEntity.EMPTY,
               ErrorDto.class);
@@ -97,23 +77,44 @@ public class OpenZevProductApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("product_not_found", ErrorDto::getCode)
+          .returns("bank_account_not_found", ErrorDto::getCode)
           .returns(
-              "product with id '370f9494-8f2a-4c52-9b6e-5509415d0e4a' not found",
+              "bank account with id '370f9494-8f2a-4c52-9b6e-5509415d0e4a' not found",
               ErrorDto::getMessage);
+    }
+
+    @Test
+    void status200() {
+      // arrange
+      testDatabaseService.insert(BankAccountModels.getBankAccount());
+
+      // act
+      final ResponseEntity<BankAccountDto> response =
+          restTemplate.exchange(
+              UriFactory.settings_bank_accounts(BankAccountModels.UUID),
+              HttpMethod.GET,
+              HttpEntity.EMPTY,
+              BankAccountDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+          .doesNotReturn(null, HttpEntity::getBody);
+
+      jsonJacksonApprovals.verifyAsJson(response.getBody());
     }
   }
 
   @Nested
-  class CreateProductTests {
+  class CreateBankAccountTests {
 
     @ParameterizedTest
-    @RequiredSource(ModifiableProductDto.class)
-    void status400(final ModifiableProductDto requestBody) {
+    @RequiredSource(ModifiableBankAccountDto.class)
+    void status400(final ModifiableBankAccountDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.products(),
+              UriFactory.settings_bank_accounts(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -123,16 +124,19 @@ public class OpenZevProductApiIntegrationTest {
     }
 
     @Test
-    @Transactional
     void status200() {
       // arrange
-      final ModifiableProductDto requestBody =
-          new ModifiableProductDto().subject("Lorem ipsum").price(Constants.TWO).notes("dolor");
+      testDatabaseService.insert(BankAccountModels.getBankAccount());
+
+      final ModifiableBankAccountDto requestBody =
+          new ModifiableBankAccountDto()
+              .iban("563f43db-90cf-43b2-af4d-f6c4c045c8e0")
+              .name("Euturpis");
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.products(),
+              UriFactory.settings_bank_accounts(),
               HttpMethod.POST,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -145,24 +149,24 @@ public class OpenZevProductApiIntegrationTest {
       jsonJacksonApprovals.verifyAsJson(
           restTemplate
               .exchange(
-                  UriFactory.products(response.getBody()),
+                  UriFactory.settings_bank_accounts(),
                   HttpMethod.GET,
                   HttpEntity.EMPTY,
-                  ProductDto.class)
+                  BankAccountDto[].class)
               .getBody());
     }
   }
 
   @Nested
-  class ChangeProductTests {
+  class ChangeBankAccountTests {
 
     @ParameterizedTest
-    @RequiredSource(ModifiableProductDto.class)
-    void status400(final ModifiableProductDto requestBody) {
+    @RequiredSource(ModifiableBankAccountDto.class)
+    void status400(final ModifiableBankAccountDto requestBody) {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID),
+              UriFactory.settings_bank_accounts(BankAccountModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -174,13 +178,15 @@ public class OpenZevProductApiIntegrationTest {
     @Test
     void status404() {
       // arrange
-      final ModifiableProductDto requestBody =
-          new ModifiableProductDto().subject("Lorem ipsum").price(Constants.TWO);
+      final ModifiableBankAccountDto requestBody =
+          new ModifiableBankAccountDto()
+              .iban("563f43db-90cf-43b2-af4d-f6c4c045c8e0")
+              .name("Euturpis");
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID),
+              UriFactory.settings_bank_accounts(BankAccountModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               ErrorDto.class);
@@ -192,15 +198,19 @@ public class OpenZevProductApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insert(ProductModels.getProduct());
+      testDatabaseService.insert(
+          BankAccountModels.getBankAccount().toBuilder().uuid(UUID.randomUUID()).build());
+      testDatabaseService.insert(BankAccountModels.getBankAccount());
 
-      final ModifiableProductDto requestBody =
-          new ModifiableProductDto().subject("Lorem ipsum").price(Constants.TWO);
+      final ModifiableBankAccountDto requestBody =
+          new ModifiableBankAccountDto()
+              .iban("563f43db-90cf-43b2-af4d-f6c4c045c8e0")
+              .name("Euturpis");
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID),
+              UriFactory.settings_bank_accounts(BankAccountModels.UUID),
               HttpMethod.PUT,
               new HttpEntity<>(requestBody, null),
               UUID.class);
@@ -213,23 +223,26 @@ public class OpenZevProductApiIntegrationTest {
       jsonJacksonApprovals.verifyAsJson(
           restTemplate
               .exchange(
-                  UriFactory.products(response.getBody()),
+                  UriFactory.settings_bank_accounts(),
                   HttpMethod.GET,
                   HttpEntity.EMPTY,
-                  ProductDto.class)
+                  BankAccountDto[].class)
               .getBody());
     }
   }
 
   @Nested
-  class DeleteProductTests {
+  class DeleteBankAccountTests {
 
     @Test
     void status404() {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID), HttpMethod.DELETE, null, ErrorDto.class);
+              UriFactory.settings_bank_accounts(BankAccountModels.UUID),
+              HttpMethod.DELETE,
+              null,
+              ErrorDto.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
@@ -238,12 +251,15 @@ public class OpenZevProductApiIntegrationTest {
     @Test
     void status204() {
       // arrange
-      testDatabaseService.insert(ProductModels.getProduct());
+      testDatabaseService.insert(BankAccountModels.getBankAccount());
 
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID), HttpMethod.DELETE, null, UUID.class);
+              UriFactory.settings_bank_accounts(BankAccountModels.UUID),
+              HttpMethod.DELETE,
+              null,
+              UUID.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);

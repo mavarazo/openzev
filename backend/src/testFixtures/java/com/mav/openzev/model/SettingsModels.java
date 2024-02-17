@@ -1,11 +1,10 @@
 package com.mav.openzev.model;
 
-import com.mav.openzev.model.config.ZevConfig;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ZevConfigModels {
+public class SettingsModels {
 
   public static final java.util.UUID UUID =
       java.util.UUID.fromString("242fcc40-eb81-4ab4-9505-a9a964c0b2dd");
@@ -16,8 +15,8 @@ public class ZevConfigModels {
   public static final String GRATTAVACHE = "Grattavache";
   public static final String _F1DF95E0 = "f1df95e0-a1a0-4dd5-9001-4b196dd4b230";
 
-  public static ZevConfig getZevConfig() {
-    return ZevConfig.builder()
+  public static Settings getSettings() {
+    return Settings.builder()
         .uuid(UUID)
         .name(ZEV_STRADUN_30_GRATTAVACHE)
         .street(STRADUN)

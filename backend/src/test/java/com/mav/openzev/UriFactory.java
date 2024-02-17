@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class UriFactory {
-
   public static URI invoices() {
     return UriComponentsBuilder.fromPath("/v1/invoices").build().toUri();
   }
@@ -28,16 +27,38 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI invoices_pdf(final UUID invoiceId) {
+    return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}/pdf")
+        .buildAndExpand(invoiceId)
+        .toUri();
+  }
+
   public static URI items(final UUID itemId) {
     return UriComponentsBuilder.fromPath("/v1/items/{itemId}").buildAndExpand(itemId).toUri();
   }
 
-  public static URI configs_zev() {
-    return UriComponentsBuilder.fromPath("/v1/configs/zev").build().toUri();
+  public static URI settings() {
+    return UriComponentsBuilder.fromPath("/v1/settings").build().toUri();
   }
 
-  public static URI configs_zev_representative() {
-    return UriComponentsBuilder.fromPath("/v1/configs/zev-representative").build().toUri();
+  public static URI settings_bank_accounts() {
+    return UriComponentsBuilder.fromPath("/v1/settings/bank-accounts").build().toUri();
+  }
+
+  public static URI settings_bank_accounts(final UUID bankAccountId) {
+    return UriComponentsBuilder.fromPath("/v1/settings/bank-accounts/{bankAccountId}")
+        .buildAndExpand(bankAccountId)
+        .toUri();
+  }
+
+  public static URI settings_representatives() {
+    return UriComponentsBuilder.fromPath("/v1/settings/representatives").build().toUri();
+  }
+
+  public static URI settings_representatives(final UUID representativeId) {
+    return UriComponentsBuilder.fromPath("/v1/settings/representatives/{representativeId}")
+        .buildAndExpand(representativeId)
+        .toUri();
   }
 
   public static URI documents(final UUID documentId) {

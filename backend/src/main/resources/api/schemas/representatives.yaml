@@ -1,47 +1,10 @@
-ZevConfigDto:
+RepresentativeDto:
   type: object
   properties:
     id:
       $ref: '../schemas/commons.yaml#/Id'
-    name:
-      type: string
-    street:
-      type: string
-    houseNr:
-      type: string
-    postalCode:
-      type: string
-    city:
-      type: string
-    propertyNr:
-      type: string
-
-ModifiableZevConfigDto:
-  type: object
-  properties:
-    name:
-      type: string
-    street:
-      type: string
-    houseNr:
-      type: string
-    postalCode:
-      type: string
-    city:
-      type: string
-    propertyNr:
-      type: string
-  required:
-    - street
-    - houseNr
-    - postalCode
-    - city
-
-ZevRepresentativeConfigDto:
-  type: object
-  properties:
-    id:
-      $ref: '../schemas/commons.yaml#/Id'
+    active:
+      type: boolean
     firstName:
       type: string
     lastName:
@@ -62,9 +25,12 @@ ZevRepresentativeConfigDto:
     mobileNr:
       type: string
 
-ModifiableZevRepresentativeConfigDto:
+ModifiableRepresentativeDto:
   type: object
   properties:
+    active:
+      type: boolean
+      default: true
     firstName:
       type: string
     lastName:
@@ -85,6 +51,7 @@ ModifiableZevRepresentativeConfigDto:
     mobileNr:
       type: string
   required:
+    - active
     - firstName
     - lastName
     - email

@@ -1,0 +1,20 @@
+get:
+  operationId: getPdf
+  tags:
+    - Invoice
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  responses:
+    '200':
+      description: Invoices
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

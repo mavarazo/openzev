@@ -1,0 +1,39 @@
+SettingsDto:
+  type: object
+  properties:
+    id:
+      $ref: '../schemas/commons.yaml#/Id'
+    name:
+      type: string
+    street:
+      type: string
+    houseNr:
+      type: string
+    postalCode:
+      type: string
+    city:
+      type: string
+    propertyNr:
+      type: string
+
+ModifiableSettingsDto:
+  type: object
+  properties:
+    name:
+      type: string
+    street:
+      type: string
+    houseNr:
+      type: string
+    postalCode:
+      type: string
+    city:
+      type: string
+    propertyNr:
+      type: string
+  required:
+    - name
+    - street
+    - houseNr
+    - postalCode
+    - city

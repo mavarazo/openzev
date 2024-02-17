@@ -3,10 +3,10 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
 
-    <changeSet author="mav" id="442bce8c-17ee-4172-a5a5-3a7d16b14a98">
-        <createTable tableName="OZEV_CONFIG_ZEV_REPRESENTATIVE">
+    <changeSet author="mav" id="d761a656-00a2-4159-b980-f8840231f1b9">
+        <createTable tableName="OZEV_BANK_ACCOUNTS">
             <column name="ID" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" primaryKeyName="PK_OZEV_CONFIG_ZEV_REPRESENTATIVE"/>
+                <constraints primaryKey="true" primaryKeyName="PK_OZEV_BANK_ACCOUNT"/>
             </column>
 
             <column name="UUID" type="VARCHAR(36)">
@@ -19,15 +19,15 @@
 
             <column name="MODIFIED" type="TIMESTAMP(6)"/>
 
-            <column name="FIRST_NAME" type="VARCHAR2(255)">
+            <column name="ACTIVE" type="BOOLEAN" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="LAST_NAME" type="VARCHAR2(255)">
+            <column name="IBAN" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="EMAIL" type="VARCHAR2(255)">
+            <column name="NAME" type="VARCHAR2(255)">
                 <constraints nullable="false"/>
             </column>
 
@@ -38,12 +38,6 @@
             <column name="POSTAL_CODE" type="VARCHAR(255)"/>
 
             <column name="CITY" type="VARCHAR(255)"/>
-
-            <column name="PHONE_NR" type="VARCHAR(20)"/>
-
-            <column name="MOBILE_NR" type="VARCHAR(20)">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

@@ -1,0 +1,53 @@
+delete:
+  operationId: deleteRepresentative
+  tags:
+    - Representative
+  parameters:
+    - $ref: '../parameters/representatives.yaml#/RepresentativeParam'
+  responses:
+    '204':
+      description: Deleted
+get:
+  operationId: getRepresentative
+  tags:
+    - Representative
+  parameters:
+    - $ref: '../parameters/representatives.yaml#/RepresentativeParam'
+  responses:
+    '200':
+      description: Representative
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/representatives.yaml#/RepresentativeDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeRepresentative
+  tags:
+    - Representative
+  parameters:
+    - $ref: '../parameters/representatives.yaml#/RepresentativeParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/representatives.yaml#/ModifiableRepresentativeDto'
+  responses:
+    '200':
+      description: Saved
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

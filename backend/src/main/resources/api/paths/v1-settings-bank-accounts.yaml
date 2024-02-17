@@ -1,33 +1,35 @@
 get:
-  operationId: getZevRepresentativeConfig
+  operationId: getBankAccounts
   tags:
-    - Config
+    - Bank Account
   responses:
     '200':
-      description: Settings for ZEV
+      description: Bank Accounts
       content:
         application/json:
           schema:
-            $ref: '../schemas/configs.yaml#/ZevRepresentativeConfigDto'
+            type: array
+            items:
+              $ref: '../schemas/bank-accounts.yaml#/BankAccountDto'
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: '../schemas/commons.yaml#/ErrorDto'
-put:
-  operationId: saveZevRepresentativeConfig
+post:
+  operationId: createBankAccount
   tags:
-    - Config
+    - Bank Account
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../schemas/configs.yaml#/ModifiableZevRepresentativeConfigDto'
+          $ref: '../schemas/bank-accounts.yaml#/ModifiableBankAccountDto'
   responses:
-    '200':
-      description: Saved
+    '201':
+      description: Created
       content:
         application/json:
           schema:

@@ -1,39 +1,46 @@
-get:
-  operationId: getPayments
+delete:
+  operationId: deleteBankAccount
   tags:
-    - Payment
+    - Bank Account
   parameters:
-    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+    - $ref: '../parameters/bank-accounts.yaml#/BankAccountParam'
+  responses:
+    '204':
+      description: Deleted
+get:
+  operationId: getBankAccount
+  tags:
+    - Bank Account
+  parameters:
+    - $ref: '../parameters/bank-accounts.yaml#/BankAccountParam'
   responses:
     '200':
-      description: Payments
+      description: BankAccount
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: '../schemas/payments.yaml#/PaymentDto'
+            $ref: '../schemas/bank-accounts.yaml#/BankAccountDto'
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: '../schemas/commons.yaml#/ErrorDto'
-post:
-  operationId: createPayment
+put:
+  operationId: changeBankAccount
   tags:
-    - Payment
+    - Bank Account
   parameters:
-    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+    - $ref: '../parameters/bank-accounts.yaml#/BankAccountParam'
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../schemas/payments.yaml#/ModifiablePaymentDto'
+          $ref: '../schemas/bank-accounts.yaml#/ModifiableBankAccountDto'
   responses:
-    '201':
-      description: Created
+    '200':
+      description: Updated
       content:
         application/json:
           schema:

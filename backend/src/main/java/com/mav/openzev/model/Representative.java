@@ -1,13 +1,9 @@
-package com.mav.openzev.model.config;
+package com.mav.openzev.model;
 
-import com.mav.openzev.model.AbstractAuditEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder(toBuilder = true)
@@ -16,8 +12,12 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @Entity
-@Table(name = "OZEV_CONFIG_ZEV_REPRESENTATIVE")
-public class ZevRepresentativeConfig extends AbstractAuditEntity {
+@Table(name = "OZEV_REPRESENTATIVES")
+public class Representative extends AbstractAuditEntity {
+
+  @Column(name = "ACTIVE")
+  @Builder.Default
+  private boolean active = true;
 
   @Column(name = "FIRST_NAME")
   private String firstName;

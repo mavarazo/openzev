@@ -1,18 +1,16 @@
 get:
-  operationId: getPayments
+  operationId: getRepresentatives
   tags:
-    - Payment
-  parameters:
-    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+    - Representative
   responses:
     '200':
-      description: Payments
+      description: Representatives
       content:
         application/json:
           schema:
             type: array
             items:
-              $ref: '../schemas/payments.yaml#/PaymentDto'
+              $ref: '../schemas/representatives.yaml#/RepresentativeDto'
     default:
       description: Unexpected error
       content:
@@ -20,20 +18,18 @@ get:
           schema:
             $ref: '../schemas/commons.yaml#/ErrorDto'
 post:
-  operationId: createPayment
+  operationId: createRepresentative
   tags:
-    - Payment
-  parameters:
-    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+    - Representative
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../schemas/payments.yaml#/ModifiablePaymentDto'
+          $ref: '../schemas/representatives.yaml#/ModifiableRepresentativeDto'
   responses:
-    '201':
-      description: Created
+    '200':
+      description: Saved
       content:
         application/json:
           schema:

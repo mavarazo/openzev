@@ -1,0 +1,6 @@
+RepresentativeParam:
+  name: representativeId
+  in: path
+  required: true
+  schema:
+    $ref: '../schemas/commons.yaml#/Id'

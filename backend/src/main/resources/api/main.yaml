@@ -4,11 +4,20 @@ info:
   title: OpenZEV API
 
 paths:
-  /v1/configs/zev:
-    $ref: './paths/v1-configs-zev.yaml'
+  /v1/settings/bank-accounts:
+    $ref: './paths/v1-settings-bank-accounts.yaml'
 
-  /v1/configs/zev-representative:
-    $ref: './paths/v1-configs-zev-representative.yaml'
+  /v1/settings/bank-accounts/{bankAccountId}:
+    $ref: './paths/v1-settings-bank-accounts-id.yaml'
+
+  /v1/settings:
+    $ref: './paths/v1-settings.yaml'
+
+  /v1/settings/representatives:
+    $ref: './paths/v1-settings-representatives.yaml'
+
+  /v1/settings/representatives/{representativeId}:
+    $ref: './paths/v1-settings-representatives-id.yaml'
 
   /v1/documents/{documentId}:
     $ref: './paths/v1-documents-id.yaml'
@@ -24,6 +33,9 @@ paths:
 
   /v1/invoices/{invoiceId}/payments:
     $ref: './paths/v1-invoices-id-payments.yaml'
+
+  /v1/invoices/{invoiceId}/pdf:
+    $ref: './paths/v1-invoices-id-pdf.yaml'
 
   /v1/items/{itemId}:
     $ref: './paths/v1-items-id.yaml'

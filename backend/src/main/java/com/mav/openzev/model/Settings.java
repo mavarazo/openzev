@@ -1,6 +1,5 @@
-package com.mav.openzev.model.config;
+package com.mav.openzev.model;
 
-import com.mav.openzev.model.AbstractAuditEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -16,8 +15,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @Entity
-@Table(name = "OZEV_CONFIG_ZEV")
-public class ZevConfig extends AbstractAuditEntity {
+@Table(name = "OZEV_SETTINGS")
+public class Settings extends AbstractAuditEntity {
 
   @Column(name = "NAME")
   private String name;

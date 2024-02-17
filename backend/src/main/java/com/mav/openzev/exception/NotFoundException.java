@@ -15,6 +15,12 @@ public class NotFoundException extends RuntimeException {
     this.code = code;
   }
 
+  public static NotFoundException ofBankAccountNotFound(final UUID bankAccountId) {
+    return new NotFoundException(
+        "bank_account_not_found",
+        "bank account with id '%s' not found".formatted(bankAccountId.toString()));
+  }
+
   public static NotFoundException ofDocumentNotFound(final UUID documentId) {
     return new NotFoundException(
         "document_not_found", "document with id '%s' not found".formatted(documentId.toString()));
@@ -56,12 +62,21 @@ public class NotFoundException extends RuntimeException {
         "unit_not_found", "unit with id '%s' not found".formatted(unitId.toString()));
   }
 
-  public static NotFoundException ofZevConfigNotFound() {
-    return new NotFoundException("zev_config_not_found", "ZevConfig not found");
+  public static NotFoundException ofSettingsNotFound() {
+    return new NotFoundException("settings_not_found", "settings not found");
   }
 
-  public static NotFoundException ofZevRepresentativeConfigNotFound() {
+  public static NotFoundException ofRepresentativeNotFound(final UUID representativeId) {
     return new NotFoundException(
-        "zev_representative_config_not_found", "ZevRepresentativeConfig not found");
+        "representative_not_found",
+        "representative with id '%s' not found".formatted(representativeId.toString()));
+  }
+
+  public static NotFoundException ofBankAccountActive() {
+    return new NotFoundException("bank_account_not_found", "no active bank account found");
+  }
+
+  public static NotFoundException ofRepresentativeActive() {
+    return new NotFoundException("representative_not_found", "no active representative found");
   }
 }

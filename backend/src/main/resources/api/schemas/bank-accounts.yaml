@@ -1,0 +1,42 @@
+BankAccountDto:
+  type: object
+  properties:
+    id:
+      $ref: '../schemas/commons.yaml#/Id'
+    active:
+      type: boolean
+    iban:
+      type: string
+    name:
+      type: string
+    street:
+      type: string
+    houseNr:
+      type: string
+    postalCode:
+      type: string
+    city:
+      type: string
+
+ModifiableBankAccountDto:
+  type: object
+  properties:
+    active:
+      type: boolean
+      default: true
+    iban:
+      type: string
+    name:
+      type: string
+    street:
+      type: string
+    houseNr:
+      type: string
+    postalCode:
+      type: string
+    city:
+      type: string
+  required:
+    - active
+    - iban
+    - name

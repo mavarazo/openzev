@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    java
+    `java-library`
     id("java-test-fixtures")
     id("org.springframework.boot") version "3.2.0"
     id("org.openapi.generator") version "6.3.0"
@@ -27,19 +27,12 @@ sourceSets {
 }
 
 dependencies {
+    api(platform(SpringBootPlugin.BOM_COORDINATES))
     annotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
-    implementation(platform(SpringBootPlugin.BOM_COORDINATES))
-
     developmentOnly(platform(SpringBootPlugin.BOM_COORDINATES))
-
     testAnnotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
-    testImplementation(platform(SpringBootPlugin.BOM_COORDINATES))
-
     testFixturesAnnotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
-    testFixturesImplementation(platform(SpringBootPlugin.BOM_COORDINATES))
-}
 
-dependencies {
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
 
@@ -49,9 +42,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-webflux") // fixme... replace with new rest client
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
     implementation("org.liquibase:liquibase-core")
-
+    implementation(libs.flying.saucer.pdf)
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
     implementation(libs.pdfbox)
 

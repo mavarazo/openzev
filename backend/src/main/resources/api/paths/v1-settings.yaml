@@ -1,14 +1,14 @@
 get:
-  operationId: getZevConfig
+  operationId: getSettings
   tags:
-    - Config
+    - Setting
   responses:
     '200':
-      description: Settings for ZEV
+      description: Setting for ZEV
       content:
         application/json:
           schema:
-            $ref: '../schemas/configs.yaml#/ZevConfigDto'
+            $ref: '../schemas/settings.yaml#/SettingsDto'
     default:
       description: Unexpected error
       content:
@@ -16,15 +16,15 @@ get:
           schema:
             $ref: '../schemas/commons.yaml#/ErrorDto'
 put:
-  operationId: saveZevConfig
+  operationId: saveSettings
   tags:
-    - Config
+    - Setting
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../schemas/configs.yaml#/ModifiableZevConfigDto'
+          $ref: '../schemas/settings.yaml#/ModifiableSettingsDto'
   responses:
     '200':
       description: Saved
