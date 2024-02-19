@@ -1,0 +1,46 @@
+get:
+  operationId: getItems
+  tags:
+    - Item
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  responses:
+    '200':
+      description: Items
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/items.yaml#/ItemDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createItem
+  tags:
+    - Item
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/items.yaml#/ModifiableItemDto'
+  responses:
+    '200':
+      description: Added
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

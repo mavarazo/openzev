@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,9 +59,18 @@ public class Owner extends AbstractEntity {
   @OneToMany(mappedBy = "owner")
   private Set<Ownership> ownerships;
 
+  @OneToMany(mappedBy = "recipient")
+  private Set<Invoice> invoices;
+
   public Owner addOwnership(final Ownership ownership) {
     ownerships.add(ownership);
     ownership.setOwner(this);
     return this;
+  }
+
+  public Balance getBalance() {
+    return new Balance(
+        invoices.stream().map(Invoice::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add),
+        invoices.stream().map(Invoice::getPaid).reduce(BigDecimal.ZERO, BigDecimal::add));
   }
 }

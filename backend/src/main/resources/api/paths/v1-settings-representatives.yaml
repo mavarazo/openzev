@@ -1,0 +1,42 @@
+get:
+  operationId: getRepresentatives
+  tags:
+    - Representative
+  responses:
+    '200':
+      description: Representatives
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/representatives.yaml#/RepresentativeDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createRepresentative
+  tags:
+    - Representative
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/representatives.yaml#/ModifiableRepresentativeDto'
+  responses:
+    '200':
+      description: Saved
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

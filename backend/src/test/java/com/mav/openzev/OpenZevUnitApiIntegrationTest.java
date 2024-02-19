@@ -6,7 +6,6 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableUnitDto;
 import com.mav.openzev.api.model.UnitDto;
 import com.mav.openzev.helper.RequiredSource;
-import com.mav.openzev.model.AccountingModels;
 import com.mav.openzev.model.InvoiceModels;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
@@ -244,7 +243,7 @@ public class OpenZevUnitApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.units(UnitModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               ErrorDto.class);
 
       // assert
@@ -266,7 +265,7 @@ public class OpenZevUnitApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.units(UnitModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               ErrorDto.class);
 
       // assert
@@ -279,17 +278,16 @@ public class OpenZevUnitApiIntegrationTest {
     @Test
     void status422_invoice() {
       final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
-
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
       testDatabaseService.insert(
-          AccountingModels.getAccounting()
-              .addInvoice(InvoiceModels.getInvoice().toBuilder().unit(unit).build()));
+          InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
 
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
               UriFactory.units(UnitModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               ErrorDto.class);
 
       // assert
@@ -307,10 +305,7 @@ public class OpenZevUnitApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.units(UnitModels.UUID),
-              HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
-              UUID.class);
+              UriFactory.units(UnitModels.UUID), HttpMethod.DELETE, HttpEntity.EMPTY, UUID.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);

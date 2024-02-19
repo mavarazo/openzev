@@ -1,17 +1,17 @@
 <div class="card">
   <div class="card-body">
 
-    <ng-container *ngIf="errors?.length">
+    <ng-container *ngIf="error$ | async as error">
       <div class="alert alert-danger d-flex align-items-center" role="alert">
         <i class="bi bi-exclamation-triangle"></i>
         <ul>
-          <li *ngFor="let error of errors">{{ error }}</li>
+          <li>{{ error.message }}</li>
         </ul>
       </div>
     </ng-container>
 
     <ng-container *ngIf="unit$ | async as unit">
-      <form [formGroup]="ownershipForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+      <form [formGroup]="form" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
         <div class="mb-3">
           <label for="unit" class="form-label">Unit</label>
           <input type="text" id="unit" class="form-control-plaintext" value="{{unit.subject}}" readonly>

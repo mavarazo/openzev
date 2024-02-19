@@ -1,14 +1,18 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
-    java
+    `java-library`
     id("java-test-fixtures")
-    id("org.springframework.boot") version "3.1.0"
-    id("io.spring.dependency-management") version "1.1.0"
+    id("org.springframework.boot") version "3.2.0"
     id("org.openapi.generator") version "6.3.0"
 }
 
 group = "com.mav"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
 
 repositories {
     mavenCentral()
@@ -23,21 +27,29 @@ sourceSets {
 }
 
 dependencies {
+    api(platform(SpringBootPlugin.BOM_COORDINATES))
+    annotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
+    developmentOnly(platform(SpringBootPlugin.BOM_COORDINATES))
+    testAnnotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
+    testFixturesAnnotationProcessor(platform(SpringBootPlugin.BOM_COORDINATES))
+
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
 
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    annotationProcessor(libs.mapstruct.processor)
+    implementation(libs.mapstruct)
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-webflux") // fixme... replace with new rest client
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
     implementation("org.liquibase:liquibase-core")
+    implementation(libs.flying.saucer.pdf)
+    implementation(libs.springdoc.openapi.starter.webmvc.ui)
+    implementation(libs.pdfbox)
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
-    implementation("org.apache.pdfbox:pdfbox:3.0.1")
-    
     runtimeOnly("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("org.postgresql:postgresql")
 
@@ -47,8 +59,9 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.squareup.okhttp3:okhttp:4.0.1")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.0.1")
+    testImplementation(libs.bundles.okhttp.mockwebserver)
+    testImplementation(libs.approvaltests)
+
     testRuntimeOnly("com.h2database:h2")
 
     testFixturesAnnotationProcessor("org.projectlombok:lombok")

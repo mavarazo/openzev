@@ -1,0 +1,53 @@
+delete:
+  operationId: deleteBankAccount
+  tags:
+    - Bank Account
+  parameters:
+    - $ref: '../parameters/bank-accounts.yaml#/BankAccountParam'
+  responses:
+    '204':
+      description: Deleted
+get:
+  operationId: getBankAccount
+  tags:
+    - Bank Account
+  parameters:
+    - $ref: '../parameters/bank-accounts.yaml#/BankAccountParam'
+  responses:
+    '200':
+      description: BankAccount
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/bank-accounts.yaml#/BankAccountDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeBankAccount
+  tags:
+    - Bank Account
+  parameters:
+    - $ref: '../parameters/bank-accounts.yaml#/BankAccountParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/bank-accounts.yaml#/ModifiableBankAccountDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

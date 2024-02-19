@@ -1,0 +1,59 @@
+delete:
+  operationId: deleteProduct
+  tags:
+    - Product
+  parameters:
+    - $ref: '../parameters/products.yaml#/ProductParam'
+  responses:
+    '204':
+      description: Deleted
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+get:
+  operationId: getProduct
+  tags:
+    - Product
+  parameters:
+    - $ref: '../parameters/products.yaml#/ProductParam'
+  responses:
+    '200':
+      description: Product
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/products.yaml#/ProductDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeProduct
+  tags:
+    - Product
+  parameters:
+    - $ref: '../parameters/products.yaml#/ProductParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/products.yaml#/ModifiableProductDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

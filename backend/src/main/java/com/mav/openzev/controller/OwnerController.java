@@ -25,14 +25,19 @@ public class OwnerController implements OwnerApi {
   private final OwnerMapper ownerMapper;
 
   @Override
+  @Transactional(readOnly = true)
   public ResponseEntity<List<OwnerDto>> getOwners() {
+    final Sort sortByFirstName = Sort.sort(Owner.class).by(Owner::getFirstName).ascending();
+    final Sort sortByLastName = Sort.sort(Owner.class).by(Owner::getLastName).ascending();
+
     return ResponseEntity.ok(
-        ownerRepository.findAll(Sort.sort(Owner.class).by(Owner::getUuid)).stream()
+        ownerRepository.findAll(sortByFirstName.and(sortByLastName)).stream()
             .map(ownerMapper::mapToOwnerDto)
             .toList());
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResponseEntity<OwnerDto> getOwner(final UUID ownerId) {
     return ResponseEntity.ok(
         ownerRepository

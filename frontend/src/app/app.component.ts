@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavItem } from './core/components/sidebar/sidebar.component';
 
 @Component({
@@ -6,8 +6,9 @@ import { NavItem } from './core/components/sidebar/sidebar.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   items: NavItem[];
+  settingsItems: NavItem[];
 
   ngOnInit(): void {
     this.items = [
@@ -17,14 +18,9 @@ export class AppComponent {
         link: '/dashboard',
       },
       {
-        label: 'Accountings',
+        label: 'Invoices',
         icon: 'bi bi-briefcase',
-        link: '/accountings',
-      },
-      {
-        label: 'Agreements',
-        icon: 'bi bi-patch-check',
-        link: '/agreements',
+        link: '/invoices',
       },
       {
         label: 'Owners',
@@ -32,9 +28,32 @@ export class AppComponent {
         link: '/owners',
       },
       {
+        label: 'Products',
+        icon: 'bi bi-boxes',
+        link: '/products',
+      },
+      {
         label: 'Units',
         icon: 'bi bi-houses',
         link: '/units',
+      },
+    ];
+
+    this.settingsItems = [
+      {
+        label: 'Basics',
+        icon: 'bi bi-houses',
+        link: '/settings',
+      },
+      {
+        label: 'Bank Accounts',
+        icon: 'bi bi-houses',
+        link: '/bank-accounts',
+      },
+      {
+        label: 'Representatives',
+        icon: 'bi bi-houses',
+        link: '/representatives',
       },
     ];
   }

@@ -259,7 +259,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               ErrorDto.class);
 
       // assert
@@ -281,7 +281,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               UUID.class);
 
       // assert

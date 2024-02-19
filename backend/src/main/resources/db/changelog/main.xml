@@ -4,13 +4,6 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
 
-    <include file="migration/configs/main.xml" relativeToChangelogFile="true"/>
-    <include file="migration/documents/main.xml" relativeToChangelogFile="true"/>
-    <include file="migration/units/main.xml" relativeToChangelogFile="true"/>
-    <include file="migration/owners/main.xml" relativeToChangelogFile="true"/>
-    <include file="migration/ownerships/main.xml" relativeToChangelogFile="true"/>
-    <include file="migration/agreements/main.xml" relativeToChangelogFile="true"/>
-    <include file="migration/accountings/main.xml" relativeToChangelogFile="true"/>
-    <include file="migration/invoices/main.xml" relativeToChangelogFile="true"/>
+    <includeAll path="migration/**/*.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

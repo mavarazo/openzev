@@ -23,9 +23,9 @@
         <th scope="col">Subject</th>
       </tr>
       </thead>
-      <tbody *ngFor="let unit of units$ | async as units">
-      <tr [routerLink]="unit.id" style="cursor: pointer">
-        <td>{{unit.subject}}</td>
+      <tbody>
+      <tr *ngFor="let unit of units$ | async as units" [routerLink]="unit.id" style="cursor: pointer">
+        <td>{{ unit.subject }}</td>
       </tr>
       </tbody>
     </table>

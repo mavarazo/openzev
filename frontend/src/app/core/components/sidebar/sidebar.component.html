@@ -11,5 +11,13 @@
         <span class="align-middle">{{item.label}}</span>
       </a>
     </li>
+
+    <li class="sidebar-header">Settings</li>
+    <li class="sidebar-nav-item" *ngFor="let item of settingsItems">
+      <a href="#" class="sidebar-nav-link" [routerLink]="item.link" routerLinkActive="active">
+        <i class="{{item.icon}}"></i>
+        <span class="align-middle">{{ item.label }}</span>
+      </a>
+    </li>
   </ul>
 </div>

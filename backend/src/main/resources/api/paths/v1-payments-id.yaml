@@ -1,0 +1,53 @@
+delete:
+  operationId: deletePayment
+  tags:
+    - Payment
+  parameters:
+    - $ref: '../parameters/payments.yaml#/PaymentParam'
+  responses:
+    '204':
+      description: Deleted
+get:
+  operationId: getPayment
+  tags:
+    - Payment
+  parameters:
+    - $ref: '../parameters/payments.yaml#/PaymentParam'
+  responses:
+    '200':
+      description: Payment
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/payments.yaml#/PaymentDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changePayment
+  tags:
+    - Payment
+  parameters:
+    - $ref: '../parameters/payments.yaml#/PaymentParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/payments.yaml#/ModifiablePaymentDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

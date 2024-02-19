@@ -1,97 +1,58 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ModifiableUnitDto, UnitService } from '../../../generated-source/api';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input } from '@angular/core';
+import {
+  ModifiableUnitDto,
+  UnitDto,
+  UnitService,
+} from '../../../generated-source/api';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable } from 'rxjs';
+import { AbstractAddEditComponent } from '../../shared/components/abstract-add-edit.component';
 
 @Component({
   selector: 'app-add-edit-unit',
   templateUrl: './add-edit-unit.component.html',
   styleUrls: ['./add-edit-unit.component.scss'],
 })
-export class AddEditUnitComponent implements OnInit, OnDestroy {
+export class AddEditUnitComponent extends AbstractAddEditComponent<
+  UnitDto,
+  ModifiableUnitDto
+> {
   @Input() unitId: string | null;
 
-  private destroy$ = new Subject<void>();
-
-  unitForm: FormGroup;
-  isSubmitted: boolean = false;
-
-  constructor(private unitService: UnitService, private router: Router) {}
-
-  ngOnInit(): void {
-    this.initForm();
-
-    if (this.unitId) {
-      this.unitService
-        .getUnit(this.unitId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((unit) => {
-          this.unitForm.patchValue(unit);
-        });
-    }
+  get isEdit(): boolean {
+    return !!this.unitId;
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  constructor(private router: Router, private unitService: UnitService) {
+    super();
   }
 
-  private initForm() {
-    this.unitForm = new FormBuilder().group({
-      subject: [null, Validators.required],
-      valueRatio: [null, Validators.pattern('^[0-9]*$')],
-      mpan: [null],
+  fetchEntity(): Observable<UnitDto> {
+    return this.unitService.getUnit(this.unitId!);
+  }
+
+  override initForm() {
+    return new FormGroup({
+      subject: new FormControl(null, Validators.required),
+      valueRatio: new FormControl(null, Validators.pattern('^[0-9]*$')),
+      mpan: new FormControl(null),
     });
   }
 
-  submit() {
-    this.isSubmitted = true;
-    if (this.unitForm.valid) {
-      const unit = {
-        ...this.unitForm.value,
-      } as ModifiableUnitDto;
-
-      if (this.unitId) {
-        this.editUnit(unit);
-      } else {
-        this.addUnit(unit);
-      }
-    }
+  createEntity(entity: ModifiableUnitDto): Observable<any> {
+    return this.unitService.createUnit(entity);
   }
 
-  private addUnit(unit: ModifiableUnitDto) {
-    this.unitService
-      .createUnit(unit)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (id) => {
-          this.reset();
-          this.router.navigate(['units', id]);
-        },
-        error: (error) => {
-          console.error(error);
-        },
-      });
+  onSuccessfullCreate(result: any): void {
+    this.router.navigate(['/units', result]);
   }
 
-  private editUnit(unit: ModifiableUnitDto) {
-    this.unitService
-      .changeUnit(this.unitId!, unit)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.reset();
-          this.router.navigate(['units', this.unitId]);
-        },
-        error: (error) => {
-          console.error(error);
-        },
-      });
+  changeEntity(entity: ModifiableUnitDto): Observable<any> {
+    return this.unitService.changeUnit(this.unitId!, entity);
   }
 
-  reset() {
-    this.isSubmitted = false;
-    this.unitForm.reset();
+  onSuccessfullChange(result: any): void {
+    this.router.navigate(['/invoices', result]);
   }
 }

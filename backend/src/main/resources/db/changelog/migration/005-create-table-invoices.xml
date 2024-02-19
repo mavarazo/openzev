@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
+
+    <changeSet author="mav" id="fa20bf1b-7f51-4670-80a9-63792f5d708a">
+        <createTable tableName="OZEV_INVOICES">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_OZEV_INVOICE"/>
+            </column>
+
+            <column name="UUID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="CREATED" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="MODIFIED" type="TIMESTAMP(6)"/>
+
+            <column name="UNIT_ID" type="BIGINT"/>
+
+            <column name="RECIPIENT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_INVOICE_OWNER" references="OZEV_OWNERS(ID)"/>
+            </column>
+
+            <column name="STATUS" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="DIRECTION" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="SUBJECT" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="NOTES" type="VARCHAR(255)"/>
+
+            <column name="DUE_DATE" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

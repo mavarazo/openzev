@@ -1,8 +1,11 @@
 package com.mav.openzev.helper;
 
+import com.mav.openzev.api.model.InvoiceDirection;
+import com.mav.openzev.api.model.InvoiceStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,18 +24,24 @@ import org.junit.jupiter.params.support.AnnotationConsumer;
 public class RequiredArgumentsProvider
     implements ArgumentsProvider, AnnotationConsumer<RequiredSource> {
 
-  private RequiredSource requiredSource;
-
   private static final Map<Class<?>, Object> RANDOM_VALUES;
 
   static {
+    final SecureRandom random = new SecureRandom();
+
     final Map<Class<?>, Object> values = new HashMap<>();
-    values.put(BigDecimal.class, BigDecimal.valueOf(Math.random()));
+    values.put(BigDecimal.class, BigDecimal.valueOf(random.nextDouble()));
+    values.put(Boolean.class, Boolean.TRUE);
+    values.put(Float.class, random.nextFloat());
+    values.put(InvoiceDirection.class, InvoiceDirection.OUTGOING);
+    values.put(InvoiceStatus.class, InvoiceStatus.DRAFT);
     values.put(LocalDate.class, LocalDate.now());
     values.put(String.class, UUID.randomUUID().toString());
     values.put(UUID.class, UUID.randomUUID());
     RANDOM_VALUES = values;
   }
+
+  private RequiredSource requiredSource;
 
   @Override
   public void accept(final RequiredSource requiredSource) {

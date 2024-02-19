@@ -1,99 +1,53 @@
 <div class="card">
   <div class="card-body">
-    <form [formGroup]="invoiceForm" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
-      <div class="mb-3">
-        <label for="accounting" class="form-label">Accounting</label>
-        <ng-container *ngIf="accounting$ | async as accounting">
-          <input type="text" id="accounting" class="form-control-plaintext"
-                 value="{{accounting.periodFrom | date}} - {{accounting.periodUpto | date}}" readonly>
-        </ng-container>
-      </div>
-
+    <form [formGroup]="form" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
       <div class="mb-3">
         <label for="unit" class="form-label">Unit</label>
-        <select id="unit" class="form-select" formControlName="unitId" required>
+        <select id="unit" class="form-select" formControlName="unitId">
+          <option></option>
           <option *ngFor="let unit of (units$ | async)"
                   [ngValue]="unit.id">{{ unit.subject }}</option>
         </select>
       </div>
 
-      <div class="mb-3 row">
-        <div class="col-2">
-        </div>
-
-        <div class="col-4 text-end">
-          Usage in kWh
-        </div>
-
-        <div class="col-2 text-end">
-          Tariff in CHF
-        </div>
-
-        <div class="col-4 text-end">
-          Amount in CHF
-        </div>
-      </div>
-
-      <div class="mb-3 row">
-        <div class="col-2">
-          High tariff
-        </div>
-
-        <div class="col-4">
-          <input type="number" id="usageHighTariff" class="form-control text-end" formControlName="usageHighTariff"
-                 required>
-        </div>
-
-        <div class="col-2">
-          <input type="text" id="hightTariff" class="form-control-plaintext text-end" readonly
-                 value="&times; {{this.highTariff | currency: 'CHF'}} &equals;">
-        </div>
-
-        <div class="col-4">
-          <input type="number" id="amountHighTariff" class="form-control text-end" formControlName="amountHighTariff"
-                 required>
-        </div>
-      </div>
-
-      <div class="mb-3 row">
-        <div class="col-2">
-          Low tariff
-        </div>
-
-        <div class="col-4">
-          <input type="number" id="usageLowTariff" class="form-control text-end" formControlName="usageLowTariff"
-                 required>
-        </div>
-
-        <div class="col-2">
-          <input type="text" id="lowTariff" class="form-control-plaintext text-end" readonly
-                 value="&times; {{this.lowTariff | currency: 'CHF'}} &equals;">
-        </div>
-
-        <div class="col-4">
-          <input type="number" id="amountLowTariff" class="form-control text-end" formControlName="amountLowTariff"
-                 required>
-        </div>
-      </div>
-
-      <div class="mb-3 row">
-        <div class="col-4 offset-2">
-          <input type="number" id="usageTotal" class="form-control text-end" formControlName="usageTotal" required>
-        </div>
-
-        <div class="col-4 offset-2">
-          <input type="number" id="amountTotal" class="form-control text-end" formControlName="amountTotal" required>
-        </div>
+      <div class="mb-3">
+        <label for="recipient" class="form-label">Recipient</label>
+        <select id="recipient" class="form-select" formControlName="recipientId" required>
+          <option *ngFor="let recipient of (owners$ | async)"
+                  [ngValue]="recipient.id">{{ recipient.firstName }} {{ recipient.lastName }}
+          </option>
+        </select>
       </div>
 
       <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <select id="status" class="form-select" formControlName="status" required>
+          <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}
+          </option>
+        </select>
       </div>
 
       <div class="mb-3">
-        <div class="mb-3">
-          <label for="payed" class="form-label">Payed</label>
-          <input type="date" id="payed" class="form-control" formControlName="payed">
-        </div>
+        <label for="direction" class="form-label">Direction</label>
+        <select id="direction" class="form-select" formControlName="direction" required>
+          <option *ngFor="let direction of directions" [ngValue]="direction">{{ direction }}
+          </option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="subject" class="form-label">Subject</label>
+        <input type="text" id="subject" class="form-control" formControlName="subject" maxlength="255" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="dueDate" class="form-label">Due date</label>
+        <input type="date" id="dueDate" class="form-control" formControlName="dueDate" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="notes" class="form-label">Notes</label>
+        <input type="text" id="notes" class="form-control" formControlName="notes" maxlength="255">
       </div>
 
       <button class="btn btn-primary" type="submit">Submit</button>

@@ -1,0 +1,42 @@
+get:
+  operationId: getBankAccounts
+  tags:
+    - Bank Account
+  responses:
+    '200':
+      description: Bank Accounts
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/bank-accounts.yaml#/BankAccountDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: createBankAccount
+  tags:
+    - Bank Account
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/bank-accounts.yaml#/ModifiableBankAccountDto'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

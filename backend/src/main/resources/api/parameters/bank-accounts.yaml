@@ -1,0 +1,6 @@
+BankAccountParam:
+  name: bankAccountId
+  in: path
+  required: true
+  schema:
+    $ref: '../schemas/commons.yaml#/Id'

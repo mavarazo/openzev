@@ -2,16 +2,10 @@ server:
   port: 8001
 
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:18003/openzev
-    username: openzev
-    password: password
   jpa:
     open-in-view: false
-    database:
     hibernate:
       ddl-auto: none
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     enabled: true
     change-log: /db/changelog/main.xml

@@ -1,0 +1,73 @@
+<div class="d-flex align-items-center justify-content-between pb-3">
+  <div>
+  <ng-container *ngIf="entity$ | async as bankAccount">
+    <h4>
+      {{bankAccount.name}} <app-active-pill [active]="bankAccount.active!"></app-active-pill>
+    </h4>
+  </ng-container>
+  </div>
+
+  <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" routerLink="edit">
+        <i class="bi bi-pencil-square me-1"></i>
+        <span>Edit</span>
+      </button>
+      <button class="btn btn-outline-danger" (click)="delete()">
+        <i class="bi bi-trash me-1"></i>
+        <span>Delete</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <ng-container *ngIf="entity$ | async as bankAccount">
+      <div class="row mb-3">
+        <div class="col-2">
+          IBAN
+        </div>
+        <div class="col">
+          {{bankAccount.iban}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          Street
+        </div>
+        <div class="col">
+          {{bankAccount.street}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          House number
+        </div>
+        <div class="col">
+          {{bankAccount.houseNr}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          Postal code
+        </div>
+        <div class="col">
+          {{bankAccount.postalCode}}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-2">
+          City
+        </div>
+        <div class="col">
+          {{bankAccount.city}}
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

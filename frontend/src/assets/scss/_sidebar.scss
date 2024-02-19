@@ -8,6 +8,14 @@
   @extend .nav-item;
 }
 
+.sidebar-header {
+  @extend .nav-item;
+  
+  color: #ced4da;
+  font-size: .75rem;
+  padding: 1.5rem 1.5rem .375rem;
+}
+
 .sidebar-nav-link {
   @extend .nav-link;
   --bs-nav-link-padding-y: 0.625rem;

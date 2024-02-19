@@ -1,0 +1,30 @@
+ProductDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    active:
+      type: boolean
+    subject:
+      type: string
+    notes:
+      type: string
+    price:
+      type: number
+
+ModifiableProductDto:
+  type: object
+  properties:
+    active:
+      type: boolean
+      default: true
+    subject:
+      type: string
+    notes:
+      type: string
+    price:
+      type: number
+  required:
+    - active
+    - subject
+    - price

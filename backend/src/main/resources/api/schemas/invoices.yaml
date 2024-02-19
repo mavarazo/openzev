@@ -3,26 +3,21 @@ InvoiceDto:
   properties:
     id:
       $ref: './commons.yaml#/Id'
-    accountingId:
-      $ref: './commons.yaml#/Id'
+    created:
+      $ref: './commons.yaml#/Date'
     unitId:
       $ref: './commons.yaml#/Id'
-    usageHighTariff:
-      type: number
-      format: double
-    usageLowTariff:
-      type: number
-      format: double
-    usageTotal:
-      type: number
-      format: double
-    amountHighTariff:
-      type: number
-    amountLowTariff:
-      type: number
-    amountTotal:
-      type: number
-    payed:
+    recipientId:
+      $ref: './commons.yaml#/Id'
+    status:
+      $ref: './invoices.yaml#/InvoiceStatus'
+    direction:
+      $ref: './invoices.yaml#/InvoiceDirection'
+    subject:
+      type: string
+    notes:
+      type: string
+    dueDate:
       $ref: './commons.yaml#/Date'
 
 ModifiableInvoiceDto:
@@ -30,22 +25,29 @@ ModifiableInvoiceDto:
   properties:
     unitId:
       $ref: './commons.yaml#/Id'
-    usageHighTariff:
-      type: number
-      format: double
-    usageLowTariff:
-      type: number
-      format: double
-    usageTotal:
-      type: number
-      format: double
-    amountHighTariff:
-      type: number
-    amountLowTariff:
-      type: number
-    amountTotal:
-      type: number
-    payed:
+    recipientId:
+      $ref: './commons.yaml#/Id'
+    status:
+      $ref: './invoices.yaml#/InvoiceStatus'
+    direction:
+      $ref: './invoices.yaml#/InvoiceDirection'
+    subject:
+      type: string
+    notes:
+      type: string
+    dueDate:
       $ref: './commons.yaml#/Date'
   required:
-    - unitId
+    - recipientId
+    - status
+    - direction
+    - subject
+    - dueDate
+
+InvoiceStatus:
+  type: string
+  enum: [ DRAFT, SENT, PAID, CANCELLED, OVERDUE ]
+
+InvoiceDirection:
+  type: string
+  enum: [ INCOMING, OUTGOING ]

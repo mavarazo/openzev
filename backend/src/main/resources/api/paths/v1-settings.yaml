@@ -1,0 +1,40 @@
+get:
+  operationId: getSettings
+  tags:
+    - Setting
+  responses:
+    '200':
+      description: Setting for ZEV
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/settings.yaml#/SettingsDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: saveSettings
+  tags:
+    - Setting
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/settings.yaml#/ModifiableSettingsDto'
+  responses:
+    '200':
+      description: Saved
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

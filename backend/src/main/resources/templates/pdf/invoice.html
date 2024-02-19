@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>OpenZEV - Invoice</title>
+
+    <!-- Normalize or reset CSS with your favorite library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css"/>
+
+    <!-- Load paper.css for happy printing -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.4.1/paper.css"/>
+
+    <style>
+        @page {
+            size: A4
+        }
+
+        body {
+            font-family: Calibri, Candara, Segoe, Optima, Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            margin: 10px 0;
+            clear: both;
+            border: 0;
+            text-align: left;
+            border-spacing: 0;
+        }
+
+        table tr th {
+            border: #bfbfba solid 0;
+            border-left: none;
+            border-right: none;
+            padding: 10px 5px !important;
+            background-color: #f5f5f2;
+            color: #333;
+        }
+
+        table tr td, table tr th {
+            border-bottom: solid 1px #e6e4df;
+            padding: 10px 5px;
+        }
+
+        .total {
+            border: #bfbfba solid 0;
+            border-left: none;
+            border-right: none;
+            padding: 10px 5px !important;
+            background-color: #f5f5f2;
+            color: #333;
+        }
+
+        .text-end {
+            text-align: right !important;
+        }
+
+    </style>
+</head>
+<body class="A4">
+<section class="sheet padding-10mm">
+
+    <article><h3>ZEV Rothenburg Fläckehof 22</h3>
+        <hr/>
+
+        <div style="width: 100%; margin: 50px 0 50px 0">
+            <div style="width: 50%; float: left;">
+                <div>
+                    <span th:text="${recipient.firstName}"> FirstName </span> <span
+                        th:text="${recipient.lastName}"> LastName </span>
+                </div>
+                <div>
+                    <span th:text="${recipient.street}"> Street </span> <span
+                        th:text="${recipient.houseNr}"> HouseNr </span>
+                </div>
+                <div>
+                    <span th:text="${recipient.postalCode}"> PostalCode </span> <span
+                        th:text="${recipient.city}"> city </span>
+                </div>
+            </div>
+            <div style="margin-left: 50%;">
+                <div class="text-end">
+                    Date: <span th:text="${#temporals.format(created, 'dd.MM.yyyy')}"> Created </span>
+                </div>
+                <div class="text-end">
+                    Due date: <span th:text="${#temporals.format(dueDate, 'dd.MM.yyyy')}"> Due date </span>
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th scope="col" style="width: 25%">Subject</th>
+                <th scope="col" style="width: 25%">Notes</th>
+                <th scope="col" class="text-end">Quantity</th>
+                <th scope="col" class="text-end">Price</th>
+                <th scope="col" class="text-end">Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td><span th:text="${item.product.subject}"> Subject </span></td>
+                <td><span th:text="${item.notes}"> Notes </span></td>
+                <td class="text-end"><span th:text="${item.quantity}"> Quantity </span></td>
+                <td class="text-end"><span th:text="${#numbers.formatCurrency(item.price)}"> Price </span></td>
+                <td class="text-end"><span th:text="${#numbers.formatCurrency(item.amount)}"> Amount </span></td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr class="total">
+                <td colspan="4"><strong>Total</strong></td>
+                <td class="text-end">
+                    <strong><span th:text="${#numbers.formatCurrency(total)}"> Total </span></strong>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div style="width: 100%; margin: 50px 0 50px 0">
+            <div style="width: 49%; float: left;">
+                <b>Contact information</b>
+                <div>
+                    <span th:text="${representative.firstName}"> FirstName </span> <span
+                        th:text="${representative.lastName}"> LastName </span>
+                </div>
+                <div>
+                    <span th:text="${representative.street}"> Street </span> <span
+                        th:text="${representative.houseNr}"> HouseNr </span>
+                </div>
+                <div>
+                    <span th:text="${representative.postalCode}"> PostalCode </span> <span
+                        th:text="${representative.city}"> city </span>
+                </div>
+                <div>
+                    <span th:text="${representative.email}"> EMail </span>
+                </div>
+                <div th:if="${representative.phoneNr != null}">
+                    <span th:text="${representative.phoneNr}"> PhoneNr </span>
+                </div>
+                <div th:if="${representative.mobileNr != null}">
+                    <span th:text="${representative.mobileNr}"> MobileNr </span>
+                </div>
+            </div>
+            <div>
+                <b>Payment information </b>
+                <div>IBAN: <span th:text="${bankAccount.iban}"> IBAN </span></div>
+                <div><span th:text="${bankAccount.name}"> Name </span></div>
+                <div th:if="${bankAccount.street != null}"><span th:text="${bankAccount.street}"> Street </span> <span
+                        th:text="${bankAccount.houseNr}"> houseNr </span>
+                </div>
+                <div th:if="${bankAccount.postalCode != null && bankAccount.city != null}">
+                    <span th:text="${bankAccount.postalCode}"> PostalCode </span> <span
+                        th:text="${bankAccount.city}"> City </span>
+                </div>
+            </div>
+        </div>
+    </article>
+</section>
+</body>
+</html>

@@ -1,0 +1,39 @@
+ItemDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    invoiceId:
+      $ref: './commons.yaml#/Id'
+    productId:
+      $ref: './commons.yaml#/Id'
+    notes:
+      type: string
+    quantity:
+      type: number
+      format: float
+    price:
+      type: number
+    amount:
+      type: number
+
+ModifiableItemDto:
+  type: object
+  properties:
+    productId:
+      $ref: './commons.yaml#/Id'
+    notes:
+      type: string
+    quantity:
+      type: number
+      format: float
+    price:
+      type: number
+    amount:
+      type: number
+  required:
+    - invoiceId
+    - subject
+    - price
+    - quantity
+    - amount

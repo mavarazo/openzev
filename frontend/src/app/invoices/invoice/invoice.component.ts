@@ -1,32 +1,24 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { filter, forkJoin, map, Observable, switchMap, takeUntil } from 'rxjs';
 import {
-  EMPTY,
-  forkJoin,
-  map,
-  Observable,
-  of,
-  share,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
-import {
-  AccountingDto,
-  AccountingService,
-  AgreementDto,
-  AgreementService,
   InvoiceDto,
   InvoiceService,
+  ItemDto,
+  ItemService,
   OwnerDto,
   OwnerService,
-  OwnershipDto,
-  OwnershipService,
+  PaymentDto,
+  PaymentService,
+  ProductDto,
+  ProductService,
   UnitDto,
   UnitService,
 } from '../../../generated-source/api';
+import { AbstractDetailComponent } from '../../shared/components/abstract-detail.component';
+import { Router } from '@angular/router';
 
-export interface CustomOwnershipDto extends OwnershipDto {
-  owner?: OwnerDto;
+export interface CustomItemDto extends ItemDto {
+  product?: ProductDto;
 }
 
 @Component({
@@ -34,92 +26,114 @@ export interface CustomOwnershipDto extends OwnershipDto {
   templateUrl: './invoice.component.html',
   styleUrls: ['./invoice.component.scss'],
 })
-export class InvoiceComponent implements OnInit, OnDestroy {
+export class InvoiceComponent extends AbstractDetailComponent<InvoiceDto> {
   @Input() invoiceId: string;
 
-  private destroy$ = new Subject<void>();
-
-  highTariff: number | undefined;
-  lowTariff: number | undefined;
-
-  invoice$: Observable<InvoiceDto>;
-  accounting$: Observable<AccountingDto>;
   unit$: Observable<UnitDto>;
-  ownerships$: Observable<CustomOwnershipDto[]>;
+  recipient$: Observable<OwnerDto>;
+  items$: Observable<CustomItemDto[]>;
+  payments$: Observable<PaymentDto[]>;
+
+  total: number = 0;
 
   constructor(
+    private router: Router,
     private invoiceService: InvoiceService,
-    private accountingService: AccountingService,
     private unitService: UnitService,
     private ownerService: OwnerService,
-    private ownershipService: OwnershipService,
-    private agreementService: AgreementService
-  ) {}
+    private itemService: ItemService,
+    private productService: ProductService,
+    private paymentService: PaymentService
+  ) {
+    super();
+  }
 
-  ngOnInit(): void {
-    this.invoice$ = this.invoiceService
-      .getInvoice(this.invoiceId)
-      .pipe(share(), takeUntil(this.destroy$));
+  override ngOnInit() {
+    super.ngOnInit();
 
-    this.accounting$ = this.invoice$.pipe(
-      switchMap((i) => this.accountingService.getAccounting(i.accountingId!)),
-      takeUntil(this.destroy$)
+    this.unit$ = this.entity$.pipe(
+      filter((invoice) => !!invoice.unitId),
+      switchMap((invoice) => this.unitService.getUnit(invoice.unitId!))
     );
 
-    this.unit$ = this.invoice$.pipe(
-      switchMap((i) => this.unitService.getUnit(i.unitId!)),
-      takeUntil(this.destroy$)
+    this.recipient$ = this.entity$.pipe(
+      switchMap((invoice) => this.ownerService.getOwner(invoice.recipientId!))
     );
 
-    this.unit$.pipe(
-      switchMap((u) =>
-        this.ownershipService
-          .getOwnerships(u.id!)
-          .pipe(
-            switchMap((ownerships) =>
-              forkJoin(
-                ownerships.map((ownership) =>
-                  this.loadOwnerForOwnership(ownership)
-                )
-              )
-            )
-          )
-      ),
-      takeUntil(this.destroy$)
-    );
+    this.loadItems();
 
-    this.accounting$
-      .pipe(
-        switchMap((a: AccountingDto) => {
-          if (a.agreementId) {
-            return this.agreementService.getAgreement(a.agreementId);
+    this.payments$ = this.paymentService.getPayments(this.invoiceId);
+  }
+
+  private loadItems() {
+    this.items$ = this.itemService.getItems(this.invoiceId).pipe(
+      switchMap((invoices) => {
+        const customItems = invoices.map((invoice) => {
+          if (invoice.amount) {
+            this.total += invoice.amount;
           }
-          return EMPTY;
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((a: AgreementDto) => {
-        this.highTariff = a.highTariff;
-        this.lowTariff = a.lowTariff;
+          return this.productService
+            .getProduct(invoice.productId!)
+            .pipe(
+              map(
+                (product: ProductDto) =>
+                  ({ ...invoice, product: product } as CustomItemDto)
+              )
+            );
+        });
+        return forkJoin(customItems);
+      })
+    );
+  }
+
+  override fetchEntity(): Observable<InvoiceDto> {
+    return this.invoiceService.getInvoice(this.invoiceId);
+  }
+
+  override deleteEntity(): Observable<any> {
+    return this.invoiceService.deleteInvoice(this.invoiceId);
+  }
+
+  override onSuccessfullDelete() {
+    this.router.navigate(['/invoices']);
+  }
+
+  deleteItem(item: ItemDto) {
+    if (item?.id) {
+      this.itemService
+        .deleteItem(item.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          error: console.error,
+          complete: () => {
+            this.loadItems();
+          },
+        });
+    }
+  }
+
+  deletePayment(payment: PaymentDto) {
+    if (payment?.id) {
+      this.paymentService
+        .deletePayment(payment.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          error: console.error,
+          complete: () => {
+            this.loadItems();
+          },
+        });
+    }
+  }
+
+  download() {
+    this.invoiceService
+      .getPdf(this.invoiceId, 'body', true)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((file: Blob) => {
+        const pdfBlob = new Blob([file], { type: 'application/pdf' });
+        const fileURL = URL.createObjectURL(pdfBlob);
+        window.open(fileURL, '_blank');
       });
   }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private loadOwnerForOwnership(
-    ownership: OwnershipDto
-  ): Observable<CustomOwnershipDto> {
-    if (ownership.ownerId) {
-      return this.ownerService.getOwner(ownership.ownerId).pipe(
-        map((owner) => ({ ...ownership, owner: owner } as CustomOwnershipDto)),
-        takeUntil(this.destroy$)
-      );
-    }
-    return of(ownership);
-  }
-
-  delete() {}
 }

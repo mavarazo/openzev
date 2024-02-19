@@ -1,10 +1,9 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
   defaultIfEmpty,
   forkJoin,
   map,
   Observable,
-  Subject,
   switchMap,
   takeUntil,
 } from 'rxjs';
@@ -17,6 +16,7 @@ import {
   UnitService,
 } from '../../../generated-source/api';
 import { Router } from '@angular/router';
+import { AbstractDetailComponent } from '../../shared/components/abstract-detail.component';
 
 export interface CustomOwnershipDto extends OwnershipDto {
   owner?: OwnerDto;
@@ -27,12 +27,9 @@ export interface CustomOwnershipDto extends OwnershipDto {
   templateUrl: './unit.component.html',
   styleUrls: ['./unit.component.scss'],
 })
-export class UnitComponent implements OnInit, OnDestroy {
+export class UnitComponent extends AbstractDetailComponent<UnitDto> {
   @Input() unitId: string;
 
-  private destroy$ = new Subject<void>();
-
-  unit$: Observable<UnitDto>;
   ownerships$: Observable<CustomOwnershipDto[]>;
 
   constructor(
@@ -40,17 +37,25 @@ export class UnitComponent implements OnInit, OnDestroy {
     private unitService: UnitService,
     private ownerService: OwnerService,
     private ownershipService: OwnershipService
-  ) {}
-
-  ngOnInit(): void {
-    this.unit$ = this.unitService.getUnit(this.unitId);
-
-    this.loadOwnership();
+  ) {
+    super();
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  fetchEntity(): Observable<UnitDto> {
+    return this.unitService.getUnit(this.unitId);
+  }
+
+  deleteEntity(): Observable<any> {
+    return this.unitService.deleteUnit(this.unitId);
+  }
+
+  onSuccessfullDelete(): void {
+    this.router.navigate(['/units']);
+  }
+
+  override ngOnInit(): void {
+    super.ngOnInit();
+    this.loadOwnership();
   }
 
   private loadOwnership(): void {
@@ -75,20 +80,6 @@ export class UnitComponent implements OnInit, OnDestroy {
         }),
         takeUntil(this.destroy$)
       );
-    }
-  }
-
-  delete() {
-    if (this.unitId) {
-      this.unitService
-        .deleteUnit(this.unitId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          error: console.error,
-          complete: () => {
-            this.router.navigate(['/units']);
-          },
-        });
     }
   }
 

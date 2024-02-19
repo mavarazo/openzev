@@ -5,10 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableOwnerDto;
 import com.mav.openzev.api.model.OwnerDto;
+import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
+import com.mav.openzev.model.Invoice;
+import com.mav.openzev.model.InvoiceModels;
+import com.mav.openzev.model.ItemModels;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.model.OwnerModels;
 import com.mav.openzev.model.OwnershipModels;
+import com.mav.openzev.model.PaymentModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
 import com.mav.openzev.repository.OwnerRepository;
@@ -32,6 +37,7 @@ public class OpenZevOwnerApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
+  @Autowired private JsonJacksonApprovals jsonJacksonApprovals;
 
   @Autowired private OwnerRepository ownerRepository;
 
@@ -83,7 +89,13 @@ public class OpenZevOwnerApiIntegrationTest {
     @Test
     void status200() {
       // arrange
-      testDatabaseService.insert(OwnerModels.getOwner());
+      final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
+      final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
+      final Invoice invoice =
+          testDatabaseService.insert(
+              InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
+      testDatabaseService.insert(ItemModels.getItem(invoice));
+      testDatabaseService.insert(PaymentModels.getPayment(invoice));
 
       // act
       final ResponseEntity<OwnerDto> response =
@@ -94,24 +106,7 @@ public class OpenZevOwnerApiIntegrationTest {
               OwnerDto.class);
 
       // assert
-      assertThat(response)
-          .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
-          .satisfies(
-              r ->
-                  assertThat(r.getBody())
-                      .returns(
-                          UUID.fromString("790772bd-6425-41af-9270-297eb0d42060"), OwnerDto::getId)
-                      .returns(true, OwnerDto::getActive)
-                      .returns("6aeeaf0f-7e55-4bb8-8fb1-10f24fb8318c", OwnerDto::getContractId)
-                      .returns("Anna", OwnerDto::getFirstName)
-                      .returns("Barry", OwnerDto::getLastName)
-                      .returns("anna@barry.com", OwnerDto::getEmail)
-                      .returns("Stradun", OwnerDto::getStreet)
-                      .returns("30", OwnerDto::getHouseNr)
-                      .returns("1624", OwnerDto::getPostalCode)
-                      .returns("Grattavache", OwnerDto::getCity)
-                      .returns("+41 41 555 66 77", OwnerDto::getPhoneNr)
-                      .returns("+41 79 555 66 77", OwnerDto::getMobileNr));
+      jsonJacksonApprovals.verifyAsJson(response.getBody());
     }
   }
 
@@ -292,7 +287,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(OwnerModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               ErrorDto.class);
 
       // assert
@@ -314,7 +309,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(OwnerModels.UUID),
               HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
+              HttpEntity.EMPTY,
               ErrorDto.class);
 
       // assert
@@ -332,10 +327,7 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.owners(OwnerModels.UUID),
-              HttpMethod.DELETE,
-              new HttpEntity<>(null, null),
-              UUID.class);
+              UriFactory.owners(OwnerModels.UUID), HttpMethod.DELETE, HttpEntity.EMPTY, UUID.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);

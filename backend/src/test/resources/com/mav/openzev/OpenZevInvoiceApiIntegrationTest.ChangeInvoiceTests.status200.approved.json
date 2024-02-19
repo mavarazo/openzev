@@ -1,0 +1,11 @@
+{
+  "id" : "guid_1",
+  "created" : "localdate(time)_1",
+  "unitId" : "guid_1",
+  "recipientId" : "guid_2",
+  "status" : "DRAFT",
+  "direction" : "OUTGOING",
+  "subject" : "Lorem ipsum",
+  "notes" : null,
+  "dueDate" : "localdate(time)_2"
+}

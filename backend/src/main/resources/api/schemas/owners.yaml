@@ -26,6 +26,18 @@ OwnerDto:
       type: string
     mobileNr:
       type: string
+    balance:
+      $ref: './owners.yaml#/BalanceDto'
+
+BalanceDto:
+  type: object
+  properties:
+    invoicedAmount:
+      type: number
+    amountPaid:
+      type: number
+    balance:
+      type: number
 
 ModifiableOwnerDto:
   type: object
