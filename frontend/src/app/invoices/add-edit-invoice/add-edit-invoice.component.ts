@@ -1,191 +1,113 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  AccountingDto,
-  AccountingService,
-  AgreementDto,
-  AgreementService,
+  InvoiceDirection,
+  InvoiceDto,
   InvoiceService,
+  InvoiceStatus,
   ModifiableInvoiceDto,
+  OwnerDto,
+  OwnerService,
+  OwnershipService,
   UnitDto,
   UnitService,
 } from '../../../generated-source/api';
-import { EMPTY, Observable, share, Subject, switchMap, takeUntil } from 'rxjs';
+import { combineLatest, Observable, switchMap } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractAddEditComponent } from '../../shared/components/abstract-add-edit.component';
 
 @Component({
   selector: 'app-add-edit-invoice',
   templateUrl: './add-edit-invoice.component.html',
   styleUrls: ['./add-edit-invoice.component.scss'],
 })
-export class AddEditInvoiceComponent implements OnInit, OnDestroy {
+export class AddEditInvoiceComponent extends AbstractAddEditComponent<
+  InvoiceDto,
+  ModifiableInvoiceDto
+> {
   @Input() invoiceId: string | null;
-  @Input() accountingId: string;
 
-  private destroy$ = new Subject<void>();
-
-  agreement: AgreementDto | undefined;
-
-  accounting$: Observable<AccountingDto>;
   units$: Observable<UnitDto[]>;
+  owners$: Observable<OwnerDto[]>;
 
-  invoiceForm: FormGroup;
-  isSubmitted: boolean = false;
-
-  get highTariff() {
-    return this.agreement?.highTariff;
+  get statuses(): InvoiceStatus[] {
+    return Object.values(InvoiceStatus);
   }
 
-  get lowTariff() {
-    return this.agreement?.lowTariff;
+  get directions(): InvoiceDirection[] {
+    return Object.values(InvoiceDirection);
+  }
+
+  override get isEdit(): boolean {
+    return !!this.invoiceId;
   }
 
   constructor(
     private router: Router,
     private invoiceService: InvoiceService,
-    private accountingService: AccountingService,
-    private agreementService: AgreementService,
-    private unitService: UnitService
-  ) {}
+    private unitService: UnitService,
+    private ownershipService: OwnershipService,
+    private ownerService: OwnerService
+  ) {
+    super();
+  }
 
-  ngOnInit(): void {
+  override fetchEntity(): Observable<InvoiceDto> {
+    return this.invoiceService.getInvoice(this.invoiceId!);
+  }
+
+  override ngOnInit(): void {
+    super.ngOnInit();
+
     this.units$ = this.unitService.getUnits();
 
-    this.initForm();
+    this.loadAllOwners();
 
-    if (this.invoiceId) {
-      this.invoiceService
-        .getInvoice(this.invoiceId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((invoice) => this.invoiceForm.patchValue(invoice));
-    }
-
-    if (this.accountingId) {
-      this.accounting$ = this.accountingService
-        .getAccounting(this.accountingId)
-        .pipe(share(), takeUntil(this.destroy$));
-
-      this.accounting$
-        .pipe(
-          switchMap((a: AccountingDto) => {
-            if (a.agreementId) {
-              return this.agreementService.getAgreement(a.agreementId);
-            }
-            return EMPTY;
-          }),
-          takeUntil(this.destroy$)
-        )
-        .subscribe((a: AgreementDto) => (this.agreement = a));
-    }
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private initForm() {
-    this.invoiceForm = new FormGroup({
-      accountingId: new FormControl(this.accountingId, Validators.required),
-      unitId: new FormControl(null, Validators.required),
-      usageHighTariff: new FormControl(null, Validators.required),
-      usageLowTariff: new FormControl(null, Validators.required),
-      usageTotal: new FormControl(null, Validators.required),
-      amountHighTariff: new FormControl(null, Validators.required),
-      amountLowTariff: new FormControl(null, Validators.required),
-      amountTotal: new FormControl(null, Validators.required),
-      payed: new FormControl(null),
-    });
-
-    this.invoiceForm
-      .get('usageHighTariff')
-      ?.valueChanges.subscribe((highTariff: number) => {
-        const sum = highTariff + this.invoiceForm.get('usageLowTariff')?.value;
-        this.invoiceForm.get('usageTotal')?.setValue(sum);
-
-        const amountHighTariff = highTariff * this.agreement?.highTariff!;
-        this.invoiceForm
-          .get('amountHighTariff')
-          ?.setValue(amountHighTariff.toFixed(2));
-      });
-
-    this.invoiceForm
-      .get('usageLowTariff')
-      ?.valueChanges.subscribe((lowTariff: number) => {
-        const sum = this.invoiceForm.get('usageHighTariff')?.value + lowTariff;
-        this.invoiceForm.get('usageTotal')?.setValue(sum);
-
-        const amountLowTariff = lowTariff * this.agreement?.lowTariff!;
-        this.invoiceForm
-          .get('amountLowTariff')
-          ?.setValue(amountLowTariff.toFixed(2));
-      });
-
-    this.invoiceForm
-      .get('amountHighTariff')
-      ?.valueChanges.subscribe((highTariff) => {
-        const lowTariff = +this.invoiceForm.get('amountLowTariff')?.value;
-        const sum = +highTariff + lowTariff;
-        this.invoiceForm.get('amountTotal')?.setValue(sum.toFixed(2));
-      });
-
-    this.invoiceForm
-      .get('amountLowTariff')
-      ?.valueChanges.subscribe((lowTariff) => {
-        const highTariff = +this.invoiceForm.get('amountHighTariff')?.value;
-        const sum = highTariff + +lowTariff;
-        this.invoiceForm.get('amountTotal')?.setValue(sum.toFixed(2));
-      });
-  }
-
-  submit() {
-    this.isSubmitted = true;
-
-    if (this.invoiceForm.valid) {
-      const invoice = {
-        ...this.invoiceForm.value,
-      } as ModifiableInvoiceDto;
-
-      if (this.invoiceId) {
-        this.editInvoice(invoice);
+    this.form.get('unitId')?.valueChanges.subscribe((unitId) => {
+      if (!unitId) {
+        this.loadAllOwners();
       } else {
-        this.addInvoice(invoice);
+        this.owners$ = this.ownershipService.getOwnerships(unitId).pipe(
+          switchMap((ownerships) => {
+            const result = ownerships.map((ownership) =>
+              this.ownerService.getOwner(ownership.ownerId!)
+            );
+            return combineLatest([...result]);
+          })
+        );
       }
-    }
+    });
   }
 
-  private addInvoice(invoice: ModifiableInvoiceDto) {
-    this.invoiceService
-      .createInvoice(this.accountingId, invoice)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (id) => {
-          this.reset();
-          this.router.navigate(['/accountings', this.accountingId]);
-        },
-        error: (error) => {
-          console.error(error);
-        },
-      });
+  private loadAllOwners() {
+    this.owners$ = this.ownerService.getOwners();
   }
 
-  private editInvoice(invoice: ModifiableInvoiceDto) {
-    this.invoiceService
-      .changeInvoice(this.invoiceId!, invoice)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.reset();
-          this.router.navigate(['/accountings', this.accountingId]);
-        },
-        error: (error) => {
-          console.error(error);
-        },
-      });
+  override initForm() {
+    return new FormGroup({
+      unitId: new FormControl(null),
+      recipientId: new FormControl(null, Validators.required),
+      status: new FormControl(InvoiceStatus.Draft, Validators.required),
+      direction: new FormControl(null, Validators.required),
+      subject: new FormControl(null, Validators.required),
+      dueDate: new FormControl(null, Validators.required),
+      notes: new FormControl(null),
+    });
   }
 
-  reset() {
-    this.isSubmitted = false;
-    this.invoiceForm.reset();
+  override createEntity(item: ModifiableInvoiceDto): Observable<any> {
+    return this.invoiceService.createInvoice(item);
+  }
+
+  override onSuccessfullCreate(result: any) {
+    this.router.navigate(['/invoices', result]);
+  }
+
+  override changeEntity(item: ModifiableInvoiceDto): Observable<any> {
+    return this.invoiceService.changeInvoice(this.invoiceId!, item);
+  }
+
+  override onSuccessfullChange(result: any) {
+    this.router.navigate(['/invoices', result]);
   }
 }

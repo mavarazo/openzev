@@ -2,8 +2,14 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddEditInvoiceComponent } from './add-edit-invoice/add-edit-invoice.component';
 import { InvoiceComponent } from './invoice/invoice.component';
+import { InvoicesComponent } from './invoices.component';
+import { AddEditItemComponent } from './add-edit-item/add-edit-item.component';
 
 const routes: Routes = [
+  {
+    path: '',
+    component: InvoicesComponent,
+  },
   {
     path: 'add',
     component: AddEditInvoiceComponent,
@@ -20,6 +26,19 @@ const routes: Routes = [
         path: 'edit',
         pathMatch: 'full',
         component: AddEditInvoiceComponent,
+      },
+      {
+        path: 'items',
+        children: [
+          {
+            path: 'add',
+            component: AddEditItemComponent,
+          },
+          {
+            path: ':itemId/edit',
+            component: AddEditItemComponent,
+          },
+        ],
       },
     ],
   },

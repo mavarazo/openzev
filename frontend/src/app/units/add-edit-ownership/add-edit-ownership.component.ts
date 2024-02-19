@@ -1,126 +1,79 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
-  ErrorDto,
   ModifiableOwnershipDto,
   OwnerDto,
   OwnerService,
+  OwnershipDto,
   OwnershipService,
   UnitDto,
   UnitService,
 } from '../../../generated-source/api';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractAddEditComponent } from '../../shared/components/abstract-add-edit.component';
 
 @Component({
   selector: 'app-add-edit-ownership',
   templateUrl: './add-edit-ownership.component.html',
   styleUrls: ['./add-edit-ownership.component.scss'],
 })
-export class AddEditOwnershipComponent implements OnInit, OnDestroy {
+export class AddEditOwnershipComponent extends AbstractAddEditComponent<
+  OwnershipDto,
+  ModifiableOwnershipDto
+> {
   @Input() ownershipId: string | null;
   @Input() unitId: string;
 
-  private destroy$ = new Subject<void>();
+  get isEdit(): boolean {
+    return !!this.ownershipId;
+  }
 
-  unit$: Observable<UnitDto>;
   owners$: Observable<OwnerDto[]>;
-
-  ownershipForm: FormGroup;
-  isSubmitted: boolean = false;
-  errors: string[] = [];
+  unit$: Observable<UnitDto>;
 
   constructor(
     private unitService: UnitService,
     private ownerService: OwnerService,
     private ownershipService: OwnershipService,
     private router: Router
-  ) {}
+  ) {
+    super();
+  }
 
-  ngOnInit(): void {
-    this.initForm();
+  fetchEntity(): Observable<OwnershipDto> {
+    return this.ownershipService.getOwnership(this.ownershipId!);
+  }
+
+  override ngOnInit() {
+    super.ngOnInit();
 
     this.owners$ = this.ownerService.getOwners();
-
     if (this.unitId) {
       this.unit$ = this.unitService.getUnit(this.unitId);
     }
-    if (this.ownershipId) {
-      this.ownershipService
-        .getOwnership(this.ownershipId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((ownership) => {
-          this.ownershipForm.patchValue(ownership);
-        });
-    }
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private initForm() {
-    this.ownershipForm = new FormBuilder().group({
-      ownerId: [null, Validators.required],
-      periodFrom: [null, Validators.required],
+  override initForm() {
+    return new FormGroup({
+      ownerId: new FormControl(null, Validators.required),
+      periodFrom: new FormControl(null, Validators.required),
     });
   }
 
-  submit() {
-    if (this.ownershipForm.valid) {
-      const ownership = {
-        ...this.ownershipForm.value,
-      } as ModifiableOwnershipDto;
-
-      if (this.ownershipId) {
-        this.edit(ownership);
-      } else {
-        this.add(ownership);
-      }
-    }
+  createEntity(entity: ModifiableOwnershipDto): Observable<any> {
+    return this.ownershipService.createOwnership(this.unitId, entity);
   }
 
-  private add(ownership: ModifiableOwnershipDto) {
-    this.ownershipService
-      .createOwnership(this.unitId, ownership)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (id) => {
-          this.reset();
-          this.router.navigate(['units', this.unitId]);
-        },
-        error: (error) => {
-          console.error(error);
-          this.showValidationError(error.error);
-        },
-      });
+  onSuccessfullCreate(result: any): void {
+    this.router.navigate(['units', this.unitId]);
   }
 
-  private edit(ownership: ModifiableOwnershipDto) {
-    this.ownershipService
-      .changeOwnership(this.ownershipId!, ownership)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.reset();
-          this.router.navigate(['units', this.unitId]);
-        },
-        error: (error) => {
-          console.error(error);
-          this.showValidationError(error.error);
-        },
-      });
+  changeEntity(entity: ModifiableOwnershipDto): Observable<any> {
+    return this.ownershipService.changeOwnership(this.ownershipId!, entity);
   }
 
-  reset() {
-    this.isSubmitted = false;
-    this.ownershipForm.reset();
-  }
-
-  showValidationError(error: ErrorDto): void {
-    if (error && error.code) {
-      this.errors.push(error.code);
-    }
+  onSuccessfullChange(result: any): void {
+    this.router.navigate(['units', this.unitId]);
   }
 }

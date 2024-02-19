@@ -1,0 +1,74 @@
+<div class="d-flex align-items-center justify-content-between pb-3">
+  <ng-container>
+    <h4>
+      Basics
+    </h4>
+  </ng-container>
+
+  <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" routerLink="edit">
+        <i class="bi bi-pencil-square me-1"></i>
+        <span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="row mb-3">
+      <div class="col-2">
+        Name
+      </div>
+      <div class="col">
+        {{ (settings$ | async)?.name }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-2">
+        Street
+      </div>
+      <div class="col">
+        {{ (settings$ | async)?.street }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-2">
+        House number
+      </div>
+      <div class="col">
+        {{ (settings$ | async)?.houseNr }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-2">
+        Postal code
+      </div>
+      <div class="col">
+        {{ (settings$ | async)?.postalCode }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-2">
+        City
+      </div>
+      <div class="col">
+        {{ (settings$ | async)?.city }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-2">
+        Property id
+      </div>
+      <div class="col">
+        {{ (settings$ | async)?.propertyNr }}
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,9 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'configs',
+    path: 'bank-accounts',
     loadChildren: () =>
-      import('./configs/configs.module').then((_) => _.ConfigsModule),
+      import('./bank-accounts/bank-accounts.module').then(
+        (_) => _.BankAccountsModule
+      ),
   },
   {
     path: 'dashboard',
@@ -13,21 +15,31 @@ const routes: Routes = [
       import('./dashboard/dashboard.module').then((_) => _.DashboardModule),
   },
   {
-    path: 'accountings',
+    path: 'invoices',
     loadChildren: () =>
-      import('./accountings/accountings.module').then(
-        (_) => _.AccountingsModule
-      ),
-  },
-  {
-    path: 'agreements',
-    loadChildren: () =>
-      import('./agreements/agreements.module').then((_) => _.AgreementsModule),
+      import('./invoices/invoices.module').then((_) => _.InvoicesModule),
   },
   {
     path: 'owners',
     loadChildren: () =>
       import('./owners/owners.module').then((_) => _.OwnersModule),
+  },
+  {
+    path: 'products',
+    loadChildren: () =>
+      import('./products/products.module').then((_) => _.ProductsModule),
+  },
+  {
+    path: 'representatives',
+    loadChildren: () =>
+      import('./representatives/representatives.module').then(
+        (_) => _.RepresentativesModule
+      ),
+  },
+  {
+    path: 'settings',
+    loadChildren: () =>
+      import('./settings/settings.module').then((_) => _.SettingsModule),
   },
   {
     path: 'units',

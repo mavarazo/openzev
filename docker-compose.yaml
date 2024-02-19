@@ -4,7 +4,7 @@ services:
     build:
       context: backend
     ports:
-    - 18002:8001
+    - 18001:8001
     environment:
     - LOGGING_LEVEL_ROOT=INFO
     - LOGGING_LEVEL_COM_MAV_OPENZEV=TRACE
@@ -14,7 +14,6 @@ services:
     - SPRING_DATASOURCE_USERNAME=openzev
     - SPRING_DATASOURCE_PASSWORD=password
     - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-    - BUILDSCALE_BASEURL=http://frontend:3000
     depends_on:
     - db
 

@@ -1,0 +1,49 @@
+<form [formGroup]="form" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+  <div class="mb-3">
+    <label for="iban" class="form-label">IBAN</label>
+    <input type="text" id="iban" class="form-control" formControlName="iban"
+           required>
+    <ng-container *ngIf="form.get('iban')?.invalid && form.get('iban')?.touched">
+      <div class="invalid-feedback d-block" *ngIf="form.get('iban')?.errors">
+        Please use a correct formatted IBAN
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="mb-3">
+    <label for="name" class="form-label">Name</label>
+    <input type="text" id="name" class="form-control" formControlName="name"
+           required>
+  </div>
+
+  <div class="mb-3">
+    <label for="street" class="form-label">Street</label>
+    <input type="text" id="street" class="form-control" formControlName="street">
+  </div>
+
+  <div class="mb-3">
+    <label for="houseNr" class="form-label">House number</label>
+    <input type="text" id="houseNr" class="form-control" formControlName="houseNr">
+  </div>
+
+  <div class="mb-3">
+    <label for="postalCode" class="form-label">Postal code</label>
+    <input type="text" id="postalCode" class="form-control" formControlName="postalCode">
+  </div>
+
+  <div class="mb-3">
+    <label for="city" class="form-label">City</label>
+    <input type="text" id="city" class="form-control" formControlName="city">
+  </div>
+
+  <div class="mb-3">
+    <div class="form-check">
+      <input type="checkbox" id="active" class="form-check-input" formControlName="active">
+      <label class="form-check-label" for="active">
+        Active
+      </label>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Submit</button>
+</form>

@@ -13,4 +13,5 @@ export interface NavItem {
 })
 export class SidebarComponent {
   @Input() items: NavItem[];
+  @Input() settingsItems: NavItem[];
 }

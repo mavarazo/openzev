@@ -1,0 +1,66 @@
+<form [formGroup]="form" [class.was-validated]="isSubmitted" (ngSubmit)="submit()">
+  <div class="mb-3">
+    <label for="firstName" class="form-label">First name</label>
+    <input type="text" id="firstName" class="form-control" formControlName="firstName"
+           required>
+  </div>
+
+  <div class="mb-3">
+    <label for="lastName" class="form-label">Last name</label>
+    <input type="text" id="lastName" class="form-control" formControlName="lastName"
+           required>
+  </div>
+
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" id="email" class="form-control" formControlName="email">
+    <ng-container *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+      <div class="invalid-feedback" *ngIf="form.get('email')?.errors">
+        Email is invalid!
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="mb-3">
+    <label for="street" class="form-label">Street</label>
+    <input type="text" id="street" class="form-control" formControlName="street" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="houseNr" class="form-label">House number</label>
+    <input type="text" id="houseNr" class="form-control" formControlName="houseNr"
+           required>
+  </div>
+
+  <div class="mb-3">
+    <label for="postalCode" class="form-label">Postal code</label>
+    <input type="text" id="postalCode" class="form-control" formControlName="postalCode"
+           required>
+  </div>
+
+  <div class="mb-3">
+    <label for="city" class="form-label">City</label>
+    <input type="text" id="city" class="form-control" formControlName="city" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="phoneNr" class="form-label">Phone number</label>
+    <input type="text" id="phoneNr" class="form-control" formControlName="phoneNr">
+  </div>
+
+  <div class="mb-3">
+    <label for="mobileNr" class="form-label">Mobile number</label>
+    <input type="text" id="mobileNr" class="form-control" formControlName="mobileNr">
+  </div>
+
+  <div class="mb-3">
+    <div class="form-check">
+      <input type="checkbox" id="active" class="form-check-input" formControlName="active">
+      <label class="form-check-label" for="active">
+        Active
+      </label>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Submit</button>
+</form>

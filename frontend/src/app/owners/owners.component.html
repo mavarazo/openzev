@@ -25,11 +25,11 @@
         <th scope="col">Email</th>
       </tr>
       </thead>
-      <tbody *ngFor="let owner of owners$ | async as owners">
-      <tr [routerLink]="owner.id" style="cursor: pointer">
-        <td>{{owner.firstName}}</td>
-        <td>{{owner.lastName}}</td>
-        <td>{{owner.email}}</td>
+      <tbody>
+      <tr *ngFor="let owner of owners$ | async as owners" [routerLink]="owner.id" style="cursor: pointer">
+        <td>{{ owner.firstName }}</td>
+        <td>{{ owner.lastName }}</td>
+        <td>{{ owner.email }}</td>
       </tr>
       </tbody>
     </table>

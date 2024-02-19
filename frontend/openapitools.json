@@ -13,7 +13,8 @@
           "npmName": "restClient",
           "supportsES6": "true",
           "npmVersion": "9.7.1",
-          "withInterfaces": true
+          "withInterfaces": true,
+          "stringEnums": true
         }
       }
     }
