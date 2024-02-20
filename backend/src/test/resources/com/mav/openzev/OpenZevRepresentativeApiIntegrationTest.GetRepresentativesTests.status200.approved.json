@@ -1,15 +1,13 @@
-[
-  {
-    "id": "guid_1",
-    "active": true,
-    "firstName": "Anna",
-    "lastName": "Barry",
-    "email": "anna@barry.com",
-    "street": "Stradun",
-    "houseNr": "30",
-    "postalCode": "1624",
-    "city": "Grattavache",
-    "phoneNr": "+41 41 555 66 77",
-    "mobileNr": "+41 79 555 66 77"
-  }
-]
+[ {
+  "id" : "guid_1",
+  "active" : true,
+  "firstName" : "Anna",
+  "lastName" : "Barry",
+  "email" : "anna@barry.com",
+  "street" : "Stradun",
+  "houseNr" : "30",
+  "postalCode" : "1624",
+  "city" : "Grattavache",
+  "phoneNr" : "+41 41 555 66 77",
+  "mobileNr" : "+41 79 555 66 77"
+} ]

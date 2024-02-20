@@ -2,6 +2,7 @@ package com.mav.openzev.exception;
 
 
 import com.mav.openzev.model.Owner;
+import com.mav.openzev.model.Product;
 import com.mav.openzev.model.Unit;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,13 @@ public class ValidationException extends RuntimeException {
 
   public static ValidationException ofUnitHasInvoice(final Unit unit) {
     return new ValidationException(
-        "unit_has_invoice",
+        "unit_used",
         "unit with id '%s' is in use by invoice(s)".formatted(unit.getUuid().toString()));
+  }
+
+  public static ValidationException ofProductIsUsed(final Product product) {
+    return new ValidationException(
+        "product_used",
+        "product with id '%s' is in use by item(s)".formatted(product.getUuid().toString()));
   }
 }

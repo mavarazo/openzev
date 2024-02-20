@@ -294,7 +294,7 @@ public class OpenZevUnitApiIntegrationTest {
       assertThat(response)
           .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
           .extracting(ResponseEntity::getBody)
-          .returns("unit_has_invoice", ErrorDto::getCode);
+          .returns("unit_used", ErrorDto::getCode);
     }
 
     @Test

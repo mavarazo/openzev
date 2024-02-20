@@ -7,8 +7,7 @@ import com.mav.openzev.api.model.ModifiableProductDto;
 import com.mav.openzev.api.model.ProductDto;
 import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
-import com.mav.openzev.model.Constants;
-import com.mav.openzev.model.ProductModels;
+import com.mav.openzev.model.*;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -233,6 +232,28 @@ public class OpenZevProductApiIntegrationTest {
 
       // assert
       assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
+    }
+
+    @Test
+    void status422() {
+      // arrange
+      final Product product = testDatabaseService.insert(ProductModels.getProduct());
+      final Owner owner = testDatabaseService.insert(OwnerModels.getOwner());
+      final Invoice invoice =
+          testDatabaseService.insert(
+              InvoiceModels.getInvoice().toBuilder().recipient(owner).unit(null).build());
+      testDatabaseService.insert(ItemModels.getItem(invoice, product));
+
+      // act
+      final ResponseEntity<ErrorDto> response =
+          restTemplate.exchange(
+              UriFactory.products(ProductModels.UUID), HttpMethod.DELETE, null, ErrorDto.class);
+
+      // assert
+      assertThat(response)
+          .returns(HttpStatus.UNPROCESSABLE_ENTITY, ResponseEntity::getStatusCode)
+          .extracting(ResponseEntity::getBody)
+          .returns("product_used", ErrorDto::getCode);
     }
 
     @Test

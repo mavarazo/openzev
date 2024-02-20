@@ -1,10 +1,10 @@
 {
-  "id": "guid_1",
-  "active": true,
-  "iban": "guid_2",
-  "name": "Dictumsollicitudin",
-  "street": "Habitasseadipiscing",
-  "houseNr": "146",
-  "postalCode": "6710",
-  "city": "Dignissimsem"
+  "id" : "guid_1",
+  "active" : true,
+  "iban" : "guid_2",
+  "name" : "Dictumsollicitudin",
+  "street" : "Habitasseadipiscing",
+  "houseNr" : "146",
+  "postalCode" : "6710",
+  "city" : "Dignissimsem"
 }

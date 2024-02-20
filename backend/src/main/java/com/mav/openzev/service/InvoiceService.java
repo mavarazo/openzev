@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -25,7 +26,10 @@ public class InvoiceService {
 
   private final TemplateEngine templateEngine;
 
-  public ByteArrayInputStream generatePdf(final Invoice invoice) {
+  @Transactional(readOnly = true)
+  public ByteArrayInputStream generatePdf(final UUID invoiceId) {
+    final Invoice invoice = findInvoiceOrFail(invoiceId);
+
     final Context context = new Context();
     context.setVariables(
         Map.of(
