@@ -28,6 +28,9 @@ paths:
   /v1/invoices/{invoiceId}:
     $ref: './paths/v1-invoices-id.yaml'
 
+  /v1/invoices/{invoiceId}/email:
+    $ref: './paths/v1-invoices-id-email.yaml'
+
   /v1/invoices/{invoiceId}/items:
     $ref: './paths/v1-invoices-id-items.yaml'
 

@@ -3,9 +3,12 @@ package com.mav.openzev.service;
 import com.lowagie.text.DocumentException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class PdfService {
 

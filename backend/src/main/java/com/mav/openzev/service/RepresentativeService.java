@@ -20,6 +20,12 @@ public class RepresentativeService {
         .orElseThrow(() -> NotFoundException.ofRepresentativeNotFound(representativeId));
   }
 
+  public Representative findActive() {
+    return representativeRepository
+        .findActive()
+        .orElseThrow(NotFoundException::ofRepresentativeActive);
+  }
+
   @Transactional
   public Representative saveRepresentative(final Representative representative) {
     if (representative.isActive()) {

@@ -20,6 +20,10 @@ public class BankAccountService {
         .orElseThrow(() -> NotFoundException.ofBankAccountNotFound(bankAccountId));
   }
 
+  public BankAccount findActive() {
+    return bankAccountRepository.findActive().orElseThrow(NotFoundException::ofBankAccountActive);
+  }
+
   @Transactional
   public BankAccount saveBankAccount(final BankAccount bankAccount) {
     if (bankAccount.isActive()) {

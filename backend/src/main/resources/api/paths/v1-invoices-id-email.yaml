@@ -1,17 +1,12 @@
-get:
-  operationId: getPdf
+post:
+  operationId: sendEmail
   tags:
     - Invoice
   parameters:
     - $ref: '../parameters/invoices.yaml#/InvoiceParam'
   responses:
-    '200':
-      description: Invoice as PDF
-      content:
-        application/pdf:
-          schema:
-            type: string
-            format: binary
+    '204':
+      description: Send invoice as Email
     default:
       description: Unexpected error
       content:

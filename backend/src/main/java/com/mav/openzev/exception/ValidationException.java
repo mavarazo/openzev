@@ -1,9 +1,6 @@
 package com.mav.openzev.exception;
 
-
-import com.mav.openzev.model.Owner;
-import com.mav.openzev.model.Product;
-import com.mav.openzev.model.Unit;
+import com.mav.openzev.model.*;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -40,5 +37,25 @@ public class ValidationException extends RuntimeException {
     return new ValidationException(
         "product_used",
         "product with id '%s' is in use by item(s)".formatted(product.getUuid().toString()));
+  }
+
+  public static ValidationException ofInvoiceHasWrongStatus(
+      final Invoice invoice, final InvoiceStatus invoiceStatus) {
+    return new ValidationException(
+        "invoice_has_wrong_status",
+        "invoice has status '%s', expected: '%s'"
+            .formatted(
+                invoice.getStatus().toString().toLowerCase(),
+                invoiceStatus.toString().toLowerCase()));
+  }
+
+  public static ValidationException ofRecipientOfInvoiceHasNoEmail(final Invoice invoice) {
+    return new ValidationException(
+        "recipient_of_invoice_has_no_email",
+        "recipient '%s' '%s' of invoice '%s' has no email"
+            .formatted(
+                invoice.getRecipient().getFirstName(),
+                invoice.getRecipient().getLastName(),
+                invoice.getUuid()));
   }
 }

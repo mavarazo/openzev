@@ -9,6 +9,9 @@ spring:
   liquibase:
     enabled: true
     change-log: /db/changelog/main.xml
+  mail.properties:
+    mail.smtp.auth: true
+    mail.smtp.starttls.enable: true
   servlet:
     multipart:
       max-file-size: 15MB

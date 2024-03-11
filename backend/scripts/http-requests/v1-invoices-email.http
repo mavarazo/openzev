@@ -1,0 +1,1 @@
+POST http://localhost:18001/v1/invoices/f7894940-04a6-44d7-909d-3268ab2057c9/email

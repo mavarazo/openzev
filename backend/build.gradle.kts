@@ -39,8 +39,10 @@ dependencies {
     annotationProcessor(libs.mapstruct.processor)
     implementation(libs.mapstruct)
 
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux") // fixme... replace with new rest client
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")

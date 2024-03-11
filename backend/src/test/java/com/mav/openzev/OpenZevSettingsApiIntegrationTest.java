@@ -6,7 +6,6 @@ import com.mav.openzev.api.model.*;
 import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.Settings;
 import com.mav.openzev.model.SettingsModels;
-import com.mav.openzev.repository.RepresentativeRepository;
 import com.mav.openzev.repository.SettingsRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -15,22 +14,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@MockBeans({@MockBean(JavaMailSenderImpl.class)})
 public class OpenZevSettingsApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
 
   @Autowired private SettingsRepository settingsRepository;
-  @Autowired private RepresentativeRepository representativeRepository;
 
   @AfterEach
   void tearDown() {

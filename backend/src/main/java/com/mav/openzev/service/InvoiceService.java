@@ -1,62 +1,59 @@
 package com.mav.openzev.service;
 
 import com.mav.openzev.exception.NotFoundException;
+import com.mav.openzev.exception.ValidationException;
+import com.mav.openzev.model.BankAccount;
 import com.mav.openzev.model.Invoice;
-import com.mav.openzev.repository.BankAccountRepository;
+import com.mav.openzev.model.InvoiceStatus;
+import com.mav.openzev.model.Representative;
 import com.mav.openzev.repository.InvoiceRepository;
-import com.mav.openzev.repository.RepresentativeRepository;
 import java.io.ByteArrayInputStream;
-import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
 public class InvoiceService {
-
-  private static final String INVOICE_PDF = "pdf/invoice.html";
-
+  
   private final InvoiceRepository invoiceRepository;
-  private final RepresentativeRepository representativeRepository;
-  private final BankAccountRepository bankAccountRepository;
 
-  private final TemplateEngine templateEngine;
+  private final RepresentativeService representativeService;
+  private final BankAccountService bankAccountService;
 
-  @Transactional(readOnly = true)
-  public ByteArrayInputStream generatePdf(final UUID invoiceId) {
-    final Invoice invoice = findInvoiceOrFail(invoiceId);
-
-    final Context context = new Context();
-    context.setVariables(
-        Map.of(
-            "created",
-            invoice.getCreated(),
-            "dueDate",
-            invoice.getDueDate(),
-            "recipient",
-            invoice.getRecipient(),
-            "items",
-            invoice.getItems(),
-            "total",
-            invoice.getTotal(),
-            "representative",
-            representativeRepository
-                .findActive()
-                .orElseThrow(NotFoundException::ofRepresentativeActive),
-            "bankAccount",
-            bankAccountRepository
-                .findActive()
-                .orElseThrow(NotFoundException::ofBankAccountActive)));
-    return PdfService.generatePdf(templateEngine.process(INVOICE_PDF, context));
-  }
+  private final InvoicePdfService invoicePdfService;
+  private final InvoiceEmailService invoiceEmailService;
 
   public Invoice findInvoiceOrFail(final UUID invoiceId) {
     return invoiceRepository
         .findByUuid(invoiceId)
         .orElseThrow(() -> NotFoundException.ofInvoiceNotFound(invoiceId));
+  }
+
+  @Transactional(readOnly = true)
+  public ByteArrayInputStream generatePdf(final UUID invoiceId) {
+    final Invoice invoice = findInvoiceOrFail(invoiceId);
+
+    final Representative representative = representativeService.findActive();
+    final BankAccount bankAccount = bankAccountService.findActive();
+
+    return invoicePdfService.generatePdf(invoice, representative, bankAccount);
+  }
+
+  @Transactional(readOnly = true)
+  public void sendAsEmail(final UUID invoiceId) {
+    final Invoice invoice = findInvoiceOrFail(invoiceId);
+    if (invoice.getStatus() != InvoiceStatus.DRAFT) {
+      throw ValidationException.ofInvoiceHasWrongStatus(invoice, InvoiceStatus.DRAFT);
+    }
+    if (StringUtils.isEmpty(invoice.getRecipient().getEmail())) {
+      throw ValidationException.ofRecipientOfInvoiceHasNoEmail(invoice);
+    }
+
+    final Representative representative = representativeService.findActive();
+
+    invoiceEmailService.generateAndSend(invoice, representative, generatePdf(invoiceId));
   }
 }

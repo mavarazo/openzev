@@ -97,4 +97,10 @@ public class InvoiceController implements InvoiceApi {
         .contentType(MediaType.APPLICATION_PDF)
         .body(new InputStreamResource(byteArrayInputStream));
   }
+
+  @Override
+  public ResponseEntity<Void> sendEmail(final UUID invoiceId) {
+    invoiceService.sendAsEmail(invoiceId);
+    return ResponseEntity.noContent().build();
+  }
 }
