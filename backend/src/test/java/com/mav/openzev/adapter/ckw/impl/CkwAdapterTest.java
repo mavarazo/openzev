@@ -1,10 +1,11 @@
-package com.mav.openzev.adapter.impl;
+package com.mav.openzev.adapter.ckw.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.mav.openzev.adapter.CkwAdapterConfig;
-import com.mav.openzev.adapter.model.ChronoUnit;
-import com.mav.openzev.adapter.model.Consumption;
+import com.mav.openzev.adapter.ckw.CkwAdapter;
+import com.mav.openzev.adapter.ckw.CkwAdapterConfig;
+import com.mav.openzev.adapter.ckw.model.ChronoUnit;
+import com.mav.openzev.adapter.ckw.model.Consumption;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,11 +23,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import reactor.core.publisher.Mono;
 
-@SpringJUnitConfig(classes = {CkwAdapterImpl.class, CkwAdapterConfig.class})
+@SpringJUnitConfig(classes = {CkwAdapter.class, CkwAdapterConfig.class})
 @TestPropertySource(properties = {"openzev.ckw.base-url=http://localhost:2222/"})
-class CkwAdapterImplTest {
+class CkwAdapterTest {
 
-  @Autowired private CkwAdapterImpl sut;
+  @Autowired private CkwAdapter sut;
 
   public static MockWebServer mockBackEnd;
 

@@ -81,7 +81,7 @@ public class InvoiceController implements InvoiceApi {
   @Override
   public ResponseEntity<Resource> getPdf(final UUID invoiceId) {
     final Invoice invoice = invoiceService.findInvoiceOrFail(invoiceId);
-    final ByteArrayInputStream byteArrayInputStream = invoiceService.generatePdf(invoiceId);
+    final byte[] invoiceAsPdf = invoiceService.generatePdf(invoiceId);
 
     final var headers = new HttpHeaders();
     headers.add(
@@ -95,7 +95,7 @@ public class InvoiceController implements InvoiceApi {
     return ResponseEntity.ok()
         .headers(headers)
         .contentType(MediaType.APPLICATION_PDF)
-        .body(new InputStreamResource(byteArrayInputStream));
+        .body(new InputStreamResource(new ByteArrayInputStream(invoiceAsPdf)));
   }
 
   @Override

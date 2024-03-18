@@ -3,6 +3,7 @@ package com.mav.openzev;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import com.mav.openzev.adapter.qrgenerator.QrGeneratorAdapter;
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.InvoiceDirection;
 import com.mav.openzev.api.model.InvoiceDto;
@@ -36,15 +37,14 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-// @MockBeans({@MockBean(JavaMailSenderImpl.class)})
 public class OpenZevInvoiceApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
   @Autowired private JsonJacksonApprovals jsonJacksonApprovals;
 
-  @MockBean(JavaMailSenderImpl.class)
-  private JavaMailSenderImpl javaMailSender;
+  @MockBean private JavaMailSenderImpl javaMailSender;
+  @MockBean private QrGeneratorAdapter qrGeneratorAdapter;
 
   @AfterEach
   void tearDown() {
@@ -368,6 +368,7 @@ public class OpenZevInvoiceApiIntegrationTest {
 
     @Test
     void status200() {
+      testDatabaseService.insert(SettingsModels.getSettings());
       testDatabaseService.insert(RepresentativeModels.getRepresentative());
       testDatabaseService.insert(BankAccountModels.getBankAccount());
 
@@ -375,6 +376,8 @@ public class OpenZevInvoiceApiIntegrationTest {
       final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
       testDatabaseService.insert(
           InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
+
+      when(qrGeneratorAdapter.get(any())).thenReturn(null);
 
       // act
       final ResponseEntity<Resource> response =
@@ -483,6 +486,7 @@ public class OpenZevInvoiceApiIntegrationTest {
 
     @Test
     void status200() {
+      testDatabaseService.insert(SettingsModels.getSettings());
       testDatabaseService.insert(RepresentativeModels.getRepresentative());
       testDatabaseService.insert(BankAccountModels.getBankAccount());
 
@@ -490,6 +494,8 @@ public class OpenZevInvoiceApiIntegrationTest {
       final Owner recipient = testDatabaseService.insert(OwnerModels.getOwner());
       testDatabaseService.insert(
           InvoiceModels.getInvoice().toBuilder().unit(unit).recipient(recipient).build());
+
+      when(qrGeneratorAdapter.get(any())).thenReturn(null);
 
       final MimeMessage message = new MimeMessage((Session) null);
       when(javaMailSender.createMimeMessage()).thenReturn(message);

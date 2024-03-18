@@ -20,3 +20,5 @@ spring:
 openzev:
   ckw:
     base-url: https://etility.ckw.ch/etility/proxy/ckw/serviceAzureDA/smartmeter/
+  qr-generator:
+    base-url: https://api.raiffeisen.ch/qrgenerator/v1/

@@ -1,21 +1,19 @@
-package com.mav.openzev.adapter.impl;
+package com.mav.openzev.adapter.ckw;
 
-import com.mav.openzev.adapter.model.ChronoUnit;
-import com.mav.openzev.adapter.model.Consumption;
+import com.mav.openzev.adapter.ckw.model.ChronoUnit;
+import com.mav.openzev.adapter.ckw.model.Consumption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
-public class CkwAdapterImpl {
+public class CkwAdapter {
 
   private final WebClient ckwClient;
 
@@ -24,7 +22,7 @@ public class CkwAdapterImpl {
       final String mpan,
       final LocalDate from,
       final LocalDate upto,
-      ChronoUnit chronoUnit) {
+      final ChronoUnit chronoUnit) {
     return ckwClient
         .get()
         .uri(

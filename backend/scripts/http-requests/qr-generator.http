@@ -1,0 +1,35 @@
+POST https://api.raiffeisen.ch/qrgenerator/v1/bill/image/pdf
+Content-Type: application/json
+
+{
+  "creditor": {
+    "account": "CH96 0024 8248 4118 5940 X",
+    "name": "ZEV Stradun 30 Grattavache",
+    "street": "",
+    "houseNo": "",
+    "countryCode": "CH",
+    "postalCode": "1624",
+    "town": "Grattavache"
+  },
+  "debitor": {
+    "name": "Anna Barry",
+    "street": "",
+    "houseNo": "",
+    "countryCode": "CH",
+    "postalCode": "1624",
+    "town": "Grattavache"
+  },
+  "format": {
+    "language": "DE",
+    "outputSize": "A4_PORTRAIT_SHEET",
+    "separatorType": "NONE",
+    "graphicsFormat": "PDF"
+  },
+  "payment": {
+    "currency": "CHF",
+    "amount": 1,
+    "reference": "RF97BONGO",
+    "unstructuredMessage": "bingo",
+    "referenceInput": "bongo"
+  }
+}

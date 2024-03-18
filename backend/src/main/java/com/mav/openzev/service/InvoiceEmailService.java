@@ -3,7 +3,6 @@ package com.mav.openzev.service;
 import com.mav.openzev.model.Invoice;
 import com.mav.openzev.model.Representative;
 import jakarta.mail.internet.MimeMessage;
-import java.io.ByteArrayInputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +25,7 @@ public class InvoiceEmailService {
 
   @SneakyThrows
   public void generateAndSend(
-      final Invoice invoice,
-      final Representative representative,
-      final ByteArrayInputStream invoiceAsPdf) {
+      final Invoice invoice, final Representative representative, final byte[] invoiceAsPdf) {
     final Context context = new Context();
     context.setVariables(
         Map.of(
@@ -48,7 +45,7 @@ public class InvoiceEmailService {
     helper.setText(body, true);
     helper.addAttachment(
         "%s - Rechnung.pdf".formatted(DateTimeFormatter.ISO_DATE.format(invoice.getCreated())),
-        new ByteArrayResource(invoiceAsPdf.readAllBytes()));
+        new ByteArrayResource(invoiceAsPdf));
     javaMailSender.send(message);
   }
 }

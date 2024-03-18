@@ -1,10 +1,8 @@
-package com.mav.openzev.adapter.model;
+package com.mav.openzev.adapter.ckw.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 public record Consumption(
     @JsonProperty("anzahl_linien_fb") Integer anzahlLinienFb,

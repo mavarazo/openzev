@@ -1,6 +1,9 @@
 package com.mav.openzev.exception;
 
+import com.mav.openzev.adapter.qrgenerator.model.validator.ValidationMessage;
 import com.mav.openzev.model.*;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -10,7 +13,7 @@ public class ValidationException extends RuntimeException {
 
   @Getter private final String code;
 
-  private ValidationException(final String code, final String message) {
+  public ValidationException(final String code, final String message) {
     super(message);
     this.code = code;
   }
@@ -57,5 +60,17 @@ public class ValidationException extends RuntimeException {
                 invoice.getRecipient().getFirstName(),
                 invoice.getRecipient().getLastName(),
                 invoice.getUuid()));
+  }
+
+  public static ValidationException ofQrGeneratorValidationFailed(
+      final List<ValidationMessage> validationMessages) {
+    return new ValidationException(
+        "qr_generator_validation_failed",
+        validationMessages.stream()
+            .map(
+                v ->
+                    "{ \"type\": %s, \"field\": %s, \"messageKey\": %s, \"messageParameters\": %s }"
+                        .formatted(v.type(), v.field(), v.messageKey(), v.messageParameters()))
+            .collect(Collectors.joining(".")));
   }
 }

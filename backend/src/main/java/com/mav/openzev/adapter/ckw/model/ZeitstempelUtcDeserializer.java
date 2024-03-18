@@ -1,9 +1,8 @@
-package com.mav.openzev.adapter.model;
+package com.mav.openzev.adapter.ckw.model;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,8 +14,9 @@ public class ZeitstempelUtcDeserializer extends JsonDeserializer<LocalDateTime> 
 
   @Override
   public LocalDateTime deserialize(
-      JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-    String dateAsString = jsonParser.getText();
+      final JsonParser jsonParser, final DeserializationContext deserializationContext)
+      throws IOException {
+    final String dateAsString = jsonParser.getText();
     if (dateAsString == null) {
       throw new IOException("OffsetDateTime argument is null.");
     }

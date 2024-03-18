@@ -1,5 +1,6 @@
-package com.mav.openzev.adapter;
+package com.mav.openzev.adapter.ckw;
 
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.util.Collections;
 
 @Configuration
 @Slf4j
@@ -37,7 +36,7 @@ public class CkwAdapterConfig {
     return ExchangeFilterFunction.ofRequestProcessor(
         clientRequest -> {
           if (log.isDebugEnabled()) {
-            StringBuilder sb =
+            final StringBuilder sb =
                 new StringBuilder("Request: \n")
                     .append(clientRequest.method())
                     .append(" ")
@@ -46,8 +45,7 @@ public class CkwAdapterConfig {
                 .headers()
                 .forEach(
                     (k, v) ->
-                        v.forEach(
-                            value -> sb.append("\n").append(k).append(":").append(value)));
+                        v.forEach(value -> sb.append("\n").append(k).append(":").append(value)));
             log.debug(sb.toString());
           }
           return Mono.just(clientRequest);
@@ -58,7 +56,7 @@ public class CkwAdapterConfig {
     return ExchangeFilterFunction.ofResponseProcessor(
         clientResponse -> {
           if (log.isDebugEnabled()) {
-            StringBuilder sb =
+            final StringBuilder sb =
                 new StringBuilder("Response: \n")
                     .append("Status: ")
                     .append(clientResponse.statusCode());

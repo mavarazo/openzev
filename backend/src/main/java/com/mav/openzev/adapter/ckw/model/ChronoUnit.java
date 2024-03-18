@@ -1,4 +1,4 @@
-package com.mav.openzev.adapter.model;
+package com.mav.openzev.adapter.ckw.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -9,9 +9,9 @@ public enum ChronoUnit {
     HOUR("hour"),
     QUARTER_HOUR("quarter_hour");
 
-    private String value;
+  private final String value;
 
-    ChronoUnit(String value) {
+  ChronoUnit(final String value) {
         this.value = value;
     }
 
