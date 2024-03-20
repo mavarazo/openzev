@@ -49,7 +49,7 @@ public class InvoiceService {
     return PdfService.mergePdf(pdfsAsBytes);
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   public void sendAsEmail(final UUID invoiceId) {
     final Invoice invoice = findInvoiceOrFail(invoiceId);
     if (invoice.getStatus() != InvoiceStatus.DRAFT) {
@@ -62,5 +62,6 @@ public class InvoiceService {
     final Representative representative = representativeService.findActive();
 
     invoiceEmailService.generateAndSend(invoice, representative, generatePdf(invoiceId));
+    invoice.setStatus(InvoiceStatus.SENT);
   }
 }

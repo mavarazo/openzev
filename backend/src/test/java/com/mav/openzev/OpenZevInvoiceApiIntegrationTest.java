@@ -516,6 +516,16 @@ public class OpenZevInvoiceApiIntegrationTest {
       MimeMessageAssert.assertThat(message)
           .hasSubject(
               "Lorem ipsum"); // hasContent checks with apache commons email 2.0 as soon as released
+
+      assertThat(
+              restTemplate
+                  .exchange(
+                      UriFactory.invoices(InvoiceModels.UUID),
+                      HttpMethod.GET,
+                      HttpEntity.EMPTY,
+                      InvoiceDto.class)
+                  .getBody())
+          .returns(com.mav.openzev.api.model.InvoiceStatus.SENT, InvoiceDto::getStatus);
     }
   }
 }
