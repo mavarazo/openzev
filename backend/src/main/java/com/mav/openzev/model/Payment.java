@@ -50,6 +50,6 @@ public class Payment extends AbstractAuditEntity {
   }
 
   private void updateInvoice() {
-    invoice.afterPayments();
+    invoice.afterPayment();
   }
 }

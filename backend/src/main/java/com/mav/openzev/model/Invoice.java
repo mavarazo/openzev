@@ -100,12 +100,12 @@ public class Invoice extends AbstractAuditEntity {
     return items.stream().map(Item::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
-  public BigDecimal getPaid() {
+  public BigDecimal getTotalPaid() {
     return payments.stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
-  public void afterPayments() {
-    if (getPaid().compareTo(getTotal()) >= 0) {
+  public void afterPayment() {
+    if (getTotalPaid().compareTo(getTotal()) >= 0) {
       status = InvoiceStatus.PAID;
     }
   }

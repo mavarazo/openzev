@@ -71,6 +71,6 @@ public class Owner extends AbstractEntity {
   public Balance getBalance() {
     return new Balance(
         invoices.stream().map(Invoice::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add),
-        invoices.stream().map(Invoice::getPaid).reduce(BigDecimal.ZERO, BigDecimal::add));
+        invoices.stream().map(Invoice::getTotalPaid).reduce(BigDecimal.ZERO, BigDecimal::add));
   }
 }

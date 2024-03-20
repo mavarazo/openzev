@@ -2,9 +2,7 @@ package com.mav.openzev;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.mav.openzev.api.model.ErrorDto;
-import com.mav.openzev.api.model.ModifiablePaymentDto;
-import com.mav.openzev.api.model.PaymentDto;
+import com.mav.openzev.api.model.*;
 import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.Constants;
@@ -16,7 +14,6 @@ import com.mav.openzev.model.OwnerModels;
 import com.mav.openzev.model.PaymentModels;
 import com.mav.openzev.model.Unit;
 import com.mav.openzev.model.UnitModels;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -183,7 +180,6 @@ public class OpenZevPaymentApiIntegrationTest {
     }
 
     @Test
-    @Transactional
     void status200() {
       // arrange
       final Unit unit = testDatabaseService.insert(UnitModels.getUnit());
@@ -215,6 +211,16 @@ public class OpenZevPaymentApiIntegrationTest {
                   HttpEntity.EMPTY,
                   PaymentDto.class)
               .getBody());
+
+      assertThat(
+              restTemplate
+                  .exchange(
+                      UriFactory.invoices(InvoiceModels.UUID),
+                      HttpMethod.GET,
+                      HttpEntity.EMPTY,
+                      InvoiceDto.class)
+                  .getBody())
+          .returns(InvoiceStatus.PAID, InvoiceDto::getStatus);
     }
   }
 
