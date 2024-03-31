@@ -400,7 +400,7 @@ public class OpenZevInvoiceApiIntegrationTest {
                 }
               },
               InstanceOfAssertFactories.LONG)
-          .isGreaterThan(0);
+          .isPositive();
     }
   }
 

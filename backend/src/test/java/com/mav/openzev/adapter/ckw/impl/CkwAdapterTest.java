@@ -1,46 +1,32 @@
 package com.mav.openzev.adapter.ckw.impl;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.maciejwalkowiak.wiremock.spring.ConfigureWireMock;
+import com.maciejwalkowiak.wiremock.spring.EnableWireMock;
+import com.maciejwalkowiak.wiremock.spring.InjectWireMock;
 import com.mav.openzev.adapter.ckw.CkwAdapter;
 import com.mav.openzev.adapter.ckw.CkwAdapterConfig;
 import com.mav.openzev.adapter.ckw.model.ChronoUnit;
 import com.mav.openzev.adapter.ckw.model.Consumption;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import reactor.core.publisher.Mono;
 
 @SpringJUnitConfig(classes = {CkwAdapter.class, CkwAdapterConfig.class})
-@TestPropertySource(properties = {"openzev.ckw.base-url=http://localhost:2222/"})
+@EnableWireMock({@ConfigureWireMock(name = "ckw-service", property = "openzev.ckw.base-url")})
 class CkwAdapterTest {
 
+  @InjectWireMock("ckw-service")
+  private WireMockServer wiremock;
+
   @Autowired private CkwAdapter sut;
-
-  public static MockWebServer mockBackEnd;
-
-  @BeforeAll
-  static void setUp() throws IOException {
-    mockBackEnd = new MockWebServer();
-    mockBackEnd.start(2222);
-  }
-
-  @AfterAll
-  static void tearDown() throws IOException {
-    mockBackEnd.shutdown();
-  }
 
   @Nested
   class GetOwnerConsumptionsTests {
@@ -48,12 +34,11 @@ class CkwAdapterTest {
     @Test
     void status200() {
       // arrange
-      mockBackEnd.enqueue(
-          new MockResponse()
-              .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-              .setResponseCode(200)
-              .setBody(
-                  """
+      wiremock.stubFor(
+          get(anyUrl())
+              .willReturn(
+                  okJson(
+                      """
 [
   {
     "anzahl_linien_fb": 0,
@@ -74,10 +59,10 @@ class CkwAdapterTest {
     "zeitstempel_von_utc": "Wed, 31 May 2023 22:00:00 GMT"
   }
 ]
-"""));
+""")));
 
       // act
-      final Mono<List<Consumption>> result =
+      final List<Consumption> result =
           sut.getConsumption(
               "12345",
               "56789",
@@ -86,7 +71,7 @@ class CkwAdapterTest {
               ChronoUnit.DAY);
 
       // assert
-      assertThat(result.block())
+      assertThat(result)
           .hasSize(1)
           .singleElement()
           .returns(0, Consumption::anzahlLinienFb)
@@ -103,12 +88,8 @@ class CkwAdapterTest {
           .returns(4.614999987185001, Consumption::mengeFakturiertHt)
           .returns(1.7720000334084034, Consumption::mengeFakturiertNt)
           .returns(6.387000020593405, Consumption::mengePhysikalisch)
-          .returns(
-              LocalDateTime.of(2023, 6, 1, 22, 0, 0, 0),
-              Consumption::zeitstempelBisUtc)
-          .returns(
-                  LocalDateTime.of(2023, 5, 31, 22, 0, 0, 0),
-              Consumption::zeitstempelVonUtc);
+          .returns(LocalDateTime.of(2023, 6, 1, 22, 0, 0, 0), Consumption::zeitstempelBisUtc)
+          .returns(LocalDateTime.of(2023, 5, 31, 22, 0, 0, 0), Consumption::zeitstempelVonUtc);
     }
   }
 }

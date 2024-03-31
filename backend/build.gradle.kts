@@ -5,6 +5,7 @@ plugins {
     id("java-test-fixtures")
     id("org.springframework.boot") version "3.2.0"
     id("org.openapi.generator") version "6.3.0"
+    id("org.sonarqube") version "4.4.1.3373"
 }
 
 group = "com.mav"
@@ -16,6 +17,14 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "mavarazo_openzev")
+        property("sonar.organization", "mavarazo")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 sourceSets {
@@ -44,9 +53,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux") // fixme... replace with new rest client
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
+    implementation(libs.thymeleaf.extras.java8time)
     implementation("org.liquibase:liquibase-core")
     implementation(libs.flying.saucer.pdf)
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
@@ -61,7 +69,7 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation(libs.bundles.okhttp.mockwebserver)
+    testImplementation(libs.bundles.wiremock)
     testImplementation(libs.approvaltests)
 
     testRuntimeOnly("com.h2database:h2")
