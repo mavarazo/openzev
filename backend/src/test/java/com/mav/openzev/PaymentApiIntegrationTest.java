@@ -3,49 +3,25 @@ package com.mav.openzev;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.*;
+import com.mav.openzev.api.model.InvoiceStatus;
 import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
-import com.mav.openzev.model.Constants;
-import com.mav.openzev.model.Invoice;
-import com.mav.openzev.model.InvoiceModels;
-import com.mav.openzev.model.ItemModels;
-import com.mav.openzev.model.Owner;
-import com.mav.openzev.model.OwnerModels;
-import com.mav.openzev.model.PaymentModels;
-import com.mav.openzev.model.Unit;
-import com.mav.openzev.model.UnitModels;
+import com.mav.openzev.model.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@MockBeans({@MockBean(JavaMailSenderImpl.class)})
-public class OpenZevPaymentApiIntegrationTest {
+public class PaymentApiIntegrationTest extends AbstractApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
   @Autowired private JsonJacksonApprovals jsonJacksonApprovals;
-
-  @AfterEach
-  void tearDown() {
-    testDatabaseService.truncateAll();
-  }
 
   @Nested
   class GetPaymentsTests {
@@ -57,7 +33,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_payments(InvoiceModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -79,7 +55,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_payments(InvoiceModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               PaymentDto[].class);
 
       // assert
@@ -101,7 +77,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.payments(PaymentModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -129,7 +105,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.payments(PaymentModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               PaymentDto.class);
 
       // assert
@@ -152,7 +128,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_payments(InvoiceModels.UUID),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -172,7 +148,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_payments(InvoiceModels.UUID),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -195,7 +171,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_payments(InvoiceModels.UUID),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -208,7 +184,7 @@ public class OpenZevPaymentApiIntegrationTest {
               .exchange(
                   UriFactory.payments(response.getBody()),
                   HttpMethod.GET,
-                  HttpEntity.EMPTY,
+                  new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                   PaymentDto.class)
               .getBody());
 
@@ -217,7 +193,7 @@ public class OpenZevPaymentApiIntegrationTest {
                   .exchange(
                       UriFactory.invoices(InvoiceModels.UUID),
                       HttpMethod.GET,
-                      HttpEntity.EMPTY,
+                      new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                       InvoiceDto.class)
                   .getBody())
           .returns(InvoiceStatus.PAID, InvoiceDto::getStatus);
@@ -235,7 +211,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.payments(PaymentModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -253,7 +229,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.payments(PaymentModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -278,7 +254,7 @@ public class OpenZevPaymentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.payments(PaymentModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -291,7 +267,7 @@ public class OpenZevPaymentApiIntegrationTest {
               .exchange(
                   UriFactory.payments(response.getBody()),
                   HttpMethod.GET,
-                  HttpEntity.EMPTY,
+                  new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                   PaymentDto.class)
               .getBody());
     }
@@ -305,7 +281,10 @@ public class OpenZevPaymentApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.items(ItemModels.UUID), HttpMethod.DELETE, null, ErrorDto.class);
+              UriFactory.items(ItemModels.UUID),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              ErrorDto.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
@@ -324,7 +303,10 @@ public class OpenZevPaymentApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.payments(PaymentModels.UUID), HttpMethod.DELETE, null, UUID.class);
+              UriFactory.payments(PaymentModels.UUID),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              UUID.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);

@@ -9,35 +9,18 @@ import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.RepresentativeModels;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@MockBeans({@MockBean(JavaMailSenderImpl.class)})
-public class OpenZevRepresentativeApiIntegrationTest {
+public class RepresentativeApiIntegrationTest extends AbstractApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
   @Autowired private JsonJacksonApprovals jsonJacksonApprovals;
-
-  @AfterEach
-  void tearDown() {
-    testDatabaseService.truncateAll();
-  }
 
   @Nested
   class GetRepresentativesTests {
@@ -52,7 +35,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               RepresentativeDto[].class);
 
       // assert
@@ -74,7 +57,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(RepresentativeModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -94,7 +77,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(RepresentativeModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               RepresentativeDto.class);
 
       // assert
@@ -127,7 +110,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -156,7 +139,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -169,7 +152,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
               .exchange(
                   UriFactory.settings_representatives(),
                   HttpMethod.GET,
-                  HttpEntity.EMPTY,
+                  new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                   RepresentativeDto[].class)
               .getBody());
     }
@@ -186,7 +169,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(RepresentativeModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -217,7 +200,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(RepresentativeModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -230,7 +213,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
               .exchange(
                   UriFactory.settings_representatives(),
                   HttpMethod.GET,
-                  HttpEntity.EMPTY,
+                  new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                   RepresentativeDto[].class)
               .getBody());
     }
@@ -245,7 +228,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(RepresentativeModels.UUID),
               HttpMethod.DELETE,
-              null,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -262,7 +245,7 @@ public class OpenZevRepresentativeApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings_representatives(RepresentativeModels.UUID),
               HttpMethod.DELETE,
-              null,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert

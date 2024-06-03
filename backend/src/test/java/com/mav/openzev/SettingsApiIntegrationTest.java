@@ -8,36 +8,19 @@ import com.mav.openzev.model.Settings;
 import com.mav.openzev.model.SettingsModels;
 import com.mav.openzev.repository.SettingsRepository;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@MockBeans({@MockBean(JavaMailSenderImpl.class)})
-public class OpenZevSettingsApiIntegrationTest {
+public class SettingsApiIntegrationTest extends AbstractApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
 
   @Autowired private SettingsRepository settingsRepository;
-
-  @AfterEach
-  void tearDown() {
-    testDatabaseService.truncateAll();
-  }
 
   @Nested
   class GetSettingsTests {
@@ -47,7 +30,10 @@ public class OpenZevSettingsApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.settings(), HttpMethod.GET, HttpEntity.EMPTY, ErrorDto.class);
+              UriFactory.settings(),
+              HttpMethod.GET,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              ErrorDto.class);
 
       // assert
       assertThat(response)
@@ -64,7 +50,10 @@ public class OpenZevSettingsApiIntegrationTest {
       // act
       final ResponseEntity<SettingsDto> response =
           restTemplate.exchange(
-              UriFactory.settings(), HttpMethod.GET, HttpEntity.EMPTY, SettingsDto.class);
+              UriFactory.settings(),
+              HttpMethod.GET,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              SettingsDto.class);
 
       // assert
       assertThat(response)
@@ -93,7 +82,7 @@ public class OpenZevSettingsApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings(),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -117,7 +106,7 @@ public class OpenZevSettingsApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings(),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -158,7 +147,7 @@ public class OpenZevSettingsApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.settings(),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert

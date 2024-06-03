@@ -10,35 +10,18 @@ import com.mav.openzev.helper.RequiredSource;
 import com.mav.openzev.model.*;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@MockBeans({@MockBean(JavaMailSenderImpl.class)})
-public class OpenZevProductApiIntegrationTest {
+public class ProductApiIntegrationTest extends AbstractApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
   @Autowired private JsonJacksonApprovals jsonJacksonApprovals;
-
-  @AfterEach
-  void tearDown() {
-    testDatabaseService.truncateAll();
-  }
 
   @Nested
   class GetProductsTests {
@@ -51,7 +34,10 @@ public class OpenZevProductApiIntegrationTest {
       // act
       final ResponseEntity<ProductDto[]> response =
           restTemplate.exchange(
-              UriFactory.products(), HttpMethod.GET, HttpEntity.EMPTY, ProductDto[].class);
+              UriFactory.products(),
+              HttpMethod.GET,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              ProductDto[].class);
 
       // assert
       assertThat(response)
@@ -75,7 +61,7 @@ public class OpenZevProductApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.products(ProductModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ProductDto.class);
 
       // assert
@@ -93,7 +79,7 @@ public class OpenZevProductApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.products(ProductModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -118,7 +104,7 @@ public class OpenZevProductApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.products(),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -137,7 +123,7 @@ public class OpenZevProductApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.products(),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -150,7 +136,7 @@ public class OpenZevProductApiIntegrationTest {
               .exchange(
                   UriFactory.products(response.getBody()),
                   HttpMethod.GET,
-                  HttpEntity.EMPTY,
+                  new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                   ProductDto.class)
               .getBody());
     }
@@ -167,7 +153,7 @@ public class OpenZevProductApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.products(ProductModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -185,7 +171,7 @@ public class OpenZevProductApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.products(ProductModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -205,7 +191,7 @@ public class OpenZevProductApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.products(ProductModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -218,7 +204,7 @@ public class OpenZevProductApiIntegrationTest {
               .exchange(
                   UriFactory.products(response.getBody()),
                   HttpMethod.GET,
-                  HttpEntity.EMPTY,
+                  new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                   ProductDto.class)
               .getBody());
     }
@@ -232,7 +218,10 @@ public class OpenZevProductApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID), HttpMethod.DELETE, null, ErrorDto.class);
+              UriFactory.products(ProductModels.UUID),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              ErrorDto.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
@@ -251,7 +240,10 @@ public class OpenZevProductApiIntegrationTest {
       // act
       final ResponseEntity<ErrorDto> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID), HttpMethod.DELETE, null, ErrorDto.class);
+              UriFactory.products(ProductModels.UUID),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              ErrorDto.class);
 
       // assert
       assertThat(response)
@@ -268,7 +260,10 @@ public class OpenZevProductApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.products(ProductModels.UUID), HttpMethod.DELETE, null, UUID.class);
+              UriFactory.products(ProductModels.UUID),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              UUID.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);

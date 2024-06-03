@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.model.DocumentModels;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,15 +19,10 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Disabled("needs rework")
-public class OpenZevDocumentApiIntegrationTest {
+public class DocumentApiIntegrationTest extends AbstractApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private com.mav.openzev.TestDatabaseService testDatabaseService;
-
-  @AfterEach
-  void tearDown() {
-    testDatabaseService.truncateAll();
-  }
 
   @Nested
   class GetDocumentTests {
@@ -40,7 +34,7 @@ public class OpenZevDocumentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.documents(DocumentModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -95,7 +89,7 @@ public class OpenZevDocumentApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.documents(DocumentModels.UUID),
               HttpMethod.DELETE,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -118,7 +112,7 @@ public class OpenZevDocumentApiIntegrationTest {
     //          restTemplate.exchange(
     //              UriFactory.documents(DocumentModels.UUID),
     //              HttpMethod.DELETE,
-    //              HttpEntity.EMPTY,
+    //              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
     //              Resource.class);
     //
     //      // assert

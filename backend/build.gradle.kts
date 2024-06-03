@@ -52,6 +52,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation(libs.thymeleaf.extras.java8time)
@@ -69,6 +70,7 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation(libs.bundles.wiremock)
     testImplementation(libs.approvaltests)
 
@@ -76,6 +78,7 @@ dependencies {
 
     testFixturesAnnotationProcessor("org.projectlombok:lombok")
     testFixturesCompileOnly("org.projectlombok:lombok")
+    testFixturesImplementation("org.springframework.boot:spring-boot-starter-security")
 }
 
 tasks.withType<Test> {

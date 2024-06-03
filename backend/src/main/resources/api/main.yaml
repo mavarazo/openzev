@@ -19,6 +19,12 @@ paths:
   /v1/settings/representatives/{representativeId}:
     $ref: './paths/v1-settings-representatives-id.yaml'
 
+  /v1/settings/users:
+    $ref: './paths/v1-settings-users.yaml'
+
+  /v1/settings/users/{userId}/password:
+    $ref: './paths/v1-settings-users-id-password.yaml'
+
   /v1/documents/{documentId}:
     $ref: './paths/v1-documents-id.yaml'
 
@@ -69,3 +75,21 @@ paths:
 
   /v1/ownerships/{ownershipId}:
     $ref: './paths/v1-ownerships-id.yaml'
+
+  /v1/users:
+    $ref: './paths/v1-users.yaml'
+
+  /v1/users/{userId}:
+    $ref: './paths/v1-users-id.yaml'
+
+  /v1/users/{userId}/password:
+    $ref: './paths/v1-users-id-password.yaml'
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+security:
+  - basicAuth: [ ]

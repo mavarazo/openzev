@@ -18,26 +18,18 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-public class OpenZevInvoiceApiIntegrationTest {
+public class InvoiceApiIntegrationTest extends AbstractApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
@@ -45,11 +37,6 @@ public class OpenZevInvoiceApiIntegrationTest {
 
   @MockBean private JavaMailSenderImpl javaMailSender;
   @MockBean private QrGeneratorAdapter qrGeneratorAdapter;
-
-  @AfterEach
-  void tearDown() {
-    testDatabaseService.truncateAll();
-  }
 
   @Nested
   class GetInvoicesTests {
@@ -65,7 +52,10 @@ public class OpenZevInvoiceApiIntegrationTest {
       // act
       final ResponseEntity<InvoiceDto[]> response =
           restTemplate.exchange(
-              UriFactory.invoices(), HttpMethod.GET, HttpEntity.EMPTY, InvoiceDto[].class);
+              UriFactory.invoices(),
+              HttpMethod.GET,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              InvoiceDto[].class);
 
       // assert
       assertThat(response)
@@ -86,7 +76,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -112,7 +102,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               InvoiceDto.class);
 
       // assert
@@ -135,7 +125,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -162,7 +152,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -175,7 +165,7 @@ public class OpenZevInvoiceApiIntegrationTest {
               .exchange(
                   UriFactory.invoices(response.getBody()),
                   HttpMethod.GET,
-                  HttpEntity.EMPTY,
+                  new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                   InvoiceDto.class)
               .getBody());
     }
@@ -192,7 +182,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -216,7 +206,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -251,7 +241,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -286,7 +276,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -299,7 +289,7 @@ public class OpenZevInvoiceApiIntegrationTest {
               .exchange(
                   UriFactory.invoices(response.getBody()),
                   HttpMethod.GET,
-                  HttpEntity.EMPTY,
+                  new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                   InvoiceDto.class)
               .getBody());
     }
@@ -315,7 +305,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.DELETE,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -338,7 +328,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices(InvoiceModels.UUID),
               HttpMethod.DELETE,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -356,7 +346,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_pdf(InvoiceModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -384,7 +374,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_pdf(InvoiceModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               Resource.class);
 
       // assert
@@ -414,7 +404,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_email(InvoiceModels.UUID),
               HttpMethod.POST,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -448,7 +438,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_email(InvoiceModels.UUID),
               HttpMethod.POST,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -474,7 +464,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_email(InvoiceModels.UUID),
               HttpMethod.POST,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -506,7 +496,7 @@ public class OpenZevInvoiceApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.invoices_email(InvoiceModels.UUID),
               HttpMethod.POST,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               Resource.class);
 
       // assert
@@ -522,7 +512,7 @@ public class OpenZevInvoiceApiIntegrationTest {
                   .exchange(
                       UriFactory.invoices(InvoiceModels.UUID),
                       HttpMethod.GET,
-                      HttpEntity.EMPTY,
+                      new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
                       InvoiceDto.class)
                   .getBody())
           .returns(com.mav.openzev.api.model.InvoiceStatus.SENT, InvoiceDto::getStatus);

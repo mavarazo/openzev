@@ -1,0 +1,59 @@
+delete:
+  operationId: deleteUser
+  tags:
+    - User
+  parameters:
+    - $ref: '../parameters/users.yaml#/UserParam'
+  responses:
+    '204':
+      description: Deleted
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+get:
+  operationId: getUser
+  tags:
+    - User
+  parameters:
+    - $ref: '../parameters/users.yaml#/UserParam'
+  responses:
+    '200':
+      description: User
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/users.yaml#/UserDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+put:
+  operationId: changeUser
+  tags:
+    - User
+  parameters:
+    - $ref: '../parameters/users.yaml#/UserParam'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/users.yaml#/ModifiableUserDto'
+  responses:
+    '200':
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

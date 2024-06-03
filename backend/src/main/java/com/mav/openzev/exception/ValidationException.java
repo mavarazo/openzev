@@ -73,4 +73,8 @@ public class ValidationException extends RuntimeException {
                         .formatted(v.type(), v.field(), v.messageKey(), v.messageParameters()))
             .collect(Collectors.joining(".")));
   }
+
+  public static ValidationException ofOldPasswordInvalid() {
+    return new ValidationException("old_password_invalid", "old password is invalid");
+  }
 }

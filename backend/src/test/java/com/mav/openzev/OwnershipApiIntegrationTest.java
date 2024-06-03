@@ -6,45 +6,23 @@ import com.mav.openzev.api.model.ErrorDto;
 import com.mav.openzev.api.model.ModifiableOwnershipDto;
 import com.mav.openzev.api.model.OwnershipDto;
 import com.mav.openzev.helper.RequiredSource;
-import com.mav.openzev.model.Owner;
-import com.mav.openzev.model.OwnerModels;
-import com.mav.openzev.model.Ownership;
-import com.mav.openzev.model.OwnershipModels;
-import com.mav.openzev.model.Unit;
-import com.mav.openzev.model.UnitModels;
+import com.mav.openzev.model.*;
 import com.mav.openzev.repository.OwnershipRepository;
 import java.time.LocalDate;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@MockBeans({@MockBean(JavaMailSenderImpl.class)})
-public class OpenZevOwnershipApiIntegrationTest {
+public class OwnershipApiIntegrationTest extends AbstractApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
 
   @Autowired private OwnershipRepository ownershipRepository;
-
-  @AfterEach
-  void tearDown() {
-    testDatabaseService.truncateAll();
-  }
 
   @Nested
   class GetOwnershipsTests {
@@ -61,7 +39,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.units_ownerships(UnitModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               OwnershipDto[].class);
 
       // assert
@@ -81,7 +59,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -105,7 +83,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               OwnershipDto.class);
 
       // assert
@@ -127,7 +105,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.units_ownerships(UnitModels.UUID),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -150,7 +128,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.units_ownerships(UnitModels.UUID),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -183,7 +161,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(UnitModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -203,7 +181,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -233,7 +211,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -263,7 +241,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.DELETE,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -285,7 +263,7 @@ public class OpenZevOwnershipApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.ownerships(OwnershipModels.UUID),
               HttpMethod.DELETE,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert

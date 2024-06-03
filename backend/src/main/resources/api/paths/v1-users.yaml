@@ -1,0 +1,19 @@
+post:
+  operationId: login
+  security:
+    - basicAuth: [ ]
+  tags:
+    - User
+  responses:
+    '201':
+      description: Logged in
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Jwt'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

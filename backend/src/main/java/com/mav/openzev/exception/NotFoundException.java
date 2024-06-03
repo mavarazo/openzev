@@ -79,4 +79,13 @@ public class NotFoundException extends RuntimeException {
   public static NotFoundException ofRepresentativeActive() {
     return new NotFoundException("representative_not_found", "no active representative found");
   }
+
+  public static NotFoundException ofUserNotFound(final UUID userId) {
+    return new NotFoundException(
+        "user_not_found", "user with id '%s' not found".formatted(userId.toString()));
+  }
+
+  public static NotFoundException ofUserNotFound(final String username) {
+    return new NotFoundException("user_not_found", "username '%s' not found".formatted(username));
+  }
 }

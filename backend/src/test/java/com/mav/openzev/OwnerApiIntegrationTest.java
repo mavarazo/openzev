@@ -7,48 +7,23 @@ import com.mav.openzev.api.model.ModifiableOwnerDto;
 import com.mav.openzev.api.model.OwnerDto;
 import com.mav.openzev.helper.JsonJacksonApprovals;
 import com.mav.openzev.helper.RequiredSource;
-import com.mav.openzev.model.Invoice;
-import com.mav.openzev.model.InvoiceModels;
-import com.mav.openzev.model.ItemModels;
-import com.mav.openzev.model.Owner;
-import com.mav.openzev.model.OwnerModels;
-import com.mav.openzev.model.OwnershipModels;
-import com.mav.openzev.model.PaymentModels;
-import com.mav.openzev.model.Unit;
-import com.mav.openzev.model.UnitModels;
+import com.mav.openzev.model.*;
 import com.mav.openzev.repository.OwnerRepository;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@MockBeans({@MockBean(JavaMailSenderImpl.class)})
-public class OpenZevOwnerApiIntegrationTest {
+public class OwnerApiIntegrationTest extends AbstractApiIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private TestDatabaseService testDatabaseService;
   @Autowired private JsonJacksonApprovals jsonJacksonApprovals;
 
   @Autowired private OwnerRepository ownerRepository;
-
-  @AfterEach
-  void tearDown() {
-    testDatabaseService.truncateAll();
-  }
 
   @Nested
   class GetOwnersTests {
@@ -61,7 +36,10 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<OwnerDto[]> response =
           restTemplate.exchange(
-              UriFactory.owners(), HttpMethod.GET, HttpEntity.EMPTY, OwnerDto[].class);
+              UriFactory.owners(),
+              HttpMethod.GET,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              OwnerDto[].class);
 
       // assert
       assertThat(response)
@@ -80,7 +58,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(UUID.randomUUID()),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -106,7 +84,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(OwnerModels.UUID),
               HttpMethod.GET,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               OwnerDto.class);
 
       // assert
@@ -125,7 +103,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -153,7 +131,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(),
               HttpMethod.POST,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -191,7 +169,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(OwnerModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -219,7 +197,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(UUID.randomUUID()),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -252,7 +230,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(OwnerModels.UUID),
               HttpMethod.PUT,
-              new HttpEntity<>(requestBody, null),
+              new HttpEntity<>(requestBody, getHttpHeadersWithBasicAuth()),
               UUID.class);
 
       // assert
@@ -291,7 +269,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(OwnerModels.UUID),
               HttpMethod.DELETE,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -313,7 +291,7 @@ public class OpenZevOwnerApiIntegrationTest {
           restTemplate.exchange(
               UriFactory.owners(OwnerModels.UUID),
               HttpMethod.DELETE,
-              HttpEntity.EMPTY,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
               ErrorDto.class);
 
       // assert
@@ -331,7 +309,10 @@ public class OpenZevOwnerApiIntegrationTest {
       // act
       final ResponseEntity<UUID> response =
           restTemplate.exchange(
-              UriFactory.owners(OwnerModels.UUID), HttpMethod.DELETE, HttpEntity.EMPTY, UUID.class);
+              UriFactory.owners(OwnerModels.UUID),
+              HttpMethod.DELETE,
+              new HttpEntity<>(null, getHttpHeadersWithBasicAuth()),
+              UUID.class);
 
       // assert
       assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);

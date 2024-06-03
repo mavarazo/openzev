@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
+
+    <changeSet author="mav" id="52f7aa4a-bc2c-40cd-afb9-ba8fc5fdc7aa">
+        <createTable tableName="OZEV_USERS">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="PK_OZEV_USER"/>
+            </column>
+
+            <column name="UUID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="CREATED" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="MODIFIED" type="TIMESTAMP(6)"/>
+
+            <column name="ACTIVE" type="BOOLEAN" valueBoolean="TRUE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="FIRST_NAME" type="VARCHAR2(255)">
+            </column>
+
+            <column name="LAST_NAME" type="VARCHAR2(255)">
+            </column>
+
+            <column name="EMAIL" type="VARCHAR2(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="PASSWORD" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ROLE" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="OWNER_ID" type="VARCHAR2(255)">
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="mav" id="0b58eee4-25e6-4f47-b927-c6a60d63107e">
+        <insert tableName="OZEV_USERS">
+            <column name="UUID" value="53af6f1f-4543-4ced-8fcf-a28b2cfd5d57"/>
+            <column name="CREATED" valueDate="current_timestamp"/>
+            <column name="ACTIVE" valueBoolean="TRUE"/>
+            <column name="EMAIL" value="admin@openzev.com"/>
+            <column name="PASSWORD" value="$2a$10$5m51h4m8RQu1a04x8T6kdeT4lq0yQWsGvgoMl0.IWzbvsj1HJmAAe"/>
+            <column name="ROLE" value="ADMIN"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
