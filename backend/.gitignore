@@ -37,3 +37,4 @@ out/
 .vscode/
 
 *.received.*
+application-local.yaml
