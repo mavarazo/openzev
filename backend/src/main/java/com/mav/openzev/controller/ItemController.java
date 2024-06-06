@@ -12,11 +12,11 @@ import com.mav.openzev.repository.ItemRepository;
 import com.mav.openzev.service.InvoiceService;
 import com.mav.openzev.service.ItemService;
 import com.mav.openzev.service.ProductService;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -32,7 +32,6 @@ public class ItemController implements ItemApi {
   private final ItemRepository itemRepository;
 
   @Override
-  @Transactional
   public ResponseEntity<List<ItemDto>> getItems(final UUID invoiceId) {
     return ResponseEntity.ok(
         itemRepository
@@ -61,6 +60,7 @@ public class ItemController implements ItemApi {
   }
 
   @Override
+  @Transactional
   public ResponseEntity<UUID> changeItem(
       final UUID itemId, final ModifiableItemDto modifiableItemDto) {
     final Item item = itemService.findItemOrFail(itemId);

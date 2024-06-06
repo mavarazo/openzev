@@ -3,17 +3,16 @@ package com.mav.openzev.controller;
 import com.mav.openzev.api.RepresentativeApi;
 import com.mav.openzev.api.model.ModifiableRepresentativeDto;
 import com.mav.openzev.api.model.RepresentativeDto;
-import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.mapper.RepresentativeMapper;
 import com.mav.openzev.model.Representative;
 import com.mav.openzev.repository.RepresentativeRepository;
+import com.mav.openzev.service.RepresentativeService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RepresentativeController implements RepresentativeApi {
 
   private final RepresentativeRepository representativeRepository;
+  private final RepresentativeService representativeService;
   private final RepresentativeMapper representativeMapper;
 
   @Override
@@ -34,54 +34,37 @@ public class RepresentativeController implements RepresentativeApi {
   }
 
   @Override
-  @Transactional
   public ResponseEntity<UUID> createRepresentative(
       final ModifiableRepresentativeDto modifiableRepresentativeDto) {
     final Representative representative =
         representativeMapper.mapToRepresentative(modifiableRepresentativeDto);
-    if (representative.isActive()) {
-      representativeRepository.findAll().forEach(b -> b.setActive(false));
-    }
+
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(representativeRepository.save(representative).getUuid());
+        .body(representativeService.saveRepresentative(representative).getUuid());
   }
 
   @Override
   public ResponseEntity<RepresentativeDto> getRepresentative(final UUID representativeId) {
-    return ResponseEntity.ok(
-        representativeRepository
-            .findByUuid(representativeId)
-            .map(representativeMapper::mapToRepresentativeDto)
-            .orElseThrow(() -> NotFoundException.ofRepresentativeNotFound(representativeId)));
+    final Representative representative =
+        representativeService.findRepresentativeOrFail(representativeId);
+    return ResponseEntity.ok(representativeMapper.mapToRepresentativeDto(representative));
   }
 
   @Override
-  @Transactional
   public ResponseEntity<UUID> changeRepresentative(
       final UUID representativeId, final ModifiableRepresentativeDto modifiableRepresentativeDto) {
     final Representative representative =
-        representativeRepository
-            .findByUuid(representativeId)
-            .orElseThrow(() -> NotFoundException.ofRepresentativeNotFound(representativeId));
+        representativeService.findRepresentativeOrFail(representativeId);
 
     representativeMapper.updateRepresentative(modifiableRepresentativeDto, representative);
-    if (representative.isActive()) {
-      representativeRepository.findAll().stream()
-          .filter(r -> !r.getUuid().equals(representativeId))
-          .forEach(b -> b.setActive(false));
-    }
-    return ResponseEntity.ok(representativeRepository.save(representative).getUuid());
+    return ResponseEntity.ok(representativeService.saveRepresentative(representative).getUuid());
   }
 
   @Override
   public ResponseEntity<Void> deleteRepresentative(final UUID representativeId) {
-    return representativeRepository
-        .findByUuid(representativeId)
-        .map(
-            representative -> {
-              representativeRepository.delete(representative);
-              return ResponseEntity.noContent().<Void>build();
-            })
-        .orElseThrow(() -> NotFoundException.ofRepresentativeNotFound(representativeId));
+    final Representative representative =
+        representativeService.findRepresentativeOrFail(representativeId);
+    representativeRepository.delete(representative);
+    return ResponseEntity.noContent().<Void>build();
   }
 }

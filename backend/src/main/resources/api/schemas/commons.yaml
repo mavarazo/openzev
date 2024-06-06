@@ -10,6 +10,9 @@ DateTime:
   type: string
   format: date-time
 
+Jwt:
+  type: string
+
 ErrorDto:
   type: object
   required:

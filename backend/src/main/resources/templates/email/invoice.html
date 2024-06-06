@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>OpenZEV - Invoice</title>
+
+    <style type="text/css">
+        @media only screen and (min-width: 480px) {
+            .mj-column-per-100 {
+                width: 100% !important;
+                max-width: 100%;
+            }
+        }
+    </style>
+    <style media="screen and (min-width:480px)">
+        .moz-text-html .mj-column-per-100 {
+            width: 100% !important;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body style="word-spacing:normal;">
+<p style="font-family:sans-serif;text-align:left;">
+    Guten Tag
+    <span th:text="${recipient.firstName}">FirstName</span>
+    <span th:text="${recipient.lastName}">LastName</span>
+</p>
+
+<p style="font-family:sans-serif;text-align:left;">
+    Im Anhang erhalten Sie die Rechnung f&uuml;r <span th:text="${invoice.subject}">Subject</span>.
+</p>
+
+<p style="font-family:sans-serif;text-align:left;">
+    Sollten Sie fragen zur Rechnung haben, stehe ich ihnen gerne zur Verf&uuml;gung.</p>
+<p style="font-family:sans-serif;text-align:left;">Freundliche Gr&uuml;sse</p>
+
+
+<div style="font-family:sans-serif;text-align:left;">
+    <span th:text="${representative.firstName}"> FirstName </span>
+    <span th:text="${representative.lastName}"> LastName </span>
+</div>
+<div style="font-family:sans-serif;text-align:left;">
+    <span th:text="${representative.street}"> Street </span> <span
+        th:text="${representative.houseNr}"> HouseNr </span>
+</div>
+<div style="font-family:sans-serif;text-align:left;">
+    <span th:text="${representative.postalCode}"> PostalCode </span> <span
+        th:text="${representative.city}"> city </span>
+</div>
+<div style="font-family:sans-serif;text-align:left;">
+    <span th:text="${representative.email}"> EMail </span>
+</div>
+<div style="font-family:sans-serif;text-align:left;"
+     th:if="${representative.phoneNr != null}">
+    <span th:text="${representative.phoneNr}"> PhoneNr </span>
+</div>
+<div style="font-family:sans-serif;text-align:left;"
+     th:if="${representative.mobileNr != null}">
+    <span th:text="${representative.mobileNr}"> MobileNr </span>
+</div>
+
+</body>
+</html>

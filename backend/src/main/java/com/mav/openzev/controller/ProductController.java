@@ -3,10 +3,10 @@ package com.mav.openzev.controller;
 import com.mav.openzev.api.ProductApi;
 import com.mav.openzev.api.model.ModifiableProductDto;
 import com.mav.openzev.api.model.ProductDto;
-import com.mav.openzev.exception.NotFoundException;
 import com.mav.openzev.mapper.ProductMapper;
 import com.mav.openzev.model.Product;
 import com.mav.openzev.repository.ProductRepository;
+import com.mav.openzev.service.ProductService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController implements ProductApi {
 
   private final ProductRepository productRepository;
+  private final ProductService productService;
   private final ProductMapper productMapper;
 
   @Override
@@ -41,34 +42,21 @@ public class ProductController implements ProductApi {
 
   @Override
   public ResponseEntity<ProductDto> getProduct(final UUID productId) {
-    return ResponseEntity.ok(
-        productRepository
-            .findByUuid(productId)
-            .map(productMapper::mapToProductDto)
-            .orElseThrow(() -> NotFoundException.ofProductNotFound(productId)));
+    final Product product = productService.findProductOrFail(productId);
+    return ResponseEntity.ok(productMapper.mapToProductDto(product));
   }
 
   @Override
   public ResponseEntity<UUID> changeProduct(
       final UUID productId, final ModifiableProductDto modifiableProductDto) {
-    final Product product =
-        productRepository
-            .findByUuid(productId)
-            .orElseThrow(() -> NotFoundException.ofProductNotFound(productId));
-
+    final Product product = productService.findProductOrFail(productId);
     productMapper.updateProduct(modifiableProductDto, product);
     return ResponseEntity.ok(productRepository.save(product).getUuid());
   }
 
   @Override
   public ResponseEntity<Void> deleteProduct(final UUID productId) {
-    return productRepository
-        .findByUuid(productId)
-        .map(
-            product -> {
-              productRepository.delete(product);
-              return ResponseEntity.noContent().<Void>build();
-            })
-        .orElseThrow(() -> NotFoundException.ofProductNotFound(productId));
+    productService.deleteProduct(productId);
+    return ResponseEntity.noContent().build();
   }
 }

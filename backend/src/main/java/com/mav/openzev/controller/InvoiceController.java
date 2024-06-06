@@ -62,6 +62,7 @@ public class InvoiceController implements InvoiceApi {
   }
 
   @Override
+  @Transactional
   public ResponseEntity<UUID> changeInvoice(
       final UUID invoiceId, final ModifiableInvoiceDto modifiableInvoiceDto) {
     final Invoice invoice = invoiceService.findInvoiceOrFail(invoiceId);
@@ -72,17 +73,15 @@ public class InvoiceController implements InvoiceApi {
   }
 
   @Override
-  @Transactional
   public ResponseEntity<Void> deleteInvoice(final UUID invoiceId) {
     invoiceRepository.delete(invoiceService.findInvoiceOrFail(invoiceId));
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  @Transactional(readOnly = true)
   public ResponseEntity<Resource> getPdf(final UUID invoiceId) {
     final Invoice invoice = invoiceService.findInvoiceOrFail(invoiceId);
-    final ByteArrayInputStream byteArrayInputStream = invoiceService.generatePdf(invoice);
+    final byte[] invoiceAsPdf = invoiceService.generatePdf(invoiceId);
 
     final var headers = new HttpHeaders();
     headers.add(
@@ -96,6 +95,12 @@ public class InvoiceController implements InvoiceApi {
     return ResponseEntity.ok()
         .headers(headers)
         .contentType(MediaType.APPLICATION_PDF)
-        .body(new InputStreamResource(byteArrayInputStream));
+        .body(new InputStreamResource(new ByteArrayInputStream(invoiceAsPdf)));
+  }
+
+  @Override
+  public ResponseEntity<Void> sendEmail(final UUID invoiceId) {
+    invoiceService.sendAsEmail(invoiceId);
+    return ResponseEntity.noContent().build();
   }
 }

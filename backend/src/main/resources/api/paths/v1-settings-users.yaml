@@ -1,0 +1,42 @@
+get:
+  operationId: getUsers
+  tags:
+    - User
+  responses:
+    '200':
+      description: Users
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/users.yaml#/UserDto'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'
+post:
+  operationId: inviteUser
+  tags:
+    - User
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/users.yaml#/ModifiableInvitationDto'
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/Id'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

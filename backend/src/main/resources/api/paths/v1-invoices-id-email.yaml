@@ -1,0 +1,15 @@
+post:
+  operationId: sendEmail
+  tags:
+    - Invoice
+  parameters:
+    - $ref: '../parameters/invoices.yaml#/InvoiceParam'
+  responses:
+    '204':
+      description: Send invoice as Email
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/commons.yaml#/ErrorDto'

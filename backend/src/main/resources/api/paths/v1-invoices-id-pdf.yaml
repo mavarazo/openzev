@@ -6,7 +6,7 @@ get:
     - $ref: '../parameters/invoices.yaml#/InvoiceParam'
   responses:
     '200':
-      description: Invoices
+      description: Invoice as PDF
       content:
         application/pdf:
           schema:

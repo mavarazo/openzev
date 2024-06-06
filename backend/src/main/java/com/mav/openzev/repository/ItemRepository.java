@@ -13,4 +13,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
   Optional<Item> findByUuid(UUID uuid);
 
   List<Item> findAllByInvoiceUuidOrderByProductSubjectAscNotesAscAmountAsc(UUID invoieUuid);
+
+  boolean existsByProductUuid(UUID productUuid);
 }

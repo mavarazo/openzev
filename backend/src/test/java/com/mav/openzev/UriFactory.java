@@ -33,6 +33,12 @@ public class UriFactory {
         .toUri();
   }
 
+  public static URI invoices_email(final UUID invoiceId) {
+    return UriComponentsBuilder.fromPath("/v1/invoices/{invoiceId}/email")
+        .buildAndExpand(invoiceId)
+        .toUri();
+  }
+
   public static URI items(final UUID itemId) {
     return UriComponentsBuilder.fromPath("/v1/items/{itemId}").buildAndExpand(itemId).toUri();
   }

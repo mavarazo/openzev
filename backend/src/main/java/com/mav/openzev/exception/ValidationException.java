@@ -1,8 +1,9 @@
 package com.mav.openzev.exception;
 
-
-import com.mav.openzev.model.Owner;
-import com.mav.openzev.model.Unit;
+import com.mav.openzev.adapter.qrgenerator.model.validator.ValidationMessage;
+import com.mav.openzev.model.*;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -12,7 +13,7 @@ public class ValidationException extends RuntimeException {
 
   @Getter private final String code;
 
-  private ValidationException(final String code, final String message) {
+  public ValidationException(final String code, final String message) {
     super(message);
     this.code = code;
   }
@@ -31,7 +32,49 @@ public class ValidationException extends RuntimeException {
 
   public static ValidationException ofUnitHasInvoice(final Unit unit) {
     return new ValidationException(
-        "unit_has_invoice",
+        "unit_used",
         "unit with id '%s' is in use by invoice(s)".formatted(unit.getUuid().toString()));
+  }
+
+  public static ValidationException ofProductIsUsed(final Product product) {
+    return new ValidationException(
+        "product_used",
+        "product with id '%s' is in use by item(s)".formatted(product.getUuid().toString()));
+  }
+
+  public static ValidationException ofInvoiceHasWrongStatus(
+      final Invoice invoice, final InvoiceStatus invoiceStatus) {
+    return new ValidationException(
+        "invoice_has_wrong_status",
+        "invoice has status '%s', expected: '%s'"
+            .formatted(
+                invoice.getStatus().toString().toLowerCase(),
+                invoiceStatus.toString().toLowerCase()));
+  }
+
+  public static ValidationException ofRecipientOfInvoiceHasNoEmail(final Invoice invoice) {
+    return new ValidationException(
+        "recipient_of_invoice_has_no_email",
+        "recipient '%s' '%s' of invoice '%s' has no email"
+            .formatted(
+                invoice.getRecipient().getFirstName(),
+                invoice.getRecipient().getLastName(),
+                invoice.getUuid()));
+  }
+
+  public static ValidationException ofQrGeneratorValidationFailed(
+      final List<ValidationMessage> validationMessages) {
+    return new ValidationException(
+        "qr_generator_validation_failed",
+        validationMessages.stream()
+            .map(
+                v ->
+                    "{ \"type\": %s, \"field\": %s, \"messageKey\": %s, \"messageParameters\": %s }"
+                        .formatted(v.type(), v.field(), v.messageKey(), v.messageParameters()))
+            .collect(Collectors.joining(".")));
+  }
+
+  public static ValidationException ofOldPasswordInvalid() {
+    return new ValidationException("old_password_invalid", "old password is invalid");
   }
 }

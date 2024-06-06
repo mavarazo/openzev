@@ -1,0 +1,19 @@
+[ {
+  "id" : "guid_1",
+  "active" : false,
+  "iban" : "guid_2",
+  "name" : "Dictumsollicitudin",
+  "street" : "Habitasseadipiscing",
+  "houseNr" : "146",
+  "postalCode" : "6710",
+  "city" : "Dignissimsem"
+}, {
+  "id" : "guid_3",
+  "active" : true,
+  "iban" : "guid_4",
+  "name" : "Euturpis",
+  "street" : null,
+  "houseNr" : null,
+  "postalCode" : null,
+  "city" : null
+} ]

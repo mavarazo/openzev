@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
@@ -83,7 +82,6 @@ public class RequiredArgumentsProvider
     return arguments.stream();
   }
 
-  @NotNull
   private List<String> getRequiredProperties() {
     return Arrays.stream(requiredSource.value().getDeclaredMethods())
         .filter(method -> method.isAnnotationPresent(Schema.class))

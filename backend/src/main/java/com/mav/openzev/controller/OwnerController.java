@@ -3,11 +3,10 @@ package com.mav.openzev.controller;
 import com.mav.openzev.api.OwnerApi;
 import com.mav.openzev.api.model.ModifiableOwnerDto;
 import com.mav.openzev.api.model.OwnerDto;
-import com.mav.openzev.exception.NotFoundException;
-import com.mav.openzev.exception.ValidationException;
 import com.mav.openzev.mapper.OwnerMapper;
 import com.mav.openzev.model.Owner;
 import com.mav.openzev.repository.OwnerRepository;
+import com.mav.openzev.service.OwnerService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OwnerController implements OwnerApi {
 
   private final OwnerRepository ownerRepository;
+  private final OwnerService ownerService;
   private final OwnerMapper ownerMapper;
 
   @Override
@@ -39,15 +39,11 @@ public class OwnerController implements OwnerApi {
   @Override
   @Transactional(readOnly = true)
   public ResponseEntity<OwnerDto> getOwner(final UUID ownerId) {
-    return ResponseEntity.ok(
-        ownerRepository
-            .findByUuid(ownerId)
-            .map(ownerMapper::mapToOwnerDto)
-            .orElseThrow(() -> NotFoundException.ofOwnerNotFound(ownerId)));
+    final Owner owner = ownerService.findOwnerOrFail(ownerId);
+    return ResponseEntity.ok(ownerMapper.mapToOwnerDto(owner));
   }
 
   @Override
-  @Transactional
   public ResponseEntity<UUID> createOwner(final ModifiableOwnerDto modifiableOwnerDto) {
     final Owner owner = ownerMapper.mapToOwner(modifiableOwnerDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(ownerRepository.save(owner).getUuid());
@@ -56,29 +52,14 @@ public class OwnerController implements OwnerApi {
   @Override
   public ResponseEntity<UUID> changeOwner(
       final UUID ownerId, final ModifiableOwnerDto modifiableOwnerDto) {
-    return ownerRepository
-        .findByUuid(ownerId)
-        .map(
-            owner -> {
-              ownerMapper.updateOwner(modifiableOwnerDto, owner);
-              return ResponseEntity.ok(ownerRepository.save(owner).getUuid());
-            })
-        .orElseThrow(() -> NotFoundException.ofOwnerNotFound(ownerId));
+    final Owner owner = ownerService.findOwnerOrFail(ownerId);
+    ownerMapper.updateOwner(modifiableOwnerDto, owner);
+    return ResponseEntity.ok(ownerRepository.save(owner).getUuid());
   }
 
   @Override
-  @Transactional
   public ResponseEntity<Void> deleteOwner(final UUID ownerId) {
-    final Owner owner =
-        ownerRepository
-            .findByUuid(ownerId)
-            .orElseThrow(() -> NotFoundException.ofOwnerNotFound(ownerId));
-
-    if (!owner.getOwnerships().isEmpty()) {
-      throw ValidationException.ofOwnerHasOwnership(owner);
-    }
-
-    ownerRepository.delete(owner);
-    return ResponseEntity.noContent().<Void>build();
+    ownerService.deleteOwner(ownerId);
+    return ResponseEntity.noContent().build();
   }
 }

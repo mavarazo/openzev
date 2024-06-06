@@ -1,0 +1,86 @@
+LoginDto:
+  type: object
+  properties:
+    username:
+      type: string
+    password:
+      type: string
+      format: password
+
+UserDto:
+  type: object
+  properties:
+    id:
+      $ref: './commons.yaml#/Id'
+    firstName:
+      type: string
+    lastName:
+      type: string
+    email:
+      type: string
+      format: email
+    role:
+      $ref: './users.yaml#/UserRole'
+    ownerId:
+      $ref: './commons.yaml#/Id'
+
+ModifiableUserDto:
+  type: object
+  properties:
+    active:
+      type: boolean
+      default: true
+    firstName:
+      type: string
+    lastName:
+      type: string
+    ownerId:
+      $ref: './commons.yaml#/Id'
+  required:
+    - email
+
+ModifiablePasswordChangeDto:
+  type: object
+  properties:
+    oldPassword:
+      type: string
+      format: password
+    newPassword:
+      type: string
+      format: password
+  required:
+    - oldPassword
+    - newPassword
+
+ModifiablePasswordResetDto:
+  type: object
+  properties:
+    newPassword:
+      type: string
+      format: password
+  required:
+    - newPassword
+
+ModifiableInvitationDto:
+  type: object
+  properties:
+    firstName:
+      type: string
+    lastName:
+      type: string
+    email:
+      type: string
+      format: email
+    password:
+      type: string
+      format: password
+    role:
+      $ref: './users.yaml#/UserRole'
+  required:
+    - email
+    - password
+    - role
+
+UserRole:
+  type: string
+  enum: [ USER, SUPERUSER, ADMIN ]

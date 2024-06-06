@@ -12,6 +12,7 @@ import com.mav.openzev.model.Unit;
 import com.mav.openzev.repository.OwnerRepository;
 import com.mav.openzev.repository.OwnershipRepository;
 import com.mav.openzev.repository.UnitRepository;
+import com.mav.openzev.service.OwnershipService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class OwnershipController implements OwnershipApi {
   private final UnitRepository unitRepository;
   private final OwnerRepository ownerRepository;
   private final OwnershipRepository ownershipRepository;
+  private final OwnershipService ownershipService;
 
   private final OwnershipMapper ownershipMapper;
 
@@ -46,11 +48,8 @@ public class OwnershipController implements OwnershipApi {
 
   @Override
   public ResponseEntity<OwnershipDto> getOwnership(final UUID ownershipId) {
-    return ResponseEntity.ok(
-        ownershipRepository
-            .findByUuid(ownershipId)
-            .map(ownershipMapper::mapToOwnershipDto)
-            .orElseThrow(() -> NotFoundException.ofOwnershipNotFound(ownershipId)));
+    final Ownership ownership = ownershipService.findOwnershipOrFail(ownershipId);
+    return ResponseEntity.ok(ownershipMapper.mapToOwnershipDto(ownership));
   }
 
   @Override
@@ -80,11 +79,7 @@ public class OwnershipController implements OwnershipApi {
   @Transactional
   public ResponseEntity<UUID> changeOwnership(
       final UUID ownershipId, final ModifiableOwnershipDto modifiableOwnershipDto) {
-    final Ownership ownership =
-        ownershipRepository
-            .findByUuid(ownershipId)
-            .orElseThrow(() -> NotFoundException.ofOwnershipNotFound(ownershipId));
-    
+    final Ownership ownership = ownershipService.findOwnershipOrFail(ownershipId);
     ownershipMapper.updateOwnership(modifiableOwnershipDto, ownership);
     ownershipRepository.save(ownership);
     return ResponseEntity.ok(ownership.getUuid());
@@ -92,13 +87,8 @@ public class OwnershipController implements OwnershipApi {
 
   @Override
   public ResponseEntity<Void> deleteOwnership(final UUID ownershipId) {
-    return ownershipRepository
-        .findByUuid(ownershipId)
-        .map(
-            ownership -> {
-              ownershipRepository.delete(ownership);
-              return ResponseEntity.noContent().<Void>build();
-            })
-        .orElseThrow(() -> NotFoundException.ofOwnershipNotFound(ownershipId));
+    final Ownership ownership = ownershipService.findOwnershipOrFail(ownershipId);
+    ownershipRepository.delete(ownership);
+    return ResponseEntity.noContent().build();
   }
 }

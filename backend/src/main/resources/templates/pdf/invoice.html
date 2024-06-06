@@ -11,7 +11,7 @@
 
     <style>
         @page {
-            size: A4
+            size: A4;
         }
 
         body {
@@ -59,8 +59,8 @@
 </head>
 <body class="A4">
 <section class="sheet padding-10mm">
-
-    <article><h3>ZEV Rothenburg Fläckehof 22</h3>
+    <article>
+        <h3>ZEV Rothenburg Fläckehof 22</h3>
         <hr/>
 
         <div style="width: 100%; margin: 50px 0 50px 0">
@@ -140,18 +140,6 @@
                 </div>
                 <div th:if="${representative.mobileNr != null}">
                     <span th:text="${representative.mobileNr}"> MobileNr </span>
-                </div>
-            </div>
-            <div>
-                <b>Payment information </b>
-                <div>IBAN: <span th:text="${bankAccount.iban}"> IBAN </span></div>
-                <div><span th:text="${bankAccount.name}"> Name </span></div>
-                <div th:if="${bankAccount.street != null}"><span th:text="${bankAccount.street}"> Street </span> <span
-                        th:text="${bankAccount.houseNr}"> houseNr </span>
-                </div>
-                <div th:if="${bankAccount.postalCode != null && bankAccount.city != null}">
-                    <span th:text="${bankAccount.postalCode}"> PostalCode </span> <span
-                        th:text="${bankAccount.city}"> City </span>
                 </div>
             </div>
         </div>

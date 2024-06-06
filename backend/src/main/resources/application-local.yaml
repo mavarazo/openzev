@@ -1,7 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:18003/openzev
-    username: openzev
-    password: password
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
