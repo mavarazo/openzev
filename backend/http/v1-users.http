@@ -1,8 +1,0 @@
-POST http://localhost:8001/v1/users
-Content-Type: application/json
-Authorization: Basic admin@openzev.com openzev
-
-{
-  "username": "asdf",
-  "password": "asdf"
-}
