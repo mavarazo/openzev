@@ -1,0 +1,149 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: OpenZEV API
+
+paths:
+  /v1/meter-points:
+    get:
+      operationId: getMeterPoints
+      tags:
+        - Meter Point
+      responses:
+        '200':
+          description: All meter points
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MeterPointDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+    post:
+      operationId: createMeterPoint
+      tags:
+        - Meter Point
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableMeterPointDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterPointDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/meter-points/{meterPointId}:
+    parameters:
+      - $ref: '#/components/parameters/MeterPointIdParameter'
+
+    get:
+      operationId: getMeterPoint
+      tags:
+        - Meter Point
+      responses:
+        '200':
+          description: Detail meter points
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterPointDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+    put:
+      operationId: changeMeterPoint
+      tags:
+        - Meter Point
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableMeterPointDto'
+      responses:
+        '201':
+          description: Changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterPointDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+components:
+  parameters:
+    MeterPointIdParameter:
+      name: meterPointId
+      in: path
+      schema:
+        type: string
+        format: uuid
+      required: true
+
+  schemas:
+    Id:
+      type: string
+      format: uuid
+
+    Date:
+      type: string
+      format: date
+
+    DateTime:
+      type: string
+      format: date-time
+
+    ErrorDto:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    MeterPointDto:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        number:
+          type: string
+      required:
+        - id
+        - number
+
+    ModifiableMeterPointDto:
+      type: object
+      properties:
+        number:
+          type: string
+      required:
+        - number

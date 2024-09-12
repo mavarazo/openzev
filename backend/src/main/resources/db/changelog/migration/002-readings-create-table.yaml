@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4fcc1df3-aaf5-4bec-8886-7a7248e7fd71
+      author: mav
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: ozev_readings
+      changes:
+        - createTable:
+            tableName: ozev_readings
+            columns:
+              - column:
+                  name: oid
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from_peak_tariff
+                  type: number
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from_off_peak_tariff
+                  type: number
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from_total
+                  type: number
+                  constraints:
+                    nullable: false
+              - column:
+                  name: upto_peak_tariff
+                  type: number
+                  constraints:
+                    nullable: false
+              - column:
+                  name: upto_off_peak_tariff
+                  type: number
+                  constraints:
+                    nullable: false
+              - column:
+                  name: upto_total
+                  type: number
+                  constraints:
+                    nullable: false

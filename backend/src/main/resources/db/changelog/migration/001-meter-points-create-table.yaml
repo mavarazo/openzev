@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4fcc1df3-aaf5-4bec-8886-7a7248e7fd71
+      author: mav
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: ozev_meter_points
+      changes:
+        - createTable:
+            tableName: ozev_meter_points
+            columns:
+              - column:
+                  name: oid
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false

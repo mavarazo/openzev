@@ -1,0 +1,14 @@
+[versions]
+mapstruct = "1.6.0"
+
+[libraries]
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version = "2.0.4" }
+wiremock = { module = "org.wiremock:wiremock-standalone", version = "3.5.2" }
+wiremock-spring-boot = { module = "com.maciejwalkowiak.spring:wiremock-spring-boot", version = "2.1.2" }
+
+[bundles]
+wiremock = ["wiremock", "wiremock-spring-boot"]
+
+[plugins]
