@@ -1,8 +1,7 @@
 package com.mav.openzev.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +14,12 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "OZEV_METER_POINTS")
+@Table(name = "meter_points")
 public class MeterPoint extends AbstractEntity {
 
   @Column(name = "number", nullable = false)
   private String number;
+
+  @OneToMany(mappedBy = "meterPoint", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Reading> readings;
 }

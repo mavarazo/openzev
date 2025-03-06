@@ -148,4 +148,41 @@ class MeterPointApiIntegrationTests extends AbstractApiIntegrationTest {
       assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
     }
   }
+
+  @Nested
+  class DeleteMeterPointTests {
+
+    @Test
+    void status200() {
+      // arrange
+      final MeterPoint meterPoint = testDataService.newMeterPoint(v -> v.setNumber("12 635 851"));
+
+      // act
+      final ResponseEntity<MeterPointDto> response =
+          restTemplate.exchange(
+              V_1_METER_POINTS_ID,
+              HttpMethod.DELETE,
+              HttpEntity.EMPTY,
+              MeterPointDto.class,
+              meterPoint.getOid());
+
+      // assert
+      assertThat(response).returns(HttpStatus.NO_CONTENT, ResponseEntity::getStatusCode);
+    }
+
+    @Test
+    void status404() {
+      // act
+      final ResponseEntity<MeterPointDto> response =
+          restTemplate.exchange(
+              V_1_METER_POINTS_ID,
+              HttpMethod.DELETE,
+              HttpEntity.EMPTY,
+              MeterPointDto.class,
+              UUID.randomUUID());
+
+      // assert
+      assertThat(response).returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
+    }
+  }
 }

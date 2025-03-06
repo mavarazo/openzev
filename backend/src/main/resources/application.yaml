@@ -4,5 +4,13 @@ server:
 spring:
   application:
     name: openzev
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     change-log: db/changelog/main.yaml
+
+

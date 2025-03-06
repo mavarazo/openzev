@@ -56,4 +56,10 @@ public class MeterPointController implements MeterPointApi {
         meterPointToDtoMapper.mapToMeterPointDto(meterPointService.changeMeterPoint(command));
     return ResponseEntity.status(HttpStatus.OK).body(meterPointDto);
   }
+
+  @Override
+  public ResponseEntity<Void> deleteMeterPoint(UUID meterPointId) {
+    meterPointService.deleteMeterPoint(meterPointId);
+    return ResponseEntity.noContent().build();
+  }
 }

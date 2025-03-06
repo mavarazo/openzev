@@ -10,7 +10,7 @@ paths:
       tags:
         - Meter Point
       responses:
-        '200':
+        200:
           description: All meter points
           content:
             application/json:
@@ -36,8 +36,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ModifiableMeterPointDto'
       responses:
-        '201':
-          description: Created
+        201:
+          description: Created meter point
           content:
             application/json:
               schema:
@@ -58,8 +58,8 @@ paths:
       tags:
         - Meter Point
       responses:
-        '200':
-          description: Detail meter points
+        200:
+          description: Detail meter point
           content:
             application/json:
               schema:
@@ -82,8 +82,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ModifiableMeterPointDto'
       responses:
-        '201':
-          description: Changed
+        200:
+          description: Changed meter point
           content:
             application/json:
               schema:
@@ -95,10 +95,131 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
 
+    delete:
+      operationId: deleteMeterPoint
+      tags:
+        - Meter Point
+      responses:
+        204:
+          description: Deleted meter point
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/readings:
+    get:
+      operationId: getReadings
+      tags:
+        - Reading
+      responses:
+        200:
+          description: All readings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReadingDto'
+
+    post:
+      operationId: createReading
+      tags:
+        - Reading
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableReadingDto'
+      responses:
+        201:
+          description: Created reading
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /v1/readings/{readingId}:
+    parameters:
+      - $ref: '#/components/parameters/ReadingIdParameter'
+
+    get:
+      operationId: getReading
+      tags:
+        - Reading
+      responses:
+        200:
+          description: Detail reading
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+    put:
+      operationId: changeReading
+      tags:
+        - Reading
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifiableReadingDto'
+      responses:
+        200:
+          description: Changed reading
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+    delete:
+      operationId: deleteReading
+      tags:
+        - Reading
+      responses:
+        204:
+          description: Deleted reading
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
 components:
   parameters:
     MeterPointIdParameter:
       name: meterPointId
+      in: path
+      schema:
+        type: string
+        format: uuid
+      required: true
+
+    ReadingIdParameter:
+      name: readingId
       in: path
       schema:
         type: string
@@ -126,6 +247,10 @@ components:
       properties:
         code:
           type: string
+        args:
+          type: array
+          items:
+            type: string
         message:
           type: string
 
@@ -147,3 +272,46 @@ components:
           type: string
       required:
         - number
+
+    ReadingDto:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        meterPoint:
+          $ref: '#/components/schemas/MeterPointDto'
+        date:
+          $ref: '#/components/schemas/Date'
+        peakTariff:
+          type: number
+        offPeakTariff:
+          type: number
+        total:
+          type: number
+      required:
+        - id
+        - meterPointId
+        - date
+        - peakTariff
+        - offPeakTariff
+        - total
+
+    ModifiableReadingDto:
+      type: object
+      properties:
+        meterPointId:
+          $ref: '#/components/schemas/Id'
+        date:
+          $ref: '#/components/schemas/Date'
+        peakTariff:
+          type: number
+        offPeakTariff:
+          type: number
+        total:
+          type: number
+      required:
+        - meterPointId
+        - date
+        - peakTariff
+        - offPeakTariff
+        - total

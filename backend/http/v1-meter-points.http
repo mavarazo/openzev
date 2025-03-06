@@ -1,0 +1,11 @@
+###
+GET http://localhost:18001/v1/meter-points
+Content-Type: application/json
+
+###
+POST http://localhost:18001/v1/meter-points
+Content-Type: application/json
+
+{
+  "number": "12 635 851"
+}

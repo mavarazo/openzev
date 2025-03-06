@@ -24,9 +24,7 @@ public class MeterPointService {
   }
 
   public MeterPoint getMeterPoint(final UUID id) {
-    return meterPointRepository
-        .findById(id)
-        .orElseThrow(() -> NotFoundException.meterPointNotFound(id));
+    return getMeterPointOrFail(id);
   }
 
   public MeterPoint createMeterPoint(final CreateMeterPointCommand command) {
@@ -37,5 +35,16 @@ public class MeterPointService {
     final MeterPoint meterPoint = getMeterPoint(command.id());
     meterPoint.setNumber(command.number());
     return meterPointRepository.save(meterPoint);
+  }
+
+  private MeterPoint getMeterPointOrFail(UUID id) {
+    return meterPointRepository
+        .findById(id)
+        .orElseThrow(() -> NotFoundException.meterPointNotFound(id));
+  }
+
+  public void deleteMeterPoint(UUID meterPointId) {
+    MeterPoint meterPoint = getMeterPointOrFail(meterPointId);
+    meterPointRepository.delete(meterPoint);
   }
 }

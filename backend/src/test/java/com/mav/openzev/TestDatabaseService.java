@@ -34,7 +34,7 @@ public class TestDatabaseService implements InitializingBean {
     entityManager.createNativeQuery("SET session_replication_role = 'replica';").executeUpdate();
 
     for (final String tableName : tableNames) {
-      entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
+      entityManager.createNativeQuery("TRUNCATE TABLE " + tableName + " CASCADE;").executeUpdate();
     }
 
     entityManager.createNativeQuery("SET session_replication_role = 'origin';").executeUpdate();

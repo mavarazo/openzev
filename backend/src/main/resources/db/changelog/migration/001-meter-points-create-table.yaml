@@ -6,10 +6,10 @@ databaseChangeLog:
         - onFail: MARK_RAN
         - not:
             - tableExists:
-                tableName: ozev_meter_points
+                tableName: meter_points
       changes:
         - createTable:
-            tableName: ozev_meter_points
+            tableName: meter_points
             columns:
               - column:
                   name: oid

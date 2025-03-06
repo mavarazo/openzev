@@ -6,10 +6,10 @@ databaseChangeLog:
         - onFail: MARK_RAN
         - not:
             - tableExists:
-                tableName: ozev_readings
+                tableName: readings
       changes:
         - createTable:
-            tableName: ozev_readings
+            tableName: readings
             columns:
               - column:
                   name: oid
@@ -23,32 +23,31 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: from_peak_tariff
+                  name: meter_point_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: peak_tariff
                   type: number
                   constraints:
                     nullable: false
               - column:
-                  name: from_off_peak_tariff
+                  name: off_peak_tariff
                   type: number
                   constraints:
                     nullable: false
               - column:
-                  name: from_total
+                  name: total
                   type: number
                   constraints:
                     nullable: false
-              - column:
-                  name: upto_peak_tariff
-                  type: number
-                  constraints:
-                    nullable: false
-              - column:
-                  name: upto_off_peak_tariff
-                  type: number
-                  constraints:
-                    nullable: false
-              - column:
-                  name: upto_total
-                  type: number
-                  constraints:
-                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: readings
+            baseColumnNames: meter_point_id
+            referencedTableName: meter_points
+            referencedColumnNames: oid
+            constraintName: fk_readings_meter_point_id
+        - addUniqueConstraint:
+            tableName: readings
+            columnNames: date, meter_point_id
