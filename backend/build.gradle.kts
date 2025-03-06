@@ -30,13 +30,16 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
 
-    annotationProcessor(libs.mapstruct.processor)
+    annotationProcessor(libs.mapstructProcessor)
     implementation(libs.mapstruct)
 
+    annotationProcessor(libs.hibernateJpamodelgen)
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.liquibase:liquibase-core")
-    implementation(libs.springdoc.openapi.starter.webmvc.ui)
+    implementation(libs.springdocOpenapiStarterWebmvcUi)
 
     runtimeOnly("org.postgresql:postgresql")
 
@@ -67,6 +70,7 @@ tasks.openApiGenerate {
     outputDir.set("$projectDir/build/generated")
     apiPackage.set("com.mav.openzev.api")
     modelPackage.set("com.mav.openzev.api.model")
+    modelNameSuffix.set("Dto")
     configOptions.set(
         mapOf(
             "dateLibrary" to "java8-localdatetime",

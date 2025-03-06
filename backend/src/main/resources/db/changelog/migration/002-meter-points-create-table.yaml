@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4fcc1df3-aaf5-4bec-8886-7a7248e7fd71
+      author: mav
+      changes:
+        - createTable:
+            tableName: meter_points
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false

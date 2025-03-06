@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4fcc1df3-aaf5-4bec-8886-7a7248e7fd71
+      author: mav
+      changes:
+        - createTable:
+            tableName: readings
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: date
+                  type: date
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: readings
+            columnNames: date

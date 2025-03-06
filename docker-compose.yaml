@@ -1,0 +1,24 @@
+---
+services:
+  backend:
+      build:
+        context: backend
+      ports:
+        - 18001:8001
+      env_file:
+        - backend.env
+      depends_on:
+        - database
+
+  database:
+    image: postgres
+    user: postgres
+    env_file:
+      - database.env
+    ports:
+      - 18002:5432
+    volumes:
+      - openzev-data:/var/lib/postgresql/data
+
+volumes:
+  openzev-data:

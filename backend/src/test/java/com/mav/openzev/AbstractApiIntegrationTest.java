@@ -1,5 +1,6 @@
 package com.mav.openzev;
 
+import com.mav.openzev.data.TestDataManager;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,10 +13,10 @@ public abstract class AbstractApiIntegrationTest {
 
   @Autowired protected TestRestTemplate restTemplate;
 
-  @Autowired protected TestDatabaseService testDatabaseService;
+  @Autowired protected TestDataManager testDataManager;
 
   @AfterEach
   protected void tearDown() {
-    testDatabaseService.truncateAll();
+    testDataManager.truncateAll();
   }
 }
