@@ -1,0 +1,40 @@
+<div class="flex justify-between pb-3">
+    <p class="text-2xl">Units</p>
+    <div class="flex flex-nowrap justify-end">
+        <button class="primary-outline" routerLink="add">Add</button>
+    </div>
+</div>
+
+<table class="w-full table-auto text-left">
+    <thead class="uppercase">
+        <tr>
+            <th scope="col">Number</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            @for (unit of units(); track unit.id) {
+                <td>{{ unit.number }}</td>
+                <td>{{ unit.firstName }}</td>
+                <td>{{ unit.lastName }}</td>
+                <td class="flex flex-nowrap justify-end gap-4">
+                    <button
+                        class="primary-outline text-sm"
+                        [routerLink]="[unit.id, 'edit']"
+                    >
+                        <fa-icon [icon]="faPencil" />
+                    </button>
+                    <button
+                        class="danger-outline text-sm"
+                        (click)="remove(unit)"
+                    >
+                        <fa-icon [icon]="faTrash" />
+                    </button>
+                </td>
+            }
+        </tr>
+    </tbody>
+</table>

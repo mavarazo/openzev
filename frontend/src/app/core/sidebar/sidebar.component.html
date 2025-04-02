@@ -1,25 +1,22 @@
-<div class="d-flex flex-column flex-shrink-0 text-white" style="width: 280px">
-  <div style="height: 70px">
-    <a
-      href="/"
-      class="d-flex align-items-center p-3 text-white text-decoration-none"
-    >
-      <h4>OpenZEV</h4>
-    </a>
-  </div>
-  <ul class="sidebar-nav flex-column mb-auto">
-    @for (item of items(); track item.link) {
-      <li class="sidebar-nav-item">
-        <a
-          href="#"
-          class="sidebar-nav-link"
-          [routerLink]="item.link"
-          routerLinkActive="active"
-        >
-          <i class="{{ item.icon }}"></i>
-          <span class="align-middle">{{ item.label }}</span>
-        </a>
-      </li>
-    }
-  </ul>
-</div>
+<aside class="relative top-0 left-0 z-40 h-screen w-64">
+    <div class="h-full overflow-y-auto bg-gray-800 py-4 pl-3">
+        <p class="p-3 text-2xl text-white">
+            <a href="#" routerLink="/">OpenZEV</a>
+        </p>
+
+        <ul class="space-y-2 font-medium">
+            @for (item of items(); track item) {
+                <li>
+                    <a
+                        href="#"
+                        class="flex items-center rounded-s-lg py-2 pl-2 text-white hover:bg-gray-700"
+                        [routerLink]="item.link"
+                        routerLinkActive="bg-gray-600"
+                    >
+                        {{ item.label }}
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</aside>

@@ -1,9 +1,13 @@
-<div class="wrapper">
-  <app-sidebar [items]="items"></app-sidebar>
+<div class="flex h-screen w-full overflow-hidden">
+    <app-sidebar [items]="items"></app-sidebar>
 
-  <div class="main">
-    <main class="content">
-      <router-outlet />
-    </main>
-  </div>
+    <div class="flex grow flex-col content-start overflow-hidden">
+        <!-- navbar -->
+
+        <main class="grow overflow-auto">
+            <div class="mx-auto px-4 py-4 sm:px-8 lg:container">
+                <router-outlet />
+            </div>
+        </main>
+    </div>
 </div>

@@ -1,0 +1,56 @@
+<div class="pb-3">
+    <p class="text-2xl">
+        @if (isEditMode) {
+            Edit unit
+        } @else {
+            Add unit
+        }
+    </p>
+</div>
+
+<form class="mx-auto" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mb-5">
+        <label
+            for="number"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Number</label
+        >
+        <input
+            type="text"
+            id="number"
+            formControlName="number"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+            required
+        />
+    </div>
+
+    <div class="mb-5">
+        <label
+            for="firstName"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >First Name</label
+        >
+        <input
+            type="text"
+            id="firstName"
+            formControlName="firstName"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+        />
+    </div>
+
+    <div class="mb-5">
+        <label
+            for="lastName"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Last Name</label
+        >
+        <input
+            type="text"
+            id="lastName"
+            formControlName="lastName"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+            required
+        />
+    </div>
+    <button type="submit" class="primary max-w-fit">Submit</button>
+</form>

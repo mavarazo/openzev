@@ -1,34 +1,49 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/nav";
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 280px;
+  color: var(--color-primary);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  color: var(--color-primary);
+  text-decoration: none;
+}
 
 .sidebar-nav {
-  @extend .nav;
-  --bs-link-color: $white;
-  --bs-link-hover-color: $white;
+  //@extend .nav;
+  //--bs-link-color: $white;
+  //--bs-link-hover-color: $white;
+
+  flex-direction: column;
+  margin-bottom: auto;
+
 }
 
 .sidebar-nav-item {
-  @extend .nav-item;
+  //@extend .nav-item;
 }
 
 .sidebar-header {
-  @extend .nav-item;
+  //@extend .nav-item
 
-  color: #ced4da;
+  color: var(--link-primary);
   font-size: .75rem;
   padding: 1.5rem 1.5rem .375rem;
 }
 
 .sidebar-nav-link {
-  @extend .nav-link;
+  //@extend .nav-link;
   --bs-nav-link-padding-y: 0.625rem;
   --bs-nav-link-padding-x: 1.625rem;
 
   border-left: 3px solid transparent;
   border-radius: 0;
-  color: rgba($gray-200, 0.5);
+  //color: rgba($gray-200, 0.5);
   transition: background .1s ease-in-out;
 
   i {
@@ -36,20 +51,24 @@
   }
 
   &:hover {
-    border-left-color: $primary;
+    //border-left-color: $primary;
 
     i {
-      color: var(--bs-link-hover-color);
+      //color: var(--bs-link-hover-color);
     }
   }
 
   &.active {
-    color: var(--bs-link-hover-color);
-    background: rgba($primary, 0.1);
-    border-left-color: $primary;
+    //color: var(--bs-link-hover-color);
+    //background: rgba($primary, 0.1);
+    //border-left-color: $primary;
 
     i {
-      color: var(--bs-link-hover-color);
+      //color: var(--bs-link-hover-color);
     }
   }
+}
+
+.sidebar-nav-link-text {
+  vertical-align: middle;
 }

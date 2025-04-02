@@ -1,5 +1,41 @@
-@import "bootstrap/scss/bootstrap";
-@import "bootstrap-icons/font/bootstrap-icons.css";
+@use 'tailwindcss';
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+button {
+    @apply px-4 py-2;
+    @apply flex items-center justify-center space-x-1;
+    @apply rounded-md;
+}
+
+button.primary {
+    @apply bg-gray-600 text-white;
+
+    &:hover {
+        @apply bg-gray-700;
+    }
+}
+
+button.primary-outline {
+    @apply border border-gray-600 text-gray-700;
+
+    &:hover {
+        @apply bg-gray-700 text-white;
+    }
+}
+
+button.danger-outline {
+    @apply border border-red-600 text-red-700;
+
+    &:hover {
+        @apply bg-red-700 text-white;
+    }
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
