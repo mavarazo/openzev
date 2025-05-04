@@ -1,0 +1,56 @@
+<div class="flex justify-between pb-3">
+    <p class="text-2xl">Vendor Invoices</p>
+    <div class="flex flex-nowrap justify-end">
+        <app-button label="Add" (clicked)="addClicked()" />
+    </div>
+</div>
+
+<table class="w-full table-auto text-left">
+    <thead class="uppercase">
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Period from</th>
+            <th scope="col">Period upto</th>
+            <th scope="col">Due date</th>
+            <th scope="col">State</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (vendorInvoice of vendorInvoices(); track vendorInvoice.id) {
+            <tr [routerLink]="vendorInvoice.id" style="cursor: pointer">
+                <td class="py-1">
+                    {{ vendorInvoice.date | date: 'dd.MM.yyyy' }}
+                </td>
+                <td class="py-1">
+                    {{ vendorInvoice.periodFrom | date: 'dd.MM.yyyy' }}
+                </td>
+                <td class="py-1">
+                    {{ vendorInvoice.periodUpto | date: 'dd.MM.yyyy' }}
+                </td>
+                <td class="py-1">
+                    {{ vendorInvoice.dueDate | date: 'dd.MM.yyyy' }}
+                </td>
+                <td class="py-1">
+                    {{ vendorInvoice.state }}
+                </td>
+                <td class="py-1">
+                    <div class="flex flex-nowrap items-center justify-end">
+                        <button
+                            class="rounded-l-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-100 hover:text-blue-600"
+                            [routerLink]="[vendorInvoice.id, 'edit']"
+                        >
+                            <fa-icon [icon]="faPencil" />
+                        </button>
+                        <button
+                            class="rounded-r-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-100 hover:text-red-600"
+                            (click)="remove(vendorInvoice)"
+                        >
+                            <fa-icon [icon]="faTrash" />
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

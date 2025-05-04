@@ -12,16 +12,20 @@ import { NavItem } from './core/sidebar/nav-item.model'
 export class AppComponent {
     items: NavItem[] = [
         {
+            label: 'Consumptions',
+            link: '/consumptions',
+        },
+        {
             label: 'Meter Points',
             link: '/meter-points',
         },
         {
-            label: 'Readings',
-            link: '/readings',
-        },
-        {
             label: 'Units',
             link: '/units',
+        },
+        {
+            label: 'Vendor Invoices',
+            link: '/vendor-invoices',
         },
     ]
 }

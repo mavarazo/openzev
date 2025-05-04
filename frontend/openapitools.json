@@ -7,7 +7,13 @@
       "v1": {
         "generatorName": "typescript-angular",
         "output": "#{cwd}/src/generated-source/api",
-        "glob": "./../backend/src/main/resources/api/main.yaml"
+        "glob": "./../backend/src/main/resources/api/main.yaml",
+        "additionalProperties": {
+          "withInterfaces": true
+        },
+        "typeMappings": {
+          "date": "Date"
+        }
       }
     }
   }

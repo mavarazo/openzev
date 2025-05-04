@@ -1,6 +1,7 @@
 import { OverviewComponent } from './containers/overview/overview.component'
 import { Routes } from '@angular/router'
 import { AddEditComponent } from './containers/add-edit/add-edit.component'
+import { DetailComponent } from './containers/detail/detail.component'
 
 export const routes: Routes = [
     {
@@ -12,8 +13,12 @@ export const routes: Routes = [
         component: AddEditComponent,
     },
     {
-        path: ':id',
+        path: ':unitId',
         children: [
+            {
+                path: '',
+                component: DetailComponent,
+            },
             {
                 path: 'edit',
                 component: AddEditComponent,

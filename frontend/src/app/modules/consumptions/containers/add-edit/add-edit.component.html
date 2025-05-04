@@ -1,0 +1,84 @@
+<div class="pb-3">
+    <p class="text-2xl">
+        @if (isEditMode) {
+            Edit consumption
+        } @else {
+            Add consumption
+        }
+    </p>
+</div>
+
+<form class="mx-auto" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mb-5">
+        <label
+            for="meter-point"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Meter point</label
+        >
+        <select
+            id="meter-point"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+            formControlName="meterPointId"
+            (change)="onMeterPointIdChange(meterPoint.value)"
+            required
+            #meterPoint
+        >
+            @for (meterPoint of meterPoints(); track meterPoint.id) {
+                <option value="{{ meterPoint.id }}">
+                    {{ meterPoint.number }}
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-5">
+        <label
+            for="previous-consumption"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Previous consumption</label
+        >
+        <select
+            id="previous-consumption"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+            formControlName="previousConsumptionId"
+        >
+            @for (consumption of consumptions(); track consumption.id) {
+                <option value="{{ consumption.id }}">
+                    {{ consumption.date | date: 'dd.MM.yyyy' }}
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-5">
+        <label
+            for="date"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Date</label
+        >
+        <input
+            type="date"
+            id="date"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+            formControlName="date"
+            required
+        />
+    </div>
+
+    <div class="mb-5">
+        <label
+            for="consumption"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Total consumption</label
+        >
+        <input
+            type="number"
+            id="consumption"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+            formControlName="total"
+            required
+        />
+    </div>
+
+    <app-button type="submit" label="Submit" />
+</form>

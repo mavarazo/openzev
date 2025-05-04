@@ -13,18 +13,19 @@ import {
     Validators,
 } from '@angular/forms'
 import { Unit } from '../../../../../generated-source/api'
+import { ButtonComponent } from '../../../../shared/components/button/button.component'
 
 @Component({
     selector: 'app-add-edit',
     standalone: true,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, ButtonComponent],
     providers: [UnitsStore],
     templateUrl: './add-edit.component.html',
     styleUrl: './add-edit.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddEditComponent {
-    readonly id = input<string>()
+    readonly unitId = input<string>()
     private readonly store = inject(UnitsStore)
     readonly unit = this.store.unit
 
@@ -45,8 +46,8 @@ export class AddEditComponent {
 
     constructor() {
         effect(() => {
-            const id = this.id()
-            if (!!id) {
+            const id = this.unitId()
+            if (id) {
                 this.isEditMode = true
                 this.store.getUnit(id)
             }
@@ -67,9 +68,9 @@ export class AddEditComponent {
             return
         }
 
-        const id = this.id()
+        const id = this.unitId()
         const unit: Unit = Object.assign(this.form.value)
-        if (this.isEditMode && !!id) {
+        if (this.isEditMode && id) {
             this.store.changeUnit({ id, unit })
         } else {
             this.store.createUnit(unit)

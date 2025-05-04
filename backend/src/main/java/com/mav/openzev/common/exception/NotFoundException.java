@@ -17,6 +17,7 @@ public class NotFoundException extends ResponseStatusException {
   public static <T> NotFoundException of(final Class<T> clazz, final UUID id) {
     return new NotFoundException(
         String.format(DEFAULT_MESSAGE, clazz.getSimpleName(), id),
-        DEFAULT_CODE.formatted(clazz.getSimpleName().toLowerCase()));
+        DEFAULT_CODE.formatted(clazz.getSimpleName().toLowerCase()),
+        id.toString());
   }
 }

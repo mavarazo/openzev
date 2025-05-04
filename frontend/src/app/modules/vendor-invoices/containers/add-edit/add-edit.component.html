@@ -1,0 +1,71 @@
+<div class="pb-3">
+    <p class="text-2xl">
+        @if (isEditMode) {
+            Edit vendor invoice
+        } @else {
+            Add vendor invoice
+        }
+    </p>
+</div>
+
+<form class="mx-auto" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mb-5">
+        <label
+            for="date"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Date</label
+        >
+        <input
+            type="date"
+            id="date"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+            formControlName="date"
+            required
+        />
+    </div>
+
+    <div class="mb-5">
+        <label
+            for="periodFrom"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Period from</label
+        >
+        <input
+            type="date"
+            id="periodFrom"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+            formControlName="periodFrom"
+        />
+    </div>
+
+    <div class="mb-5">
+        <label
+            for="periodUpto"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Period upto</label
+        >
+        <input
+            type="date"
+            id="periodUpto"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+            formControlName="periodUpto"
+        />
+
+        <div class="mb-5">
+            <label
+                for="dueDate"
+                class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+                >Due date</label
+            >
+            <input
+                type="date"
+                id="dueDate"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+                formControlName="dueDate"
+                required
+            />
+        </div>
+    </div>
+
+    <app-button type="submit" label="Submit" />
+</form>

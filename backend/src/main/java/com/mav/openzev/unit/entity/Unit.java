@@ -7,6 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +16,12 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "units")
+@Table(name = "units", uniqueConstraints = @UniqueConstraint(columnNames = "number"))
 public class Unit extends AbstractEntity {
 
   @OneToOne(mappedBy = "unit", cascade = CascadeType.ALL)

@@ -26,14 +26,15 @@ public class ExceptionController {
 
   static {
     CONSTRAINT_VIOLATIONS = new HashMap<>();
-    CONSTRAINT_VIOLATIONS.put("Total is invalid", "total_invalid");
+    CONSTRAINT_VIOLATIONS.put(
+        "{vendor-invoice-item.total.invalid}", "vendor-invoice-item.total.invalid");
   }
 
   private static final Map<String, String> DATA_INTEGRITY_VIOLATIONS;
 
   static {
     DATA_INTEGRITY_VIOLATIONS = new HashMap<>();
-    DATA_INTEGRITY_VIOLATIONS.put("readings_date_key", "reading_duplicated");
+    DATA_INTEGRITY_VIOLATIONS.put("consumptions_date_key", "consumption_duplicated");
   }
 
   @ExceptionHandler(ConstraintViolationException.class)

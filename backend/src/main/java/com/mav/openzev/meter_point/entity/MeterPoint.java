@@ -1,16 +1,14 @@
 package com.mav.openzev.meter_point.entity;
 
 import com.mav.openzev.common.entity.AbstractEntity;
-import com.mav.openzev.meter_point_reading.entity.MeterPointReading;
 import com.mav.openzev.unit.entity.Unit;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.List;
+import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,12 +16,12 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "meter_points")
+@Table(name = "meter_points", uniqueConstraints = @UniqueConstraint(columnNames = "number"))
 public class MeterPoint extends AbstractEntity {
 
   @OneToOne(optional = false)
@@ -32,7 +30,4 @@ public class MeterPoint extends AbstractEntity {
 
   @Column(name = "number", nullable = false)
   private String number;
-
-  @OneToMany(mappedBy = "meterPoint", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<MeterPointReading> meterPointReadings;
 }

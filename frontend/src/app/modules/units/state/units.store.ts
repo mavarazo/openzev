@@ -19,7 +19,6 @@ import { filter, map, pipe, switchMap, tap } from 'rxjs'
 import { tapResponse } from '@ngrx/operators'
 import { HttpErrorResponse } from '@angular/common/http'
 import { Router } from '@angular/router'
-import { withEntities } from '@ngrx/signals/entities'
 
 type UnitsState = {
     units: Unit[]
@@ -38,7 +37,6 @@ export const UnitsStore = signalStore(
         unitService: inject(UnitService),
         router: inject(Router),
     })),
-    withEntities<Unit>(),
     withMethods((store) => ({
         _loadAll: rxMethod<void>(
             pipe(
@@ -139,7 +137,7 @@ export const UnitsStore = signalStore(
             )
         ),
 
-        deleteUnit: rxMethod<Unit>(
+        removeUnit: rxMethod<Unit>(
             pipe(
                 map((unit) => unit.id),
                 filter(Boolean),

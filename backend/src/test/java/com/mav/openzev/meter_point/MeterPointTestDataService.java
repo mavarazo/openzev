@@ -13,7 +13,7 @@ public class MeterPointTestDataService extends AbstractTestDataService {
     super(testDataManager);
   }
 
-  public MeterPoint newMeterPoint(final Customize<MeterPoint.MeterPointBuilder> customize) {
+  public MeterPoint newMeterPoint(final Customize<MeterPoint.MeterPointBuilder<?, ?>> customize) {
     final MeterPoint.MeterPointBuilder<?, ?> builder =
         MeterPoint.builder().id(UUID.randomUUID()).number("34 635 851");
     customize.apply(builder);

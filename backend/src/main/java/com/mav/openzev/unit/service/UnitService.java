@@ -1,13 +1,14 @@
 package com.mav.openzev.unit.service;
 
 import com.mav.openzev.unit.entity.Unit;
+import com.mav.openzev.unit.entity.Unit_;
 import com.mav.openzev.unit.model.ChangeUnitCommand;
 import com.mav.openzev.unit.model.CreateUnitCommand;
 import com.mav.openzev.unit.repository.UnitRepository;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +18,7 @@ public class UnitService {
   private final UnitRepository unitRepository;
 
   public List<Unit> getUnits() {
-    return unitRepository.findAll().stream().sorted(Comparator.comparing(Unit::getNumber)).toList();
+    return unitRepository.findAll(Sort.by(Unit_.NUMBER).ascending());
   }
 
   public Unit getUnit(final UUID id) {

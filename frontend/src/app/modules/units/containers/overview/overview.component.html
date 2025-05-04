@@ -1,7 +1,7 @@
 <div class="flex justify-between pb-3">
     <p class="text-2xl">Units</p>
     <div class="flex flex-nowrap justify-end">
-        <button class="primary-outline" routerLink="add">Add</button>
+        <app-button label="Add" (clicked)="addClicked()" />
     </div>
 </div>
 
@@ -15,26 +15,28 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            @for (unit of units(); track unit.id) {
-                <td>{{ unit.number }}</td>
-                <td>{{ unit.firstName }}</td>
-                <td>{{ unit.lastName }}</td>
-                <td class="flex flex-nowrap justify-end gap-4">
-                    <button
-                        class="primary-outline text-sm"
-                        [routerLink]="[unit.id, 'edit']"
-                    >
-                        <fa-icon [icon]="faPencil" />
-                    </button>
-                    <button
-                        class="danger-outline text-sm"
-                        (click)="remove(unit)"
-                    >
-                        <fa-icon [icon]="faTrash" />
-                    </button>
+        @for (unit of units(); track unit.id) {
+            <tr [routerLink]="unit.id" style="cursor: pointer">
+                <td class="py-1">{{ unit.number }}</td>
+                <td class="py-1">{{ unit.firstName }}</td>
+                <td class="py-1">{{ unit.lastName }}</td>
+                <td class="py-1">
+                    <div class="flex flex-nowrap items-center justify-end">
+                        <button
+                            class="rounded-l-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-100 hover:text-blue-600"
+                            [routerLink]="[unit.id, 'edit']"
+                        >
+                            <fa-icon [icon]="faPencil" />
+                        </button>
+                        <button
+                            class="rounded-r-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-100 hover:text-red-600"
+                            (click)="remove(unit)"
+                        >
+                            <fa-icon [icon]="faTrash" />
+                        </button>
+                    </div>
                 </td>
-            }
-        </tr>
+            </tr>
+        }
     </tbody>
 </table>

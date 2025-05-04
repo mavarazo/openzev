@@ -1,15 +1,16 @@
 package com.mav.openzev.meter_point.service;
 
 import com.mav.openzev.meter_point.entity.MeterPoint;
+import com.mav.openzev.meter_point.entity.MeterPoint_;
 import com.mav.openzev.meter_point.model.ChangeMeterPointCommand;
 import com.mav.openzev.meter_point.model.CreateMeterPointCommand;
 import com.mav.openzev.meter_point.repository.MeterPointRepository;
 import com.mav.openzev.unit.entity.Unit;
 import com.mav.openzev.unit.repository.UnitRepository;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,9 +21,7 @@ public class MeterPointService {
   private final UnitRepository unitRepository;
 
   public List<MeterPoint> getMeterPoints() {
-    return meterPointRepository.findAll().stream()
-        .sorted(Comparator.comparing(MeterPoint::getNumber))
-        .toList();
+    return meterPointRepository.findAll(Sort.by(MeterPoint_.NUMBER).ascending());
   }
 
   public MeterPoint getMeterPoint(final UUID id) {

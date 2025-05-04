@@ -10,7 +10,7 @@ public class LocalOpenZevApplication {
 
   public static void main(final String[] args) {
     SpringApplication.from(OpenZevApplication::main)
-        .with(TestcontainersConfiguration.class)
+        .with(LocalTestcontainersConfiguration.class)
         .run(args);
   }
 }

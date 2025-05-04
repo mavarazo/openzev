@@ -2,14 +2,14 @@
 mapstruct = "1.6.0"
 
 [libraries]
-hibernateJpamodelgen = { module = "org.hibernate.orm:hibernate-jpamodelgen", version = "6.3.1.Final" }
-mapstructProcessor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+hibernate-jpamodelgen = { module = "org.hibernate.orm:hibernate-jpamodelgen", version = "6.3.1.Final" }
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
 mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
-springdocOpenapiStarterWebmvcUi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version = "2.0.4" }
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version = "2.0.4" }
 wiremock = { module = "org.wiremock:wiremock-standalone", version = "3.5.2" }
-wiremockSpringBoot = { module = "com.maciejwalkowiak.spring:wiremock-spring-boot", version = "2.1.2" }
+wiremock-spring-boot = { module = "com.maciejwalkowiak.spring:wiremock-spring-boot", version = "2.1.2" }
 
 [bundles]
-wiremock = ["wiremock", "wiremockSpringBoot"]
+wiremock = ["wiremock", "wiremock-spring-boot"]
 
 [plugins]

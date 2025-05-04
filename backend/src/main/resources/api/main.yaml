@@ -1,10 +1,115 @@
-openapi: 3.0.4
+openapi: 3.1.1
 
 info:
   version: 1.0.0
   title: OpenZEV API
 
 paths:
+  /v1/consumptions:
+    get:
+      operationId: getConsumptions
+      tags:
+        - Consumptions
+      parameters:
+        - name: meterPointId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: All consumptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Consumption'
+
+    post:
+      operationId: createConsumption
+      tags:
+        - Consumptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Consumption'
+      responses:
+        201:
+          description: Consumption created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consumption'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/consumptions/{consumptionId}:
+    parameters:
+      - $ref: '#/components/parameters/ConsumptionId'
+
+    get:
+      operationId: getConsumption
+      tags:
+        - Consumptions
+      responses:
+        200:
+          description: Detail of consumption
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consumption'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      operationId: changeConsumption
+      tags:
+        - Consumptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Consumption'
+      responses:
+        200:
+          description: Consumption changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consumption'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      operationId: deleteConsumption
+      tags:
+        - Consumptions
+      responses:
+        204:
+          description: Consumption deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /v1/meter-points:
     get:
       operationId: getMeterPoints
@@ -52,7 +157,7 @@ paths:
 
   /v1/meter-points/{meterPointId}:
     parameters:
-      - $ref: '#/components/parameters/MeterPointIdParameter'
+      - $ref: '#/components/parameters/MeterPointId'
 
     get:
       operationId: getMeterPoint
@@ -110,210 +215,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /v1/meter-point-readings:
-    get:
-      operationId: getMeterPointReadings
-      tags:
-        - Meter Point Reading
-      parameters:
-        - name: readingId
-          in: query
-          schema:
-            type: string
-            format: uuid
-      responses:
-        200:
-          description: All meter point readings
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MeterPointReading'
-
-    post:
-      operationId: createMeterPointReading
-      tags:
-        - Meter Point Reading
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MeterPointReading'
-      responses:
-        201:
-          description: Created reading
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MeterPointReading'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /v1/meter-point-readings/{meterPointReadingId}:
-    parameters:
-      - $ref: '#/components/parameters/MeterPointReadingIdParameter'
-
-    get:
-      operationId: getMeterPointReading
-      tags:
-        - Meter Point Reading
-      responses:
-        200:
-          description: Detail meter point reading
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MeterPointReading'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    put:
-      operationId: changeMeterPointReading
-      tags:
-        - Meter Point Reading
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MeterPointReading'
-      responses:
-        200:
-          description: Changed  meter point reading
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MeterPointReading'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    delete:
-      operationId: deleteMeterPointReading
-      tags:
-        - Meter Point Reading
-      responses:
-        204:
-          description: Deleted meter point reading
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /v1/readings:
-    get:
-      operationId: getReadings
-      tags:
-        - Reading
-      responses:
-        200:
-          description: All readings
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Reading'
-
-    post:
-      operationId: createReading
-      tags:
-        - Reading
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Reading'
-      responses:
-        201:
-          description: Created reading
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Reading'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /v1/readings/{readingId}:
-    parameters:
-      - $ref: '#/components/parameters/ReadingIdParameter'
-
-    get:
-      operationId: getReading
-      tags:
-        - Reading
-      responses:
-        200:
-          description: Detail reading
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Reading'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    put:
-      operationId: changeReading
-      tags:
-        - Reading
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Reading'
-      responses:
-        200:
-          description: Changed reading
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Reading'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    delete:
-      operationId: deleteReading
-      tags:
-        - Reading
-      responses:
-        204:
-          description: Deleted reading
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
   /v1/units:
     get:
       operationId: getUnits
@@ -361,7 +262,7 @@ paths:
 
   /v1/units/{unitId}:
     parameters:
-      - $ref: '#/components/parameters/UnitIdParameter'
+      - $ref: '#/components/parameters/UnitId'
 
     get:
       operationId: getUnit
@@ -418,39 +319,227 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  
+  /v1/vendor-invoices:
+
+    get:
+      operationId: getVendorInvoices
+      tags:
+        - Vendor Invoices
+      responses:
+        200:
+          description: All vendor invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VendorInvoice'
+
+    post:
+      operationId: createVendorInvoice
+      tags:
+        - Vendor Invoices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorInvoice'
+      responses:
+        201:
+          description: Vendor invoice created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorInvoice'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/vendor-invoices/{vendorInvoiceId}:
+    parameters:
+      - $ref: '#/components/parameters/VendorInvoiceId'
+
+    get:
+      operationId: getVendorInvoice
+      tags:
+        - Vendor Invoices
+      responses:
+        200:
+          description: Detail of vendor invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorInvoice'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      operationId: changeVendorInvoice
+      tags:
+        - Vendor Invoices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorInvoice'
+      responses:
+        200:
+          description: Vendo invoice changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorInvoice'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      operationId: deleteVendorInvoice
+      tags:
+        - Vendor Invoices
+      responses:
+        204:
+          description: Vendor invoice deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/vendor-invoices/{vendorInvoiceId}/items:
+    parameters:
+      - $ref: '#/components/parameters/VendorInvoiceId'
+
+    get:
+      operationId: getVendorInvoiceItems
+      tags:
+        - Vendor Invoice Items
+      responses:
+        200:
+          description: All vendor invoice items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VendorInvoiceItem'
+
+    post:
+      operationId: createVendorInvoiceItem
+      tags:
+        - Vendor Invoice Items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorInvoiceItem'
+      responses:
+        201:
+          description: Vendor invoice item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorInvoiceItem'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/vendor-invoices/{vendorInvoiceId}/items/{vendorInvoiceItemId}:
+    parameters:
+      - $ref: '#/components/parameters/VendorInvoiceId'
+      - $ref: '#/components/parameters/VendorInvoiceItemId'
+
+    put:
+      operationId: changeVendorInvoiceItem
+      tags:
+        - Vendor Invoice Items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorInvoiceItem'
+      responses:
+        200:
+          description: Vendo invoice item changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorInvoiceItem'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      operationId: deleteVendorInvoiceItem
+      tags:
+        - Vendor Invoice Items
+      responses:
+        204:
+          description: Vendor invoice item deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 components:
   parameters:
-    MeterPointIdParameter:
+    VendorInvoiceId:
+      name: vendorInvoiceId
+      in: path
+      schema:
+        $ref: '#/components/schemas/Id'
+      required: true
+
+    VendorInvoiceItemId:
+      name: vendorInvoiceItemId
+      in: path
+      schema:
+        $ref: '#/components/schemas/Id'
+      required: true
+
+    ConsumptionId:
+      name: consumptionId
+      in: path
+      schema:
+        $ref: '#/components/schemas/Id'
+      required: true
+
+    MeterPointId:
       name: meterPointId
       in: path
       schema:
-        type: string
-        format: uuid
+        $ref: '#/components/schemas/Id'
       required: true
 
-    MeterPointReadingIdParameter:
-      name: meterPointReadingId
-      in: path
-      schema:
-        type: string
-        format: uuid
-      required: true
-
-    ReadingIdParameter:
-      name: readingId
-      in: path
-      schema:
-        type: string
-        format: uuid
-      required: true
-
-    UnitIdParameter:
+    UnitId:
       name: unitId
       in: path
       schema:
-        type: string
-        format: uuid
+        $ref: '#/components/schemas/Id'
       required: true
 
   schemas:
@@ -481,6 +570,91 @@ components:
         - code
         - message
 
+    Consumption:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+          readOnly: true
+        meterPoint:
+          $ref: '#/components/schemas/MeterPoint'
+          readOnly: true
+        meterPointId:
+          $ref: '#/components/schemas/Id'
+          writeOnly: true
+        previousConsumption:
+          $ref: '#/components/schemas/Consumption'
+          readOnly: true
+        previousConsumptionId:
+          $ref: '#/components/schemas/Id'
+          writeOnly: true
+        date:
+          $ref: '#/components/schemas/Date'
+        total:
+          type: number
+      required:
+        - date
+        - meterPointId
+        - total
+
+    VendorInvoice:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+          readOnly: true
+        state:
+          type: string
+          enum: [ OPEN, IN_PROGRESS, DONE ]
+        date:
+          $ref: '#/components/schemas/Date'
+        periodFrom:
+          $ref: '#/components/schemas/Date'
+        periodUpto:
+          $ref: '#/components/schemas/Date'
+        dueDate:
+          $ref: '#/components/schemas/Date'
+      required:
+        - date
+        - dueDate
+
+    VendorInvoiceItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+          readOnly: true
+        type:
+          type: string
+          enum: [ CHARGE, CREDIT ]
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+          format: float
+        unit:
+          oneOf:
+            - type: string
+              enum: [ '%', kW, kWh, MONTHS ]
+            - type: string
+          type: string
+        price:
+          type: number
+          format: float
+        total:
+          type: number
+          format: float
+      required:
+        - name
+        - quantity
+        - unit
+        - price
+        - total
+
     MeterPoint:
       type: object
       properties:
@@ -490,52 +664,14 @@ components:
         unitId:
           $ref: '#/components/schemas/Id'
           writeOnly: true
+        unit:
+          $ref: '#/components/schemas/Unit'
+          readOnly: true
         number:
           type: string
       required:
+        - unitId
         - number
-
-    Reading:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-          readOnly: true
-        date:
-          $ref: '#/components/schemas/Date'
-      required:
-        - date
-
-    MeterPointReading:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-          readOnly: true
-        reading:
-          $ref: '#/components/schemas/Reading'
-          readOnly: true
-        readingId:
-          $ref: '#/components/schemas/Id'
-          writeOnly: true
-        meterPoint:
-          $ref: '#/components/schemas/MeterPoint'
-          readOnly: true
-        meterPointId:
-          $ref: '#/components/schemas/Id'
-          writeOnly: true
-        peakTariff:
-          type: number
-        offPeakTariff:
-          type: number
-        total:
-          type: number
-      required:
-        - readingId
-        - meterPointId
-        - peakTariff
-        - offPeakTariff
-        - total
 
     Unit:
       type: object

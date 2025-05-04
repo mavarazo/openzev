@@ -13,7 +13,7 @@ public class UnitTestDataService extends AbstractTestDataService {
     super(testDataManager);
   }
 
-  public Unit newUnit(final Customize<Unit.UnitBuilder> customize) {
+  public Unit newUnit(final Customize<Unit.UnitBuilder<?, ?>> customize) {
     final Unit.UnitBuilder<?, ?> builder =
         Unit.builder().id(UUID.randomUUID()).number("1234").firstName("Foo").lastName("Bar");
     customize.apply(builder);

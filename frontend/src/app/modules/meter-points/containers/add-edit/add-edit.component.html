@@ -1,0 +1,48 @@
+<div class="pb-3">
+    <p class="text-2xl">
+        @if (isEditMode) {
+            Edit meter point
+        } @else {
+            Add meter point
+        }
+    </p>
+</div>
+
+<form class="mx-auto" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mb-5">
+        <label
+            for="units"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Unit</label
+        >
+        <select
+            id="units"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+            formControlName="unitId"
+            required
+        >
+            @for (unit of units(); track unit.id) {
+                <option value="{{ unit.id }}">
+                    {{ unit.number }} {{ unit.firstName }} {{ unit.lastName }}
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-5">
+        <label
+            for="number"
+            class="mb-2 block text-sm font-medium text-gray-900 uppercase"
+            >Number</label
+        >
+        <input
+            type="text"
+            id="number"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900"
+            formControlName="number"
+            required
+        />
+    </div>
+
+    <app-button type="submit" label="Submit" />
+</form>

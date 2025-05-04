@@ -1,21 +1,44 @@
 <div class="flex justify-between pb-3">
     <p class="text-2xl">Meter Points</p>
     <div class="flex flex-nowrap justify-end">
-        <button class="primary-outline" routerLink="add">Add</button>
+        <app-button label="Add" (clicked)="addClicked()" />
     </div>
 </div>
 
-<table class="w-full text-left">
+<table class="w-full table-auto text-left">
     <thead class="uppercase">
         <tr>
             <th scope="col">Number</th>
+            <th scope="col">Unit</th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
-        <tr>
-            @for (meterPoint of meterPoints(); track meterPoint.id) {
+        @for (meterPoint of meterPoints(); track meterPoint.id) {
+            <tr>
                 <td>{{ meterPoint.number }}</td>
-            }
-        </tr>
+                <td>
+                    {{ meterPoint.unit?.number }}
+                    {{ meterPoint.unit?.firstName }}
+                    {{ meterPoint.unit?.lastName }}
+                </td>
+                <td class="py-1">
+                    <div class="flex flex-nowrap items-center justify-end">
+                        <button
+                            class="rounded-l-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-100 hover:text-blue-600"
+                            [routerLink]="[meterPoint.id, 'edit']"
+                        >
+                            <fa-icon [icon]="faPencil" />
+                        </button>
+                        <button
+                            class="rounded-r-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-100 hover:text-red-600"
+                            (click)="remove(meterPoint)"
+                        >
+                            <fa-icon [icon]="faTrash" />
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
